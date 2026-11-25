@@ -1,15 +1,8 @@
-# X26. Every even N ≥ 4 is p + η with Ω(η) ≤ 4, under GRH
+# Every even N ≥ 4 is p + η with Ω(η) ≤ 4, under GRH
 
-## Packet header
+**Status.** Regimes 1 and 2 below (all even `4 ≤ N < 10^170`) have been refereed twice with no substantive objection. Regime 3 (`N ≥ 10^170`) applies [BJS] Theorem 6 with its hypothesis checked at the sieving level only (§4.2); the proof of that theorem uses the hypothesis at all lower levels, where the present parameters violate it, so §4 is **not** a proof as it stands and is being redone (see the repository README). Theorem 1 is therefore established here only for `N < 10^170`.
 
-- **Claim ID:** `X26` | **Author:** `local-carbon` (with `d255528d`) | **Date:** `2026-11-25`
-- **Status:** `unchecked (repaired after R17)`. **Level:** `conjecture`.
-- **Standing premise:** GRH for Dirichlet L-functions (and RH) is used as an established theorem (`docs/COLLABORATION.md`, Rule 0.5).
-- **Script:** `research/goldbach/scripts/certify_all_even_1p4.py` (run: `python3 research/goldbach/scripts/certify_all_even_1p4.py`, exit 0).
-- **Output:** `research/goldbach/data/certify_all_even_1p4_output.txt` (regenerated from a run of the repaired script).
-- **Review answered:** `notes/R17-review-X26-all-even-1p4-under-grh.md` and `notes/R17-x26-reports/` (see the section "Answers to R17" at the end).
-
-**What changed after R17, in one paragraph.** The theorem statement is unchanged, and it still covers every even N ≥ 4. Its Regime 3 now rests on the explicit linear sieve exactly as stated in arXiv:2207.09452**v6** (Theorem 6 and Table 1 of v6, quoted in §0.1). The old script used a different table, the one printed in arXiv:2211.08844v1, which quotes an earlier version of the same theorem. With the v6 table, applied at ε' = 1/100 (the largest row below our 1/ε = 117.29), the net Regime-3 coefficient drops from 0.031666 to **0.001489**. It is positive, but thin. Benchmark 0 now passes with the table exactly as Regime 3 uses it. The weighted inequality now uses the set A = {N − p : p ∤ N}, so no ω(N) correction is lost. The interval arithmetic now rounds outward everywhere, and the run checks this mechanically.
+Certificate: `certificate/certify_all_even_1p4.py` (run `python3 certificate/certify_all_even_1p4.py`, exit 0); output in `certificate/certify_all_even_1p4_output.txt`; per-slab parameters in `tables/table_A_slab_parameters.md`. GRH for Dirichlet L-functions is used as an established theorem.
 
 ---
 
@@ -24,13 +17,6 @@ The proof has three regimes:
 - **Regime 3, N ≥ 10^170.** The linear sieve of [BJS] Theorem 6 with a pre-sieve (§4). It gives π₄(N) > 0.001489 · 22 U_N N/log²N.
 
 Here π₄(N) := #{p ≤ N prime : Ω(N − p) ≤ 4}, and U_N is defined in §0.5.
-
-**Exact question for a verifier.** Are the following correct, and does the script check exactly these statements?
-
-1. The quoted statements in §0.
-2. The use of the hypothesis of [BJS] Theorem 6 in §4.2, which ranges over all 1 < u < z for every z ≥ z₀.
-3. Lemmas 1–2 in §2.
-4. The error decomposition in §4.4.
 
 ---
 
@@ -119,7 +105,7 @@ The script uses each bound **only in its stated range** (`mertens_ub_err`). Lemm
 - **Lemma 4** ([Robin]): "$\omega(N)< \frac{1.3841\log N}{\log \log N}$ for $N \geq 3$."
 - **Lemma 5** ([Büthe]): "For $x \geq 10^9$, $\sum_{n\le x} \mu^2(n) \le 0.608 x$, $\sum_{n\le x}\frac{\mu^2(n)}{\varphi(n)}\le\log x + 1.333 +\frac{58}{\sqrt{x}}\le 1.1\log x$."
 
-The packet used to cite "2211.08844 Lemma 9" for V(z). In v1, Lemma 9 is the bilinear-form lemma. The V(x) lemma of [BS] is Lemma 11, and it prints U_N with $2e^{\gamma}$ instead of $2e^{-\gamma}$. We no longer use it: Regime 3 now uses [BJS] Lemma 38 (§0.1), which is unconditional and has $2e^{-\gamma}$.
+The V(x) lemma of [BS] v1 is Lemma 11; it prints U_N with $2e^{\gamma}$ instead of $2e^{-\gamma}$ and is not used. Regime 3 uses [BJS] Lemma 38 (§0.1), which is unconditional and has $2e^{-\gamma}$.
 
 ### 0.4 Elementary facts proved here
 
@@ -226,10 +212,10 @@ The slab table `SLABS` has 30 half-open intervals [X_lo, X_hi). Contiguity from 
 6. **Errors**, normalized by N/log N. Each is evaluated at the end of the slab where it is largest:
    - Lower sieve: (number of d with λ_d ≠ 0) × (∗). The count is ≤ 2^a Σ_{j≤m}C(|P₂|, j), or ≤ 2^a Σ π(z)^j/j! in the analytic branch.
    - Upper sieve for A_q, for each q: $E_q \le \#\{d\}\cdot\max|r(qd)| + |r(q)|\sum_d 1/\varphi(d) + |r(q)|\,R_{even}$. The first two terms are the remainder for $r_q(d)=r(qd)-r(q)/\varphi(d)$ when A_q is approximated by |A_q|/φ(d). The third comes from $|A_q| = |A|/(q-1)+r(q)$ in the main term, with $V_N R_{even}(P_2')\le R_{even}(P_2)$. This is `err_Aq_norm`.
-   - q² term. If y⁴ ≤ X_lo (only then is q² ≤ √N guaranteed), the script uses ½ Σ_q (|A|/(q(q−1)) + (∗)). Here |A| ≤ π(N) ≤ li(N) + √N log N/(8π) and li(N) < N/(log N − 2). This branch is used only in slab 1. Otherwise it uses ½ Σ_q N/q².
+   - q² term. If y⁴ ≤ X_lo (only then is q² ≤ √N guaranteed), the script uses ½ Σ_q (|A|/(q(q−1)) + (∗)). Here |A| ≤ π(N) ≤ li(N) + √N log N/(8π) and li(N) < N/(log N − 2). This branch is used in slabs 1–6, 23–28 and 30 (wherever its condition holds). Otherwise it uses ½ Σ_q N/q².
    - Monotonicity. The terms of (∗) divided by N/log N, namely (c_π + 1/16π) log²N/√N and 1.3841 log²N/(N log log N), decrease in N, so they are evaluated at X_lo. c_π(X_lo) is valid for all N ≥ X_lo. The elementary q² term grows like log N, so it is evaluated at X_hi. The integer z, y and the moduli bounds are fixed per slab.
 
-The output per slab is main ≥, err ≤ and net ≥, and every net is asserted positive. The minimum is 0.000331, at slab 22 [10^126, 10^134). That margin comes from the elementary q² term, not from the GRH constant. The numbers did not change from the R17 version, because the changes only touch terms of size ≤ 10^−15 in Regime 2.
+The output per slab is main ≥, err ≤ and net ≥, and every net is asserted positive. The minimum is 0.000331, at slab 22 [10^126, 10^134). That margin comes from the elementary q² term, not from the GRH constant.
 
 ---
 
@@ -256,7 +242,7 @@ Also asserted: s := log D/log z = 22(½ − α) = 8.0124 ≥ 2, so D ≥ z². An
 
 ### 4.2 The ε-hypothesis of [BJS] Theorem 6
 
-Apply Theorem 6 with 𝐏 = {p ∤ N}, ℚ = {3 ≤ p < 41, p ∤ N} ⊆ 𝐏, g_n(p) = g(p) = 1/(p − 1), and z = N^{1/22} ≥ z₀. The hypothesis must hold for **every** 1 < u < z and for every such z. It does not need to hold for arbitrary [w₁, w₂). The R17 test w₁ = 41, w₂ = 42 therefore does not apply. What has to be checked instead is all u, with the upper endpoint z.
+Apply Theorem 6 with 𝐏 = {p ∤ N}, ℚ = {3 ≤ p < 41, p ∤ N} ⊆ 𝐏, g_n(p) = g(p) = 1/(p − 1), and z = N^{1/22} ≥ z₀. As stated in [BJS], the hypothesis is quantified over 1 < u < z at the sieving level z, and that is what is checked below, for every z ≥ z₀. **Caveat:** the proof of Theorem 6 uses the product condition on every sub-interval [u, w], w ≤ z, and with ℚ as above that stronger condition fails (for instance ε ≈ 0.0165 on [97, 113)). This section therefore does not suffice; see Status.
 
 - **u ≤ 41.** The product runs over p ∈ 𝐏 ∖ ℚ ∩ [u, z), which is contained in [41, z). So it is at most the product over all primes in [41, z), and log z/log u ≥ log z/log 41. So it suffices to treat 41 ≤ u < z.
 - **41 ≤ u < z.** Write $(1-\frac1{p-1})^{-1} = \frac{(p-1)^2}{p(p-2)}(1-\frac1p)^{-1}$ and drop the condition p ∤ N, which only enlarges the product. Then:
@@ -299,7 +285,7 @@ Let Σ* denote a sum over squarefree n ≤ H with (n, N) = 1. By (∗), [BS] Lem
 ## 5. Script facts
 
 - **No float, no math module.** An AST check of the file finds no float literal, no float() call and no import other than decimal and fractions.
-- **Arithmetic.** Intervals of Decimal at 90 digits, with every rounding operation in a localcontext set to ROUND_FLOOR or ROUND_CEILING. Negation uses copy_negate, which is exact; plain unary minus rounds in the default context and was a second instance of R17 finding 5.
+- **Arithmetic.** Intervals of Decimal at 90 digits, with every rounding operation in a localcontext set to ROUND_FLOOR or ROUND_CEILING. Negation uses copy_negate, which is exact; plain unary minus would round in the default context and is not used.
 - **π enclosure.** The arctan series uses exact integer denominators.
 - **Integer conditions.** All integer conditions, such as moduli ≤ √X_lo and y⁴ ≤ X_lo, are exact int comparisons.
 - **Mechanical audit.** At import, the default Decimal context traps `Inexact` and `Rounded`, so any rounding outside a directed context aborts the run. The two heuristic contexts are marked HEURISTIC and switch off the traps: one picks a scaling exponent and one picks k in exp. Their results are re-verified in interval arithmetic.
@@ -318,25 +304,10 @@ Let Σ* denote a sum over squarefree n ≤ H with (n, N) = 1. By (∗), [BS] Lem
 
 ---
 
-## 7. Known gaps (for the verifier)
+## 7. Known gaps
 
-1. **Regime-3 margin is thin.** The net is 0.001489 against a subtracted q-sum of 0.973. Its ε'C₁e²h part is ≈ 0.12. The proof depends on [BJS] v6 Table 1 row 100 being right (C₁ = 276, C₂ = 277) and on the table being read as stated (§0.1). An earlier version of the table, reproduced in [BS] v1 with ε < 1/63, has other values (row 76: 635/636; row 114: 247/249). Those older values were what the R17 script used. That version of [BJS] itself was not read.
+1. **Regime-3 margin is thin.** The net is 0.001489 against a subtracted q-sum of 0.973. Its ε'C₁e²h part is ≈ 0.12. The proof depends on [BJS] v6 Table 1 row 100 being right (C₁ = 276, C₂ = 277) and on the table being read as stated (§0.1). An earlier version of the table, reproduced in [BS] v1 with ε < 1/63, has other values (row 76: 635/636; row 114: 247/249).
 2. **Proof of [BJS] Theorem 6 not re-checked.** Only its statement, Table 1 and the definitions of C_i (Lemma 14) were read.
 3. **Not read in primary form.** Schoenfeld 1976 (used as quoted in [BS] Lemma 1, for x ≥ 3), Robin, Büthe, Oliveira e Silva–Herzog–Pardi, and Cai's Lemma 2. Each is used as quoted by [BS], [JS] or [BJS].
 4. **The cyclotomic discriminant bound** log Δ ≤ φ(q) log q, used only in the consistency check of [JS] Lemma 5.1 against Grenié–Molteni, was not read from a source. [JS] Lemma 5.1 itself is used as quoted.
-5. **Regime 2's analytic Bonferroni bounds** (e_{m+1} ≤ S₁^{m+1}/(m+1)!, the truncation sign) are proved in §2 and checked by R17 v2. They are not from a source.
-
----
-
-## Answers to R17
-
-| # | Finding | What was changed, and where |
-|---|---|---|
-| 1 | BJS sieve not quoted | Theorem 6 of arXiv:2207.09452v6 is quoted verbatim in §0.1: both bounds, ε and its range, the quantifier "for all n and 1<u<z", h(s), R, X_A and the Table-1 semantics. The table in the script (`BJS_TABLE`) is the v6 table. The old table was the one printed in arXiv:2211.08844v1 (an earlier BJS version, ε < 1/63). The theorem is applied at ε' = 1/k, with C₁ in the upper bound and C₂ in the lower bound (§0.1, §4.2–4.3, `lookup_BJS`). |
-| 2 | ε hypothesis | The source has a fixed upper endpoint z and all 1 < u < z, so the w₁ = 41, w₂ = 42 test does not apply. The hypothesis is now proved for all u and all z ≥ z₀ (§4.2): ε ≤ 8.53·10⁻³, row 100, ε' = 1/100. Regime 3 still holds at 10^170, with net 0.001489 (was 0.031666). |
-| 3 | Benchmark 0 | Cause: two different versions of the BJS table. [JS] v3 uses 559 = C at ε⁻¹ = 76 in v6. The script's 636 came from the older table in [BS] v1. The benchmark now uses the same lookup as Regime 3 and asserts positivity in both forms: 1.4890 and 1.4456 (§5, `verify_benchmark_0`). |
-| 4 | ω(N) elements | A := {N − p : p ∤ N}, as in [JS] and [BJS], so every element is coprime to N and (1.1) needs no correction. The ω(N) appears explicitly in (∗) via \|A\| = π(N) − ω(N), and the −1 is removed (§1; `r_coeff_iv`, `err_per_d_norm`, c₄G). |
-| 5 | GRH bound for π(x;q,a) | One source quoted: [JS] v3 **Lemma 5.1** (TeX label `epilem`). Range x ≥ X₂ ≥ 4·10^18, 3 ≤ q ≤ √x, (a,q) = 1, main term li(x) with li(2) absorbed. It was checked against Grenié–Molteni v3 Cor. 1.2 (§0.2). The 1/(16π) and ω(N) terms are derived in (∗). The script asserts X₂ ≥ 4·10^18 and moduli in [3, √X_lo]. |
-| 6 | Interval arithmetic | `_atan_inv_iv` now uses exact int denominators. Moduli checks are exact int comparisons. A further defect was found and fixed: unary minus on Decimal rounds in the default context; it is now replaced by copy_negate. The default context now traps Inexact and Rounded for the whole run (§5). |
-| 7 | Note ≠ code | §3–§4 now describe exactly what the code does. Regime 3 uses the BJS upper bound F + ε'C₁e²h with pre-sieve; slabs 1–4 sieve A_q exactly by Q₁. Selberg Λ², "trivial sieve", `PRIMES_BIG`, P_sub and log-spaced slices are gone. |
-| 8 | Smaller items | Mertens bounds: quoted with their ranges ([JS] Lemma 3.2, [BJS] Lemma 16) and each used only inside its range (`mertens_ub_err`). "JS Lemma 3.2" is correct for v3. V(z): the old citation "2211.08844 Lemma 9" was wrong (Lemma 9 is a bilinear form). [BJS] Lemma 38 is now used, and U_N is defined (§0.5). \|A_{q²}\|: proved ≤ N/q² (distinct integers in [1, N−1]; §1), so +1 is not needed. Lemma 2: rewritten with the correct normalisation and the positivity condition (§2). Regime 3: the R1/R2/rq/q² decomposition and the monotonicity of each piece are written out (§4.4). Literature: corrected (§6). Benchmark numbering: "Theorem 5.6" is Theorem 5.9 in v3, and the GRH result is Theorem 1.4. The 1.25506 branch of `pi_ub_iv` was unsourced and unreachable, and is removed. |
+5. **Regime 2's analytic Bonferroni bounds** (e_{m+1} ≤ S₁^{m+1}/(m+1)!, the truncation sign) are proved in §2 and were checked by an independent referee. They are not from a source.

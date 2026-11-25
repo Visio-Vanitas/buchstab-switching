@@ -1,0 +1,74 @@
+Outward-rounded Decimal/Fraction/int verification (PREC = 90); default context traps Inexact, Rounded
+Printed lower bounds are rounded down and printed upper bounds up.
+  pi      in [3.1415926535897932384626433, 3.1415926535897932384626434]
+  ln(2)   in [0.6931471805599453094172321, 0.6931471805599453094172322]
+  gamma   in [0.5772156649015328606065120, 0.5772156649015328606065121]
+  C2      in [0.660141767292, 0.660163773486]
+  M0      in [0.261465361062, 0.261498695507]
+  U_c     in [0.741285711489, 0.741310422662]
+  li(2)   in [1.045163780117, 1.045163780118]
+  li(e^5) <= 40.185275355804 < 49.471053034192 <= e^5/3
+=== BENCHMARK 0: Johnston-Starichkova (2208.01229v3), Thm 1.4 ranges and Thm 5.9 ===
+  N < exp(104) (L+1=6):  K = 25
+  N < exp(149) (L+1=13): K = 31
+  N < exp(exp(5.077)) >= exp(160.2924) (L+1=21): K = 31
+  Theorem 5.9 (JS: eps=1.312e-2 times C=559): coeff in [1.4889, 1.4891]
+  Theorem 5.9 (as Regime 3: eps'=1/76 times C2(1/76)=559): coeff in [1.4456, 1.4457]
+
+=== REGIME 1: 4 <= N <= 4 * 10^18 ===
+  Cited, not computed: Oliveira e Silva, Herzog, Pardi, Math. Comp. 83 (2014), as quoted in [BJS] section 1 and [JS] section 1. K = 1 <= 4.
+
+=== REGIME 2: Finite Slab Ladder [4*10^18, 10^170) for K = 4 ===
+  Slab  1: [4e18, 1e20) M=14 a= 5 odd= 3 even= 0 z=27 y=43870 | main>=0.070721 err<=0.020125 net>=0.050597
+  Slab  2: [1e20, 1e22) M=10 a= 4 odd= 3 even= 0 z=159 y=89054 | main>=0.030786 err<=0.007677 net>=0.023110
+  Slab  3: [1e22, 1e24) M=12 a= 5 odd= 3 even= 0 z=101 y=315443 | main>=0.029943 err<=0.003598 net>=0.026345
+  Slab  4: [1e24, 1e26) M=12 a= 6 odd= 3 even= 0 z=147 y=908178 | main>=0.025702 err<=0.002129 net>=0.023573
+  Slab  5: [1e26, 1e28) M=14 a= 3 odd= 5 even= 2 z=101 y=3154422 | main>=0.060300 err<=0.014620 net>=0.045680
+  Slab  6: [1e28, 1e30) M=14 a= 3 odd= 5 even= 2 z=139 y=9209718 | main>=0.053527 err<=0.008543 net>=0.044984
+  Slab  7: [1e30, 1e33) M=14 a= 3 odd= 5 even= 2 z=228 y=45763190 | main>=0.044040 err<=0.036758 net>=0.007283
+  Slab  8: [1e33, 1e36) M=14 a= 3 odd= 5 even= 2 z=373 y=227547880 | main>=0.035014 err<=0.021293 net>=0.013721
+  Slab  9: [1e36, 1e40) M=14 a= 3 odd= 5 even= 2 z=720 y=1930486976 | main>=0.023303 err<=0.013195 net>=0.010108
+  Slab 10: [1e40, 1e45) M=16 a= 4 odd= 5 even= 2 z=650 y=35218565359 | main>=0.022318 err<=0.013243 net>=0.009076
+  Slab 11: [1e45, 1e50) M=16 a= 5 odd= 5 even= 2 z=1334 y=523252175435 | main>=0.018338 err<=0.007343 net>=0.010996
+  Slab 12: [1e50, 1e56) M=18 a= 6 odd= 5 even= 2 z=1292 y=16679551613798 | main>=0.014886 err<=0.008124 net>=0.006762
+  Slab 13: [1e56, 1e62) M=20 a= 7 odd= 5 even= 2 z=1259 y=530876581125756 | main>=0.011570 err<=0.009174 net>=0.002397
+  Slab 14: [1e62, 1e70) M=22 a= 2 odd= 9 even= 4 z=1520 y=50645294748998009 | main>=0.012181 err<=0.008944 net>=0.003237
+  Slab 15: [1e70, 1e78) M=22 a= 3 odd= 9 even= 4 z=3512 y=4107819698644364313 | main>=0.011637 err<=0.005582 net>=0.006056
+  Slab 16: [1e78, 1e86) M=22 a= 3 odd= 9 even= 4 z=8112 y=333209990728192118820 | main>=0.008257 err<=0.004240 net>=0.004017
+  Slab 17: [1e86, 1e94) M=22 a= 4 odd= 9 even= 4 z=18739 y=27027968070525374606356 | main>=0.007595 err<=0.003824 net>=0.003772
+  Slab 18: [1e94, 1e102) M=24 a= 6 odd= 9 even= 4 z=17783 y=2738411707564915365459224 | main>=0.006763 err<=0.004182 net>=0.002581
+  Slab 19: [1e102, 1e110) M=22 a= 5 odd= 9 even= 4 z=100001 y=177827496436818311130985111 | main>=0.002114 err<=0.001267 net>=0.000847
+  Slab 20: [1e110, 1e118) M=24 a= 7 odd= 9 even= 4 z=82541 y=18656602928273042836071752083 | main>=0.003247 err<=0.001646 net>=0.001601
+  Slab 21: [1e118, 1e126) M=24 a= 7 odd= 9 even= 4 z=177828 y=1539926398338207216234363739198 | main>=0.001281 err<=0.000816 net>=0.000465
+  Slab 22: [1e126, 1e134) M=24 a= 8 odd= 9 even= 4 z=383119 y=127106153831155856320725921923653 | main>=0.000733 err<=0.000403 net>=0.000331
+  Slab 23: [1e134, 1e138) M=28 a= 4 odd=11 even= 6 z=84835 y=1852918143807139630369465128785296 | main>=0.002238 err<=0.000006 net>=0.002232
+  Slab 24: [1e138, 1e142) M=26 a= 3 odd=11 even= 6 z=289427 y=13633747271866627448946230720346717 | main>=0.003028 err<=0.000002 net>=0.003027
+  Slab 25: [1e142, 1e146) M=26 a= 3 odd=11 even= 6 z=412463 y=124782519689946464012291527433835856 | main>=0.002660 err<=0.000002 net>=0.002658
+  Slab 26: [1e146, 1e150) M=26 a= 3 odd=11 even= 6 z=587802 y=1142068715507781141938353872518545837 | main>=0.002281 err<=0.000001 net>=0.002280
+  Slab 27: [1e150, 1e154) M=28 a= 5 odd=11 even= 6 z=316228 y=13335211854887348384547255976152475956 | main>=0.001906 err<=0.000002 net>=0.001905
+  Slab 28: [1e154, 1e158) M=28 a= 5 odd=11 even= 6 z=439398 y=122824634670995153665154731164772277908 | main>=0.001745 err<=0.000002 net>=0.001744
+  Slab 29: [1e158, 1e164) M=28 a= 5 odd=11 even= 6 z=719686 y=3433319628288343520889396922319404951426 | main>=0.001495 err<=0.000263 net>=0.001233
+  Slab 30: [1e164, 1e170) M=28 a= 5 odd=11 even= 6 z=1178769 y=95971619503304872782768562499614724242088 | main>=0.001234 err<=0.000001 net>=0.001234
+  Regime 2 PASSED across all 30 contiguous slabs (min net_lo >= 0.000331, slab 22)
+
+=== REGIME 3: N >= 10^170, [BJS] Theorem 6 with pre-sieve, K = 4 ===
+  X_LS = 1e170 (log X_LS in [391.4394, 391.4395])
+  M = 22, beta >= 0.238636, u0 = 41, B = 3.05, alpha = 0.1358
+  z0 >= 5.3366e+7, eps <= 8.525989e-3, 1/eps >= 117.28
+  [BJS] Table 1 row eps^-1 = 100: applied with eps' = 1/100, C1 = 276, C2 = 277
+  s in [8.0124, 8.0124], s_min in [2.7623, 2.7625]
+  delta_V <= 1.591674e-3, c_4G <= 0.087148
+  f(s) - eps'*C2*e^2*h(s) >= 0.975814
+  0.5 * sum_q phi(s_q)/(q-1) <= 0.973128
+  main_coeff >= 0.002683
+  tot_err    <= 0.001195 (R1<=0.000016, R2<=0.001091, rq<=0.000001, q2<=8.81e-5)
+  NET COEFF  >= 0.001489 (pi_4(N) > NET * 22 * U_N * N / log^2 N for all even N >= 10^170)
+
+=== RESULT ===
+  All 387 recorded checks hold: Regimes 2 and 3 checked; Regime 1 is the cited Goldbach verification.
+  Together with the quoted lemmas (the note, section 0), this gives K = 4 for all even N >= 4 under GRH,
+  subject to the status below.
+  STATUS: This certificate checks arithmetic given the cited theorems; it does not prove the cited theorems. The tail regime (N >= 1e170) depends on the hypothesis scope of the explicit linear sieve theorem ([BJS] Theorem 6), which is under repair (see the repository README).
+  wrote ../tables/summary.json
+  wrote ../tables/parameter_table.md
+  run time 195 s including import (Python 3.13.18)

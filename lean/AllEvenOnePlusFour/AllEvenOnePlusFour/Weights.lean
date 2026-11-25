@@ -1,7 +1,7 @@
 import Mathlib
 
 /-!
-# The switching weight (note X26, §1)
+# The switching weight (the note, §1)
 
 Fix real parameters `z, y` and an integer `a ≥ 1` all of whose prime factors are `≥ z`. Put
 
@@ -66,7 +66,7 @@ noncomputable def switchPrimes (z y : ℝ) (a : ℕ) : Finset ℕ :=
 noncomputable def squareSwitchPrimes (z y : ℝ) (a : ℕ) : Finset ℕ :=
   {q ∈ switchPrimes z y a | q ^ 2 ∣ a}
 
-/-- The weight of note X26, §1:
+/-- The weight of the note, §1:
 `w(a) = 1 - ½ #{q ∈ [z,y) prime : q ∣ a} - ½ #{q ∈ [z,y) prime : q² ∣ a}`. -/
 noncomputable def weight (z y : ℝ) (a : ℕ) : ℝ :=
   1 - (((switchPrimes z y a).card : ℝ) + ((squareSwitchPrimes z y a).card : ℝ)) / 2
@@ -90,7 +90,7 @@ theorem card_add_card_lt_two_of_weight_pos {z y : ℝ} {a : ℕ} (hw : 0 < weigh
     linarith
   exact_mod_cast h
 
-/-- **Note X26, §1.** Let `a ≥ 1` have all its prime factors `≥ z`, and let
+/-- **Note, §1.** Let `a ≥ 1` have all its prime factors `≥ z`, and let
 `N ≤ z · y⁴`, `N < y⁵` and `a < N`. If `w(a) > 0` then `Ω a ≤ 4`. -/
 theorem cardFactors_le_four_of_weight_pos {N a : ℕ} {z y : ℝ} (ha : a ≠ 0)
     (hrough : ∀ p, p.Prime → p ∣ a → z ≤ p)

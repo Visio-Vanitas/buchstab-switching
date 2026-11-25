@@ -1,1 +1,0 @@
-AXIOMS PEqualNP.Outside.L_goldbach_u1n_lorentz_reflection : [Classical.choice, Quot.sound, propext]

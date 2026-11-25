@@ -1,16 +1,15 @@
 # AllEvenOnePlusFour
 
-A Lean 4 / Mathlib formalisation skeleton for note X26:
+A Lean 4 / Mathlib formalisation skeleton for the statement
 
 > Under GRH for Dirichlet L-functions, every even N ≥ 4 is p + η with p prime and
 > Ω(η) ≤ 4, where Ω counts prime factors with multiplicity.
 
-Mathematical source: `research/goldbach/notes/X26-all-even-1p4-under-grh.md`.
-Review: `research/goldbach/notes/R18-review-X26-repaired.md`.
-R18's verdict is "not refuted, not proved for all N": Regime 3 depends on how the
-hypothesis of [BJS] Theorem 6 is read, and that question is still open. This project does not
-hide this. Every analytic or computational input is an explicit `Prop` hypothesis. None is an
-`axiom`.
+Mathematical source: `notes/all-even-1p4-under-grh.md` in this repository. The combinatorial
+core and the reduction to the analytic inputs are kernel-checked. Every analytic or
+computational input is an explicit `Prop` hypothesis, one per regime; none is an `axiom`.
+The Regime 3 hypothesis (N ≥ 10^170) is not yet supported by the note; see the repository
+README.
 
 ## Status: compiled (2026-11-25)
 
@@ -19,13 +18,6 @@ hide this. Every analytic or computational input is an explicit `Prop` hypothesi
 depends only on `propext`, `Classical.choice` and `Quot.sound`. `sorryAx` appears only for
 `all_even_one_plus_four` in `Challenge.lean`. The analytic inputs remain explicit hypotheses
 (see below), so this checks the reduction, not the analytic number theory.
-
-One statement was corrected for the build. In `Sanity.lean`,
-`allEvenPrimePlusAlmostPrime_iff_isAtMostAlmostPrime` had `m.IsAtMostAlmostPrime K`. Mathlib's
-signature is `Nat.IsAtMostAlmostPrime (k n : ℕ)`, so dot notation made that
-`IsAtMostAlmostPrime m K`, and the proof did not typecheck. It now reads
-`Nat.IsAtMostAlmostPrime K m`, which is what the docstring and this README always said. No
-other file was changed.
 
 ## Toolchain
 
@@ -81,7 +73,7 @@ lake env lean AxiomsCheck.lean
 |---|---|---|---|
 | `regime1 : GoldbachUpTo (4·10¹⁸)` | 1, 4 ≤ N ≤ 4·10¹⁸ | Goldbach for even N in that range | Oliveira e Silva–Herzog–Pardi, a computation (quoted via [BJS] §1 and [JS] §1; the primary paper was not read) |
 | `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10¹⁷⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | The certificate script `certify_all_even_1p4.py` (30 Bonferroni slabs), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
-| `regime3 : WeightedSievePositiveOn (Set.Ici (10¹⁷⁰))` | 3 | The same statement for N ≥ 10¹⁷⁰ | [BJS] Theorem 6 (arXiv:2207.09452v6, explicit linear sieve, Table 1 row 100), with [BJS] Lemma 38, [BS] Lemmas 4 and 5, and [JS] Lemma 5.1. **Open after R18**: the hypothesis scope of [BJS] Theorem 6 (fixed upper endpoint z, or all subintervals) is undecided. |
+| `regime3 : WeightedSievePositiveOn (Set.Ici (10¹⁷⁰))` | 3 | The same statement for N ≥ 10¹⁷⁰ | [BJS] Theorem 6 (arXiv:2207.09452v6, explicit linear sieve, Table 1 row 100), with [BJS] Lemma 38, [BS] Lemmas 4 and 5, and [JS] Lemma 5.1. **Not established**: the proof of [BJS] Theorem 6 uses its hypothesis at all lower levels, where the note's parameters violate it. |
 
 In `ConditionalInputs`, `regime2` and `regime3` take the form
 `DirichletLNonvanishingRightOfHalf → …`, so the role of GRH is visible in the statement.
@@ -161,7 +153,7 @@ Verbatim output of `lake env lean AxiomsCheck.lean`, with the module-system noti
 'all_even_one_plus_four' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
 ```
 
-## References (as quoted in note X26)
+## References
 
 - [BJS] Bordignon, Johnston, Starichkova, arXiv:2207.09452v6.
 - [JS] Johnston, Starichkova, arXiv:2208.01229v3.

@@ -1,7 +1,7 @@
 import Mathlib
 
 /-!
-# Truncated inclusion–exclusion (note X26, §2, Lemma 1)
+# Truncated inclusion–exclusion (the note, §2, Lemma 1)
 
 The proof of Lemma 1 of the note is the identity, for `k ≥ 1`,
 

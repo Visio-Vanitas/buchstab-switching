@@ -3,7 +3,7 @@ import AllEvenOnePlusFour.Statement
 /-!
 # Interface with GRH: the explicit bound for `π(x; q, a)`
 
-The only place where GRH enters note X26 is the explicit bound for primes in arithmetic
+The only place where GRH enters the note is the explicit bound for primes in arithmetic
 progressions of [JS] Johnston–Starichkova, arXiv:2208.01229v3, **Lemma 5.1**:
 
 > Let `x ≥ X₂ ≥ 4·10¹⁸`, and `q` and `a` be integers such that `3 ≤ q ≤ √x` and `(a, q) = 1`.

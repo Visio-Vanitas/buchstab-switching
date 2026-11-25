@@ -4,7 +4,7 @@ import AllEvenOnePlusFour.Weights
 /-!
 # The reduction: from explicit analytic inputs to `AllEvenPrimePlusAlmostPrime 4`
 
-Note X26 splits the even `N ≥ 4` into three regimes:
+The note splits the even `N ≥ 4` into three regimes:
 
 * **Regime 1**, `4 ≤ N ≤ 4·10¹⁸`: Goldbach's conjecture, verified by computation
   (Oliveira e Silva, Herzog and Pardi; quoted in the note, §0.6, via [BJS] §1 and [JS] §1).
@@ -18,10 +18,10 @@ None of these analytic or computational inputs is proved in Lean. Each enters as
 hypothesis (a `Prop`, never an `axiom`). What *is* proved here is that these hypotheses imply
 the theorem, via the weight lemma `cardFactors_le_four_of_weight_pos` of `Weights.lean`.
 
-**Status of the inputs (review R18).** Regimes 1 and 2 drew no decisive objection in two rounds
-of review. Regime 3 depends on how the hypothesis of [BJS, Theorem 6] is read (upper endpoint
-fixed at `z`, or all subintervals). That question is open, so `WeightedSievePositiveOn
-(Set.Ici (10 ^ 170))` must be treated as **unverified**. The theorem
+**Status of the inputs (independent review).** Regimes 1 and 2 drew no decisive objection in two rounds
+of review. Regime 3 as written checks the hypothesis of [BJS, Theorem 6] at the
+sieving level only, while the proof of that theorem uses it at all lower levels, so
+`WeightedSievePositiveOn (Set.Ici (10 ^ 170))` must be treated as **unverified**. The theorem
 `prime_add_of_lt_tailStart` records what follows from Regimes 1 and 2 alone.
 
 ## The sifted set
@@ -47,7 +47,7 @@ open Classical in
 noncomputable def siftedPrimes (N : ℕ) (z : ℝ) : Finset ℕ :=
   {p ∈ Finset.range N | p.Prime ∧ ¬ p ∣ N ∧ IsSifted N z (N - p)}
 
-/-- The weighted sieve sum of note X26, (1.1): `∑_{a ∈ A, (a, P(z)) = 1} w(a)`.
+/-- The weighted sieve sum of the note, (1.1): `∑_{a ∈ A, (a, P(z)) = 1} w(a)`.
 
 Exchanging the order of summation gives exactly
 `S(A, P(z)) - ½ ∑_{q ∈ [z,y) ∩ 𝐏} S(A_q, P(z)) - ½ ∑_{q ∈ [z,y) ∩ 𝐏} #{a sifted : q² ∣ a}`,
@@ -96,7 +96,7 @@ theorem exists_prime_add_of_weightedSum_pos {N : ℕ} {z y : ℝ}
 
 /-- **Regime 1 input.** Goldbach's conjecture for even `4 ≤ N ≤ B`.
 For `B = 4·10¹⁸` this is the computation of Oliveira e Silva, Herzog and Pardi
-(quoted in note X26, §0.6; the primary paper was not read). -/
+(quoted in the note, §0.6; the primary paper was not read). -/
 def GoldbachUpTo (B : ℕ) : Prop :=
   ∀ N : ℕ, 4 ≤ N → N ≤ B → Even N → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ N = p + q
 
@@ -115,14 +115,14 @@ def goldbachBound : ℕ := 4 * 10 ^ 18
 /-- The start `10¹⁷⁰` of Regime 3. -/
 def tailStart : ℕ := 10 ^ 170
 
-/-- The analytic and computational inputs of note X26, one field per regime. -/
+/-- The analytic and computational inputs of the note, one field per regime. -/
 structure AnalyticInputs : Prop where
   /-- Regime 1: Goldbach verified for even `4 ≤ N ≤ 4·10¹⁸` (computation, unconditional). -/
   regime1 : GoldbachUpTo goldbachBound
   /-- Regime 2: the thirty Bonferroni slabs, `4·10¹⁸ ≤ N < 10¹⁷⁰` (certificate script). -/
   regime2 : WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)
   /-- Regime 3: the explicit linear sieve [BJS, Theorem 6], `N ≥ 10¹⁷⁰`
-  (**open** after review R18: hypothesis scope of [BJS, Theorem 6]). -/
+  (**open** after independent review: hypothesis scope of [BJS, Theorem 6]). -/
   regime3 : WeightedSievePositiveOn (Set.Ici tailStart)
 
 /-- The same inputs, with Regimes 2 and 3 stated as consequences of GRH. -/
@@ -132,7 +132,7 @@ structure ConditionalInputs : Prop where
   /-- Regime 2, as a consequence of GRH. -/
   regime2 : DirichletLNonvanishingRightOfHalf →
     WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)
-  /-- Regime 3, as a consequence of GRH (open after review R18). -/
+  /-- Regime 3, as a consequence of GRH (open after independent review). -/
   regime3 : DirichletLNonvanishingRightOfHalf → WeightedSievePositiveOn (Set.Ici tailStart)
 
 /-! ### The theorems -/
@@ -163,7 +163,7 @@ theorem prime_add_of_lt_tailStart (h₁ : GoldbachUpTo goldbachBound)
   · exact exists_prime_add_of_weightedSievePositiveOn h₂ (Set.mem_Ico.mpr ⟨hlt.le, hN⟩) hev
   · exact exists_prime_add_of_goldbachUpTo h₁ h4 hle hev
 
-/-- **Main reduction.** The three regimes of note X26 imply that every even `N ≥ 4` is a prime
+/-- **Main reduction.** The three regimes of the note imply that every even `N ≥ 4` is a prime
 plus a positive integer with at most four prime factors counted with multiplicity. -/
 theorem all_even_one_plus_four_of_inputs (h : AnalyticInputs) :
     AllEvenPrimePlusAlmostPrime 4 := by

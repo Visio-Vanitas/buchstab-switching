@@ -1,1 +1,0 @@
-AXIOMS PEqualNP.Outside.L_goldbach_rough_mobius_w3_pinch : [Classical.choice, Quot.sound, propext]
