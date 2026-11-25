@@ -1,0 +1,1 @@
+AXIOMS PEqualNP.Outside.L_goldbach_moving_cutoff_freeze_budget : [Classical.choice, Quot.sound, propext]

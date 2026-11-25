@@ -1,0 +1,22 @@
+name = "AllEvenOnePlusFour"
+defaultTargets = ["Challenge", "AllEvenOnePlusFour", "AxiomsCheck"]
+
+[leanOptions]
+autoImplicit = false
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "31ce06eaadf4a200c0e1407c5f10953cf606b8f8"
+
+# The challenge statement (Mathlib only; contains the one intended `sorry`).
+[[lean_lib]]
+name = "Challenge"
+
+# The kernel-checked reduction (no `sorry`).
+[[lean_lib]]
+name = "AllEvenOnePlusFour"
+
+# `#print axioms` for every main theorem.
+[[lean_lib]]
+name = "AxiomsCheck"

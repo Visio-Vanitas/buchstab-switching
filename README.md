@@ -2,7 +2,7 @@
 
 Explicit Chen-type results for **every** even integer, conditional on GRH for Dirichlet L-functions: representations `N = p + P_K` with no "sufficiently large" threshold, obtained from explicit weighted linear sieves and certified numerics. The name refers to the two devices the programme is organised around, Buchstab iteration and Chen's switching (role reversal).
 
-## Statement currently on the table
+## Target statement
 
 > **(GRH)** Every even `N >= 4` is `p + η` with `p` prime and `Ω(η) <= 4`.
 
@@ -30,21 +30,24 @@ All inequalities are checked by a single stdlib-only Python certificate: integer
 
 ## Status (read this before citing)
 
-- Two rounds of independent refereeing found no arithmetic or logical error in the derivations. Every imported statement was compared with the TeX source of the cited papers.
-- The range `N < 10^170` has drawn no substantive objection.
-- **Open point, tail regime.** Theorem 6 of arXiv:2207.09452v6 assumes `∏_{u ≤ p < z} (1 − g(p))^{-1} ≤ (1+ε) log z / log u` "for all `1 < u < z`". We verify it with the top endpoint fixed at the sieving level (`ε ≤ 8.526·10^-3`), as the published `K = 31` application does. Whether the Jurkat–Richert induction behind the theorem also needs the condition at intermediate levels `w < z` is being settled by an independent derivation; if it does, short intervals just above the pre-sieve (e.g. `[41, 47)`) push `ε` above the table row used and the tail must be redone with a larger pre-sieve. Until that is closed the all-`N` statement should be read as conditional on that theorem exactly as stated.
-- The tail margin is thin and sensitive to `C_1` (it dies at `C_1 = 280`); widening it by using `F(s)`, `f(s)` at the true arguments instead of `F(5)`, `f(4)` is in progress.
+- **Established, with no substantive objection after two rounds of independent refereeing:** under GRH every even `4 <= N < 10^170` is `p + η`, `Ω(η) <= 4`. Every imported statement was compared with the TeX source of the cited papers; the certificate reruns byte-identically.
+- **Tail regime `N >= 10^170`: not established, under repair.** Theorem 6 of arXiv:2207.09452v6 states its hypothesis `∏_{u ≤ p < z} (1 − g(p))^{-1} ≤ (1+ε) log z / log u` "for all `1 < u < z`" at the theorem's own `z`. An independent derivation, confirmed by three referees, shows that the Jurkat–Richert induction behind it (Lemma on `T_n`, in particular the case `n` odd, `1 <= s < 3`, which passes through the level `D^{1/3}`) uses the condition at all lower levels, including real ones, i.e. on closed prime intervals `[u, v]`; under the fixed-`z` condition alone the lemma fails (explicit profile at `n = 3`, `s = 1.5`). With a pre-sieve below 41 our data violate the all-levels condition (`ε ≈ 0.0165` on `[97, 113)`), so the tail as written is outside the theorem as proved. A corrected statement (all-levels hypothesis, arbitrary pre-sieve set, recomputed `C_1`, `C_2`) and a redesigned tail with the slab method pushed beyond `10^170` are in progress. The all-`N` statement above is therefore a target, not a claim.
 - Primary sources not yet read first-hand: Schoenfeld, Büthe, Robin, Cai, Halberstam–Richert (monotonicity of `F`, `f`), Nathanson Ch. 9.
 - `K = 3` for all even `N >= 4` is work in progress and is **not** claimed.
 
 ## Contents
 
-To be added: the note, the certificate script and its output, a per-slab parameter table, a Lean statement file (`Challenge.lean`, Mathlib only) with `#print axioms` and comparator output.
+| Path | What |
+|---|---|
+| `notes/all-even-1p4-under-grh.md` | the argument, with quoted imports (internal review labels R17/R18 refer to refereeing rounds) |
+| `certificate/` | stdlib-only certificate script and its output |
+| `tables/` | per-slab parameter table (A), Lean output table (B), raw rerun data |
+| `lean/AllEvenOnePlusFour/` | Lake project (Lean `v4.37.0-rc1`, Mathlib `31ce06ea`): `Challenge.lean` (Mathlib-only statement), kernel-checked weight lemma (`w(a) > 0 ⟹ Ω(a) ≤ 4`), Bonferroni signs, and the reduction of the theorem to explicit analytic hypotheses, one per regime. `#print axioms`: `propext`, `Classical.choice`, `Quot.sound` only; `sorryAx` only for the challenge statement. The analytic number theory is hypothesis there, not proof. |
 
 ## What we ask of readers
 
-1. Does the quantifier in the linear-sieve hypothesis need intermediate levels (Nathanson, Lemma 9.8, Thms 9.5 and 9.7)?
+1. The scope of the product hypothesis in the explicit linear sieve (Nathanson, Lemma 9.8, Thms 9.5 and 9.7): is there a formulation weaker than all levels that the induction supports?
 2. Any missing error term in the tail, given the size of the margin.
-3. Once posted: does `Challenge.lean` say what the sentence above says?
+3. Does `lean/AllEvenOnePlusFour/Challenge.lean` say what the target statement says (note `η = 1` is allowed, `Ω(1) = 0`)?
 
 Derivations and scripts were produced largely by AI agents under human direction and refereed by independent readers; treat every claim here as unrefereed in the journal sense.

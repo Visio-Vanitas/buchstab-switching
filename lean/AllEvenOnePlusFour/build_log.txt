@@ -1,0 +1,320 @@
+# lake build, leanprover/lean4:v4.37.0-rc1, Mathlib 31ce06eaadf4a200c0e1407c5f10953cf606b8f8 (prebuilt cache via lake exe cache get)
+# 2026-11-25, Linux x86_64, 4 vCPU. Local paths shortened to <proj>/<pkgs>.
+⚠ [18293/18313] Replayed Challenge
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Challenge.lean:58:8: declaration uses `sorry`
+⚠ [18294/18313] Ran Challenge:irArts
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18296/18313] Replayed AllEvenOnePlusFour.Statement
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18297/18313] Ran AllEvenOnePlusFour.Statement:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18298/18313] Replayed AllEvenOnePlusFour.Weights
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean:48:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Weights.lean:109:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Weights.lean:136:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Weights.lean:153:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+⚠ [18299/18313] Ran AllEvenOnePlusFour.Weights:irArts
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18300/18313] Replayed AllEvenOnePlusFour.Bonferroni
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean:45:61: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+warning: AllEvenOnePlusFour/Bonferroni.lean:55:61: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+⚠ [18301/18313] Ran AllEvenOnePlusFour.Bonferroni:irArts
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18302/18313] Replayed AllEvenOnePlusFour.Reduction
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Reduction.lean:67:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Reduction.lean:83:4: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+⚠ [18303/18313] Ran AllEvenOnePlusFour.Reduction:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18304/18313] Replayed AllEvenOnePlusFour.GRHInterface
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18305/18313] Ran AllEvenOnePlusFour.GRHInterface:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18306/18313] Built AllEvenOnePlusFour.Sanity (2.9s)
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18307/18313] Ran AllEvenOnePlusFour.Sanity:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18308/18313] Built AllEvenOnePlusFour (2.5s)
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18309/18313] Ran AllEvenOnePlusFour:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18311/18313] Built AxiomsCheck (2.6s)
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: AxiomsCheck.lean:30:0: 'allEvenPrimePlusAlmostPrime_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:31:0: 'dirichletLNonvanishingRightOfHalf_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:32:0: 'all_even_one_plus_four_of_conditionalInputs'' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:35:0: 'AllEvenOnePlusFour.pow_cardFactors_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:36:0: 'AllEvenOnePlusFour.cardFactors_lt_of_lt_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:37:0: 'AllEvenOnePlusFour.cardFactors_le_four_of_weight_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:40:0: 'AllEvenOnePlusFour.truncated_alternating_sum_choose' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:41:0: 'AllEvenOnePlusFour.truncated_alternating_sum_choose_le_of_odd' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AxiomsCheck.lean:42:0: 'AllEvenOnePlusFour.le_truncated_alternating_sum_choose_of_even' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AxiomsCheck.lean:45:0: 'AllEvenOnePlusFour.rough_of_mem_siftedPrimes' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:46:0: 'AllEvenOnePlusFour.exists_prime_add_of_weightedSum_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:47:0: 'AllEvenOnePlusFour.prime_add_of_lt_tailStart' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:48:0: 'AllEvenOnePlusFour.all_even_one_plus_four_of_inputs' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:49:0: 'AllEvenOnePlusFour.all_even_one_plus_four_of_conditionalInputs' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AxiomsCheck.lean:52:0: 'AllEvenOnePlusFour.AllEvenPrimePlusAlmostPrime.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:53:0: 'AllEvenOnePlusFour.allEvenPrimePlusAlmostPrime_iff_primeFactorsList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AxiomsCheck.lean:54:0: 'AllEvenOnePlusFour.allEvenPrimePlusAlmostPrime_iff_isAtMostAlmostPrime' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AxiomsCheck.lean:55:0: 'AllEvenOnePlusFour.four_eq_prime_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:56:0: 'AllEvenOnePlusFour.not_allEvenPrimePlusAlmostPrime_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:57:0: 'AllEvenOnePlusFour.goldbach_of_le_forty' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:58:0: 'AllEvenOnePlusFour.primePlusAlmostPrime_one_of_le_forty' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AxiomsCheck.lean:61:0: 'all_even_one_plus_four' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+⚠ [18312/18313] Ran AxiomsCheck:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+Build completed successfully (18313 jobs).
+
+# lake env lean AxiomsCheck.lean (rc 0)
+'allEvenPrimePlusAlmostPrime_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'dirichletLNonvanishingRightOfHalf_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'all_even_one_plus_four_of_conditionalInputs'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.pow_cardFactors_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.cardFactors_lt_of_lt_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.cardFactors_le_four_of_weight_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.truncated_alternating_sum_choose' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.truncated_alternating_sum_choose_le_of_odd' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AllEvenOnePlusFour.le_truncated_alternating_sum_choose_of_even' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AllEvenOnePlusFour.rough_of_mem_siftedPrimes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.exists_prime_add_of_weightedSum_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.prime_add_of_lt_tailStart' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.all_even_one_plus_four_of_inputs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.all_even_one_plus_four_of_conditionalInputs' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AllEvenOnePlusFour.AllEvenPrimePlusAlmostPrime.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.allEvenPrimePlusAlmostPrime_iff_primeFactorsList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AllEvenOnePlusFour.allEvenPrimePlusAlmostPrime_iff_isAtMostAlmostPrime' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AllEvenOnePlusFour.four_eq_prime_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.not_allEvenPrimePlusAlmostPrime_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.goldbach_of_le_forty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AllEvenOnePlusFour.primePlusAlmostPrime_one_of_le_forty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'all_even_one_plus_four' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

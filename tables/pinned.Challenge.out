@@ -1,0 +1,10 @@
+chk/Challenge.lean:19:8: warning: declaration uses `sorry`
+chk/Challenge.lean:21:8: warning: declaration uses `sorry`
+chk/Challenge.lean:23:8: warning: declaration uses `sorry`
+chk/Challenge.lean:25:8: warning: declaration uses `sorry`
+chk/Challenge.lean:27:8: warning: declaration uses `sorry`
+AXIOMS LFunction_eq_zero_re : [Classical.choice, Quot.sound, propext, sorryAx]
+AXIOMS LFunction_eq_zero_re_of_isPrimitive : [Classical.choice, Quot.sound, propext, sorryAx]
+AXIOMS LFunction_ne_zero_of_half_lt_re : [Classical.choice, Quot.sound, propext, sorryAx]
+AXIOMS riemannHypothesis : [Classical.choice, Quot.sound, propext, sorryAx]
+AXIOMS riemannZeta_eq_zero_re : [Classical.choice, Quot.sound, propext, sorryAx]

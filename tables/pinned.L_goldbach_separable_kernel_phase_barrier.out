@@ -1,0 +1,1 @@
+AXIOMS PEqualNP.Outside.L_goldbach_separable_kernel_phase_barrier : [Classical.choice, Quot.sound, propext]
