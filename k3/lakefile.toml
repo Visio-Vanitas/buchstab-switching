@@ -2,6 +2,7 @@ name = "BuchstabSwitching"
 version = "0.1.0"
 keywords = ["math", "number-theory", "sieve-theory", "lean4"]
 defaultTargets = ["BuchstabSwitching"]
+allowNonModules = true
 
 [leanOptions]
 pp.unicode.fun = true
@@ -15,3 +16,4 @@ rev = "31ce06eaadf4a200c0e1407c5f10953cf606b8f8"
 
 [[lean_lib]]
 name = "BuchstabSwitching"
+allowNonModules = true
