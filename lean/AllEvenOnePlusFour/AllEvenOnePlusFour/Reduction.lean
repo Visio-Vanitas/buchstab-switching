@@ -117,10 +117,10 @@ def tailStart : ℕ := 10 ^ 500
 structure AnalyticInputs : Prop where
   /-- Regime 1: Goldbach verified for even `4 ≤ N ≤ 4·10¹⁸` (computation, unconditional). -/
   regime1 : GoldbachUpTo goldbachBound
-  /-- Regime 2: the thirty Bonferroni slabs, `4·10¹⁸ ≤ N < 10¹⁷⁰` (certificate script). -/
+  /-- Regime 2: the 58 block-sieve slabs, `4·10¹⁸ ≤ N < 10⁵⁰⁰` (certificate script). -/
   regime2 : WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)
-  /-- Regime 3: the explicit linear sieve [BJS, Theorem 6], `N ≥ 10¹⁷⁰`
-  (**open** after independent review: hypothesis scope of [BJS, Theorem 6]). -/
+  /-- Regime 3: the explicit linear sieve with pre-sieve under the closed-interval hypothesis,
+  `N ≥ 10⁵⁰⁰` (certificate script). -/
   regime3 : WeightedSievePositiveOn (Set.Ici tailStart)
 
 /-- The same inputs, with Regimes 2 and 3 stated as consequences of GRH. -/
@@ -130,7 +130,7 @@ structure ConditionalInputs : Prop where
   /-- Regime 2, as a consequence of GRH. -/
   regime2 : DirichletLNonvanishingRightOfHalf →
     WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)
-  /-- Regime 3, as a consequence of GRH (open after independent review). -/
+  /-- Regime 3, as a consequence of GRH. -/
   regime3 : DirichletLNonvanishingRightOfHalf → WeightedSievePositiveOn (Set.Ici tailStart)
 
 /-! ### The theorems -/
