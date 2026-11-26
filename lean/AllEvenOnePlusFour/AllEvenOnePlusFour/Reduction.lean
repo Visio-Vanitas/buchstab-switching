@@ -150,7 +150,7 @@ theorem exists_prime_add_of_weightedSievePositiveOn {S : Set ℕ} {N : ℕ}
   obtain ⟨z, y, hzy, hy, hpos⟩ := h N hN hev
   exact exists_prime_add_of_weightedSum_pos hzy hy hpos
 
-/-- **Regimes 1 and 2 only.** Every even `4 ≤ N < 10¹⁷⁰` is `p + m` with `Ω m ≤ 4`.
+/-- **Regimes 1 and 2 only.** Every even `4 ≤ N < 10⁵⁰⁰` is `p + m` with `Ω m ≤ 4`.
 This part does not use the disputed Regime 3. -/
 theorem prime_add_of_lt_tailStart (h₁ : GoldbachUpTo goldbachBound)
     (h₂ : WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)) :
