@@ -12,27 +12,28 @@ GRH enters only through an explicit bound for `π(x; q, a)` (Johnston–Starichk
 
 ## Method
 
-Sifted set `A = {N − p : p ≤ N, p ∤ N}`, density `g(p) = 1/(p−1)` on `p ∤ N`, linear sieve. Kuhn–Richert type weights on `z ≤ q < y` with `z·y^4 ≥ N`, `y^5 > N` (in the tail `z = N^{1/22}`, `y = N^{21/88}`; per-slab integers below `10^170`):
+Sifted set `A = {N − p : p ≤ N, p ∤ N}`, density `g(p) = 1/(p−1)` on `p ∤ N`, linear sieve. Kuhn–Richert type weights on `z ≤ q < y` with `z·y^4 ≥ N`, `y^5 > N` (per-slab integers below `10^500`):
 
 `w(a) = 1 − ½·#{z ≤ q < y : q | a} − ½·#{z ≤ q < y : q² | a}`,
 
 and `w(a) > 0`, `(a, P(z)) = 1` force `Ω(a) <= 4`. No switching term is needed at `K = 4`.
 
-Three regimes:
+Three ranges:
 
 | Range | Argument | Margin |
 |---|---|---|
 | `4 <= N <= 4·10^18` | numerical verification of Goldbach (Oliveira e Silva–Herzog–Pardi) | n/a |
-| `4·10^18 <= N < 10^170` | 30 contiguous slabs; exact pre-sieve by small primes, hybrid Bonferroni truncation, monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `3.31·10^-4` |
-| `N >= 10^170` | explicit Jurkat–Richert linear sieve (arXiv:2207.09452v6, Thm 6, Table 1 at `ε' = 1/100`, `C_1 = 276`, `C_2 = 277`), pre-sieve by primes `< 41`, monotonicity in `N` of every `N`-dependent term | net `1.489·10^-3` |
+| `4·10^18 <= N < 10^500` | 58 contiguous slabs, each certified with a Brun block sieve (blocks of primes with caps on the number of prime factors; parity rule for lower/upper bounds), monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `1.68·10^-3` |
+| `N >= 10^500` | explicit Jurkat–Richert linear sieve with an arbitrary pre-sieve set, proved here under the hypothesis on all closed prime intervals with `ε = 1/80` (`C_1 = 391.82`, `C_2 = 390.69`); pre-sieve by the odd primes `<= 82` and `103, 107, 191, 223` | net `0.0752` (`0.0391` with the classical recursion constants) |
 
-All inequalities are checked by a stdlib-only Python certificate: integers and directed-rounding decimals at 90 digits, no floats, `Inexact`/`Rounded` trapped outside directed contexts. Runtime about 3 minutes.
+All inequalities are checked by a stdlib-only Python certificate: integers and directed-rounding decimals, no floats. Every certified number has been reproduced by an independent replay from the recorded parameters.
 
 ## Status (read this before citing)
 
-- **Established, with no substantive objection after two rounds of independent refereeing:** under GRH every even `4 <= N < 10^170` is `p + η`, `Ω(η) <= 4`. Every imported statement was compared with the TeX source of the cited papers; the certificate reruns byte-identically.
-- **Tail regime `N >= 10^170`: not established, under repair.** Theorem 6 of arXiv:2207.09452v6 states its hypothesis `∏_{u ≤ p < z} (1 − g(p))^{-1} ≤ (1+ε) log z / log u` "for all `1 < u < z`" at the theorem's own `z`. An independent derivation, confirmed by three referees, shows that the Jurkat–Richert induction behind it (Lemma on `T_n`, in particular the case `n` odd, `1 <= s < 3`, which passes through the level `D^{1/3}`) uses the condition at all lower levels, including real ones, i.e. on closed prime intervals `[u, v]`; under the fixed-`z` condition alone the lemma fails (explicit profile at `n = 3`, `s = 1.5`). With a pre-sieve below 41 our data violate the all-levels condition (`ε ≈ 0.0165` on `[97, 113)`), so the tail as written is outside the theorem as proved. A corrected statement (all-levels hypothesis, arbitrary pre-sieve set, recomputed `C_1`, `C_2`) and a redesigned tail with the slab method pushed beyond `10^170` are in progress. The all-`N` statement above is therefore a target, not a claim.
-- Primary sources not yet read first-hand: Schoenfeld, Büthe, Robin, Cai, Halberstam–Richert (monotonicity of `F`, `f`), Nathanson Ch. 9.
+- **The argument covers every even `N >= 4`.** Each part (the weighted inequality, the block sieve, the corrected linear sieve and its constants, the certificate code for both computed ranges) was read by several independent readers, each part at least twice, with no error found.
+- **Correction to the literature.** Theorem 6 of Bordignon–Johnston–Starichkova (arXiv:2207.09452v6) states its product hypothesis only at the theorem's own `z`; its Jurkat–Richert induction uses it on all closed prime intervals, and under the fixed-`z` condition alone the key lemma fails (explicit profile at `n = 3`, `s = 1.5`). Its Table 1 is not reproduced by its own recursion. We prove the theorem under the all-intervals hypothesis with an arbitrary pre-sieve and recompute the constants.
+- Quoted without a first-hand check of the source: the Goldbach verification to `4·10^18`; Nathanson, *Additive Number Theory: The Classical Bases*, Thm 9.4 (identification of the sieve functions `F`, `f`); Johnston–Starichkova Lemmas 3.1, 5.1, (3.1)–(3.3) and the monotonicity of `F`, `f`; Schoenfeld; Robin.
+- The certificate package and notes in this repository are being updated to the final version above; until that update lands, `notes/` and `certificate/` describe the earlier split at `10^170`.
 - `K = 3` for all even `N >= 4` is work in progress and is **not** claimed.
 
 ## Contents
@@ -46,8 +47,8 @@ All inequalities are checked by a stdlib-only Python certificate: integers and d
 
 ## What we ask of readers
 
-1. The scope of the product hypothesis in the explicit linear sieve (Nathanson, Lemma 9.8, Thms 9.5 and 9.7): is there a formulation weaker than all levels that the induction supports?
-2. Any missing error term in the tail, given the size of the margin.
-3. Does `lean/AllEvenOnePlusFour/Challenge.lean` say what the target statement says (note `η = 1` is allowed, `Ω(1) = 0`)?
+1. Does `lean/AllEvenOnePlusFour/Challenge.lean` say what the target statement says (note `η = 1` is allowed, `Ω(1) = 0`)?
+2. The explicit linear sieve with pre-sieve under the closed-interval hypothesis, and its constants.
+3. Any missing remainder term in either computed range.
 
 Derivations and scripts were produced largely by AI agents under human direction and refereed by independent readers; treat every claim here as unrefereed in the journal sense.
