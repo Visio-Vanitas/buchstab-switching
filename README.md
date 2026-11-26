@@ -6,7 +6,7 @@ Explicit Chen-type results for **every** even integer, conditional on GRH for Di
 
 > **(GRH)** Every even `N >= 4` is `p + η` with `p` prime and `Ω(η) <= 4`.
 
-Prior explicit all-`N` results: `Ω(η) <= 16` under GRH (D. R. Johnston, thesis summary, Bull. Aust. Math. Soc. 113 (2026), 372–374, Theorem 2), improving `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
+Prior explicit all-`N` results: D. R. Johnston (2026) reports `Ω(η) <= 16` under GRH (thesis summary, Bull. Aust. Math. Soc. 113 (2026), 372–374, Theorem 2), improving `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
 
 GRH enters only through an explicit bound for `π(x; q, a)` (Johnston–Starichkova Lemma 5.1, from Grenié–Molteni), i.e. level of distribution `1/2` with explicit constants for each modulus. The premise is pinned to the Lean formalisation at `leanprover-community/riemann-hypothesis@91b273530883b723ef4422436e0dc3557749325a` (`src/Challenge.lean`, Mathlib-only statements).
 
