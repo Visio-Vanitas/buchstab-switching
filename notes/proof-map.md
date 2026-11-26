@@ -11,8 +11,8 @@ The proof splits the even integers into three ranges with exact integer endpoint
 | Range | Method | Where proved | Certificate | Least margin |
 |---|---|---|---|---|
 | `4 ≤ N ≤ 4·10^18` | numerical verification of Goldbach (`Ω(η) = 1`) | quoted, frame note §0.6 | none | not applicable |
-| `4·10^18 ≤ N < 10^500` | weighted inequality (1.1) with the Brun block sieve, 58 contiguous slabs | frame note §1–§2, block-sieve note | `data/certificate/ladder_4e18_500_all.json`, replay log | net `≥ 1.68·10^-3` (slab `[10^390, 10^400)`); relative margin smallest in slab 1 (`1.82·10^-3` of main `2.43·10^-2`) |
-| `N ≥ 10^500` | weighted inequality (1.1) with the explicit linear sieve with pre-sieve | frame note §1, linear-sieve notes | `data/certificate/tail/tail_at_500.json` | net `≥ 0.0752` (sharper recursion), `≥ 0.0391` (old recursion) |
+| `4·10^18 ≤ N < 10^500` | weighted inequality (1.1) with the Brun block sieve, 58 contiguous slabs | frame note §1–§2, block-sieve note | `data/certificate/ladder_4e18_500_all.json`, replay log | net `> 1.6796·10^-3` (slab `[10^390, 10^400)`); relative margin smallest in slab 1 (`1.82·10^-3` of main `2.43·10^-2`) |
+| `N ≥ 10^500` | weighted inequality (1.1) with the explicit linear sieve with pre-sieve | frame note §1, linear-sieve notes | `data/certificate/tail/tail_at_500.json` | net `> 0.07522` (sharper recursion), `> 0.03909` (old recursion) |
 
 ## 2. The common frame
 
@@ -42,7 +42,7 @@ Final parameters, `ε = 1/80`:
 
 - `Q₀` = odd primes `≤ 82` together with `103, 107, 191, 223`, `log ∏Q₀ ≤ 89.52005829`; the hypothesis is certified for all prime pairs (scan to `10^7` plus the analytic tail of linear-sieve S3 Theorem D): `certificate/linear_sieve/hstar_certify.py`.
 - Constants: `C₁ = 391.821751`, `C₂ = 390.689851` (sharper recursion, linear-sieve S4 Theorem 3); `C₁ ≤ 577.871`, `C₂ ≤ 579.660` (old recursion with certified `c_n`).
-- At `N ≥ 10^500`, `B = 3.01`, `α = 0.1024`: sharper recursion `M = 22`, `s = 8.7472`, main `0.07667`, errors `0.00144`, **net `≥ 0.07522`**; old recursion `M = 24`, `s = 9.5424`, main `0.04042`, errors `0.00132`, **net `≥ 0.03910`**. With `C₁`, `C₂` raised by 5% the nets are `0.0707` and `0.0349`. The tail therefore does not depend on the sharper recursion.
+- At `N ≥ 10^500`, `B = 3.01`, `α = 0.1024`: sharper recursion `M = 22`, `s = 8.7472`, main `0.07667`, errors `0.00144`, **net `> 0.07522`**; old recursion `M = 24`, `s = 9.5424`, main `0.04042`, errors `0.00132`, **net `> 0.03909`**. With `C₁`, `C₂` raised by 5% the nets are `0.0707` and `0.0349`. The tail therefore does not depend on the sharper recursion.
 - Script: `certificate/all_even_1p4_ext/tail_x31.py` (reads `Q₀`, `C₁`, `C₂` from the committed certificate files), `tail_at_500.py`; `F`, `f` from `sieve_fF.py` at mesh `H = 2000`.
 
 ## 5. Checks

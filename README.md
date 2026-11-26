@@ -6,7 +6,7 @@ Explicit Chen-type results for **every** even integer, conditional on GRH for Di
 
 > **(GRH)** Every even `N >= 4` is `p + η` with `p` prime and `Ω(η) <= 4`.
 
-Prior explicit all-`N` results: `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
+Prior explicit all-`N` results: `Ω(η) <= 16` under GRH (D. R. Johnston, thesis summary, Bull. Aust. Math. Soc. 113 (2026), 372–374, Theorem 2), improving `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
 
 GRH enters only through an explicit bound for `π(x; q, a)` (Johnston–Starichkova Lemma 5.1, from Grenié–Molteni), i.e. level of distribution `1/2` with explicit constants for each modulus. The premise is pinned to the Lean formalisation at `leanprover-community/riemann-hypothesis@91b273530883b723ef4422436e0dc3557749325a` (`src/Challenge.lean`, Mathlib-only statements).
 
@@ -23,8 +23,8 @@ Three ranges:
 | Range | Argument | Margin |
 |---|---|---|
 | `4 <= N <= 4·10^18` | numerical verification of Goldbach (Oliveira e Silva–Herzog–Pardi) | n/a |
-| `4·10^18 <= N < 10^500` | 58 contiguous slabs, each certified with a Brun block sieve (blocks of primes with caps on the number of prime factors; parity rule for lower/upper bounds), monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `1.68·10^-3` |
-| `N >= 10^500` | explicit Jurkat–Richert linear sieve with an arbitrary pre-sieve set, proved here under the hypothesis on all closed prime intervals with `ε = 1/80` (`C_1 = 391.82`, `C_2 = 390.69`); pre-sieve by the odd primes `<= 82` and `103, 107, 191, 223` | net `0.0752` (`0.0391` with the classical recursion constants) |
+| `4·10^18 <= N < 10^500` | 58 contiguous slabs, each certified with a Brun block sieve (blocks of primes with caps on the number of prime factors; parity rule for lower/upper bounds), monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `> 1.6796·10^-3` |
+| `N >= 10^500` | explicit Jurkat–Richert linear sieve with an arbitrary pre-sieve set, proved here under the hypothesis on all closed prime intervals with `ε = 1/80` (`C_1 = 391.82`, `C_2 = 390.69`); pre-sieve by the odd primes `<= 82` and `103, 107, 191, 223` | net `> 0.07522` (`> 0.03909` with the classical recursion constants) |
 
 All inequalities are checked by a stdlib-only Python certificate: integers and directed-rounding decimals, no floats. Every certified number has been reproduced by an independent replay from the recorded parameters.
 
