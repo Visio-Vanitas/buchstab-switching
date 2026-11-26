@@ -209,7 +209,7 @@ def main():
         c = c_up(CO[n]['M'], n)
         t = table_c(n)
         flag = "OK" if (c is not None and t is not None and c <= t) else "TABLE NOT CONFIRMED"
-        print(n, "|", "%.4f" % c if c is not None else ">1", "|", t and "%.2f" % t, "|", M, "|", flag)
+        print(n, "|", _up(c, 4) if c is not None else ">1", "|", _up(t, 2) if t is not None else None, "|", M, "|", flag)
     getcontext().prec = 40
     old, new = make_steps(CO, NMAX)
     for k in (74, 100, 200):

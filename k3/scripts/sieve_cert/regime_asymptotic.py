@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_CEILING
 
-from .constants import ALPHA0, C_F0, E2, E_NEG_GAMMA, H_TILDE, PI, U_CONST
+from .constants import C_F0, E2, E_NEG_GAMMA, PI, U_CONST
 from .interval import D_ZERO, Iv, directed_context, exp_iv, ln_iv, min_iv, pow_real_iv
 from .linear_sieve import f_lin_lb, h_lin_ub, load_certified_linear_sieve_row
 from .primes_and_mertens import c_pi_iv, certify_closed_hstar_q0
@@ -96,14 +96,16 @@ def certify_asymptotic_ray(spec: AsymptoticRaySpec) -> RayCertificate:
 
     lb_a = f_lin_lb(s_a) - eps_iv * c2_eff * E2 * h_lin_ub(s_a)
 
-    # V_N(z) / (U_N / ln z) relative deviation using z >= z0 - 1
-    sqrt_z_lb = z_int_lb.sqrt()
-    f1 = (Iv(3, 3) * log_z0 + Iv(5, 5)) / (Iv(8, 8) * PI * sqrt_z_lb)
-    f2 = Iv(2, 2) / z_int_lb
-    f3 = (Iv(8, 8) * log_x) / z_int_lb
-    f4 = Iv(1, 1) / (z_int_lb - Iv(1, 1))
-    d_lo = Iv(1, 1) - (Iv(1, 1) - f1) * (Iv(1, 1) - f2) * (Iv(1, 1) - f3) * (Iv(1, 1) - f4)
-    d_hi = (Iv(1, 1) + f1) * (Iv(1, 1) + f2) * (Iv(1, 1) + f3) * (Iv(1, 1) + f4) - Iv(1, 1)
+    # V_N(z) / (U_N / ln z) relative deviation using z >= z0 - 1 (unconditional BJS v6 Lemma 38)
+    f1 = (
+        Iv.from_str("1.45")
+        * (log_x / (z_int_lb - Iv(1, 1)))
+        * (Iv(1, 1) + Iv(10, 10) * ln_iv(log_x) / log_x)
+    )
+    f2 = Iv.from_str("1.002") / (z_int_lb - Iv(3, 3))
+    f3 = Iv(1, 1) / (Iv(2, 2) * (log_z_lb ** 2))
+    d_lo = Iv(1, 1) - (Iv(1, 1) - f1) * (Iv(1, 1) - f2) * (Iv(1, 1) - f3)
+    d_hi = (Iv(1, 1) + f1) * (Iv(1, 1) + f2) * (Iv(1, 1) + f3) - Iv(1, 1)
     delta_v = Iv(D_ZERO, max(d_lo.hi, d_hi.hi))
 
     assert log_x.lo > Decimal(3)
@@ -149,7 +151,8 @@ def certify_asymptotic_ray(spec: AsymptoticRaySpec) -> RayCertificate:
     )
     assert (Iv.from_str("0.5") - beta).lo > (Iv(6, 6) / log_x).hi
     y_over_n = exp_iv((beta - Iv.from_str("0.5")) * log_x)
-    g_phi_n05 = H_TILDE * (Iv.from_str("0.25") * log_x + ALPHA0 + C_F0)
+    # Use Lean-proved unconditional upper bounds H_tilde <= 13/10 and alpha0 <= 636/1000
+    g_phi_n05 = Iv(Decimal("1.3")) * (Iv.from_str("0.25") * log_x + Iv(Decimal("0.636")) + C_F0)
     err_aq2 = (
         Iv.from_str("0.5")
         * c4g

@@ -124,11 +124,10 @@ even `N ≥ asymptoticCert.X_LS = 10^600`, evaluated uniformly at `X_LS` via Sec
 and Sections 1–4 sieve bounds. -/
 theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstants)
     (c_seq : ℕ → ℝ) (hValid : ValidDecaySeq c_seq)
-    (hH_tilde : H_tilde ≤ consts.H_tilde) (halpha0 : alpha0 ≤ consts.alpha0)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises consts.li2)
     {M0 : ℝ} (hM : External.MertensPrimeSumPremise M0)
-    (hV : External.EulerProductVGRHPremise consts.U_c consts.eNegGamma)
+    (hV : External.EulerProductVPremise consts.U_c consts.eNegGamma)
     (hBJS : External.BuchstabSeriesPremise)
     (hHStar : ClosedHStarCond gTotRay (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ Q0_100) (1 + (1 : ℝ) / 100))
     (hC2_nn : (0 : ℝ) ≤ C2_bjs c_seq (1 / 100 : ℝ))
@@ -169,7 +168,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
   set logQ : ℝ := Real.log (∏ q ∈ Q0_100, (q : ℝ))
   set C2 : ℝ := C2_bjs c_seq (1 / 100 : ℝ)
   have hlo := regime3_lower_sieve_lb consts c_seq hValid hGRH hCls hBJS hN_even hN hHStar hC2_nn
-  have hup := regime3_upper_sieve_sum_ub consts hH_tilde halpha0 hGRH hCls hM hV hL strips hvj_pos hN_even hN
+  have hup := regime3_upper_sieve_sum_ub consts hGRH hCls hM hV hL strips hvj_pos hN_even hN
   have hsq := regime3_square_sum_ub consts hGRH hCls hN
   have hbal_eq : (switchingBalance N z y : ℝ) =
       ((sievedShifted N z).card : ℝ) -
@@ -232,15 +231,15 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
     have hN_ge3 : 3 ≤ N := by
       have : (3 : ℝ) ≤ (N : ℝ) := by linarith
       exact_mod_cast this
-    have hz_ge_8 : (8 : ℝ) ≤ (z : ℝ) := by
+    have hz_ge_285 : (285 : ℝ) ≤ (z : ℝ) := by
       have hz_ge_lb : rayZIntLb 16 (N : ℝ) ≤ (z : ℝ) := by
         unfold rayZIntLb; rw [rayZ0_eq_rpow hN_pos]; unfold z rayZ; exact (Nat.sub_one_lt_floor _).le
       linarith [rayZIntLb_gt_1e12 hlogN_ge.le]
-    have hV_N := (hV hGRH N hN_even hN_ge3 (z : ℝ) hz_ge_8).1
+    have hV_N := (hV N hN_even hN_ge3 (z : ℝ) hz_ge_285).1
     have hceil_z : Nat.ceil (z : ℝ) = z := Nat.ceil_natCast z
     rw [hceil_z] at hV_N
-    have hdv_le := deltaV_bs_le_rayDeltaV (M := 16) (K := N) (N := N) (by norm_num) (by norm_num)
-      (by omega : 1 ≤ N) le_rfl hlogN_160
+    have hdv_le := deltaV_bjs_le_rayDeltaV (M := 16) (K := N) (N := N) (by norm_num) (by norm_num)
+      hN_ge3 le_rfl hlogN_160
     have hdv_anti := rayDeltaV_antitone (M := 16) (by norm_num) (by norm_num) hXLS_pos
       hlogLS_160 hN_real_ge
     have hz_le_z0 : (z : ℝ) ≤ (N : ℝ) ^ ((1 : ℝ) / (16 : ℝ)) := by
@@ -254,7 +253,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
       le_trans consts.U_c_pos.le (un_ratio_ge consts.U_c_pos.le N)
     have hnum_le : (1 - rayDeltaV 16 (asymptoticCert.X_LS : ℝ)) *
         (consts.eNegGamma * External.UN_ratio consts.U_c N) ≤
-        (1 - External.deltaV_bs N (z : ℝ)) *
+        (1 - External.deltaV_bjs N (z : ℝ)) *
         (consts.eNegGamma * External.UN_ratio consts.U_c N) :=
       mul_le_mul_of_nonneg_right (by linarith) (mul_nonneg consts.eNegGamma_pos.le hUN_nn)
     have hdv_LS_lt1 := rayDeltaV_lt_one (M := 16) (by norm_num) (by norm_num) hXLS_pos hlogLS_160
@@ -269,7 +268,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
           ≤ (1 - rayDeltaV 16 (asymptoticCert.X_LS : ℝ)) *
               (consts.eNegGamma * External.UN_ratio consts.U_c N) / Real.log (z : ℝ) :=
             div_le_div_of_nonneg_left hnum_nn hlogz_pos hlogz_le
-        _ ≤ (1 - External.deltaV_bs N (z : ℝ)) *
+        _ ≤ (1 - External.deltaV_bjs N (z : ℝ)) *
               (consts.eNegGamma * External.UN_ratio consts.U_c N) / Real.log (z : ℝ) :=
             div_le_div_of_nonneg_right hnum_le hlogz_pos.le
         _ ≤ External.VN N z := hV_N
@@ -341,11 +340,10 @@ with the rational certificate `asymptoticCert` (`k3/BuchstabSwitching/Certificat
 explicit rational-interval enclosure premise on `(main_coeff - rayErrorSumInt)` at `X_LS = 10^600`. -/
 theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.CertifiedConstants)
     (c_seq : ℕ → ℝ) (hValid : ValidDecaySeq c_seq)
-    (hH_tilde : H_tilde ≤ consts.H_tilde) (halpha0 : alpha0 ≤ consts.alpha0)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises consts.li2)
     {M0 : ℝ} (hM : External.MertensPrimeSumPremise M0)
-    (hV : External.EulerProductVGRHPremise consts.U_c consts.eNegGamma)
+    (hV : External.EulerProductVPremise consts.U_c consts.eNegGamma)
     (hBJS : External.BuchstabSeriesPremise)
     (hHStar : ClosedHStarCond gTotRay (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ Q0_100) (1 + (1 : ℝ) / 100))
     (hC2_nn : (0 : ℝ) ≤ C2_bjs c_seq (1 / 100 : ℝ))
@@ -370,7 +368,7 @@ theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.Certified
       2 ≤ z ∧ z ≤ y ∧ N ≤ y ^ 4 ∧ N ≤ z * y ^ 3 ∧ 0 < scale ∧
         (asymptoticCert.main_lb - asymptoticCert.err_ub) * scale ≤ switchingBalance N z y := by
   obtain ⟨hz2, hzy, hy4, hzy3, hsc_pos, hlb⟩ :=
-    regime3_switchingBalance_analytic_lb consts c_seq hValid hH_tilde halpha0 hGRH hCls hM hV hBJS hHStar
+    regime3_switchingBalance_analytic_lb consts c_seq hValid hGRH hCls hM hV hBJS hHStar
       hC2_nn hL strips hvj_pos hbr_LS hN_even hN
   obtain ⟨scale, hsc0, hsc_lt⟩ := exists_rat_btwn hsc_pos
   have hnet_nn : (0 : ℝ) ≤ (asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ) := by

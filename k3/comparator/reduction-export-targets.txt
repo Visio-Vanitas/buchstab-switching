@@ -1,4 +1,4 @@
 Quot Quot.mk Quot.lift Quot.ind
-BuchstabSwitching.even_eq_prime_add_omegaMult_le_three BuchstabSwitching.all_even_one_plus_three_of_premises
+BuchstabSwitching.even_eq_prime_add_omegaMult_le_three BuchstabSwitching.all_even_one_plus_three_of_premises BuchstabSwitching.External.externalPremises_of_classical BuchstabSwitching.all_even_one_plus_three_of_classical
 propext Quot.sound Classical.choice
 Nat.add Nat.sub Nat.mul Nat.pow Nat.gcd Nat.div Nat.mod Nat.beq Nat.ble Nat.land Nat.lor Nat.xor Nat.shiftLeft Nat.shiftRight String.ofList Char.ofNat List eagerReduce Nat String String.mk Char optParam autoParam semiOutParam outParam

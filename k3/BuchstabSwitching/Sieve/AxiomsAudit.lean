@@ -63,7 +63,7 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 #print axioms BuchstabSwitching.abs_shifted_rem_div_card_le_epdNorm
 
 -- 11. SelbergAsymptoticBridge
-#print axioms BuchstabSwitching.VN_two_ceil_ge_of_EulerProductVGRHPremise
+#print axioms BuchstabSwitching.VN_two_ceil_ge_of_EulerProductVPremise
 #print axioms BuchstabSwitching.j_full_lb_z3_ge
 #print axioms BuchstabSwitching.j_over_logz_lb_mono
 #print axioms BuchstabSwitching.vj_monotone_lb_uniform_even_N
@@ -78,12 +78,14 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 #print axioms BuchstabSwitching.slice_selberg_sum_upper
 #print axioms BuchstabSwitching.regime2ab_switchingBalance_lb
 #print axioms BuchstabSwitching.regime2c_switchingBalance_lb
+#print axioms BuchstabSwitching.SieveInst.allSlabs_bridges_inst
 
 -- 14. Regime3RayBridge
 #print axioms BuchstabSwitching.closedHStarCond_Q0_100
 #print axioms BuchstabSwitching.regime3_lower_sieve_lb
 #print axioms BuchstabSwitching.regime3_upper_sieve_sum_ub
 #print axioms BuchstabSwitching.regime3_ray_switchingBalance_lb_of_analytic
+#print axioms BuchstabSwitching.ray_cert_data_inst
 
 -- 15. External classical-lemma interfaces & bridges
 #print axioms BuchstabSwitching.External.UN_ratio_ge_Uc
@@ -98,3 +100,4 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 -- 16. Main theorems
 #print axioms BuchstabSwitching.even_eq_prime_add_omegaMult_le_three
 #print axioms BuchstabSwitching.all_even_one_plus_three_of_premises
+#print axioms BuchstabSwitching.all_even_one_plus_three_of_classical

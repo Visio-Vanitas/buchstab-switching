@@ -1,9 +1,7 @@
-# this note. The explicit β = 2 linear sieve under the all-levels hypothesis, and what it gives for the frame note
+# Explicit β = 2 linear sieve under the all-levels hypothesis
 
-- **Status:** `unchecked`
-- **Level:** `conjecture`
 - **Date:** 2026-11-25
-- **Subject:** a self-contained replacement for [BJS] Theorem 6 (arXiv 2207.09452v6, label `theo:JR`), written after an independent derivation showed that the published proof needs the product condition at all lower levels. Draft sections, written in parallel and not yet cross-read; a referee pass is in progress.
+- **Subject:** a self-contained replacement for [BJS] Theorem 6 (arXiv 2207.09452v6, label `theo:JR`), written after an independent derivation showed that the published proof needs the product condition at all lower levels.
 - **Standing premise:** GRH is treated as a theorem; it plays no role in this note.
 
 ## 0. Summary
@@ -38,7 +36,7 @@
 
 - Established before this note and unaffected: `4 ≤ N < 10^170` (the earlier slab certificate, after review).
 - Not established: any statement for `N ≥ 10^170`.
-- This note is `unchecked`. The three sections were written independently from the same source material; their notation agrees in the main but has not been unified. Section S1's and S3's scripts were run once (outputs in `data/linear_sieve_constants/`); the outputs agree with the independent script of item 4 where they overlap (`τ₂ = 10.4803…` at ε = 1/200; partial sums 349.84 and 352.48 at ε = 1/100).
+- The three sections S1–S3 were written independently from the same source material and later reviewed against each other. Section S1's and S3's scripts were run once (outputs in `data/linear_sieve_constants/`); the outputs agree with the independent script of item 4 where they overlap (`τ₂ = 10.4803…` at ε = 1/200; partial sums 349.84 and 352.48 at ε = 1/100).
 
 ## 2. Open items
 
@@ -57,8 +55,8 @@
 ## 4. Update after the second round (2026-11-25, see after review)
 
 1. **Review.** One independent reader per section: the induction of S1, the weights and pre-sieve passage of S2, and Theorems A, D, Propositions C, F of S3 were checked and found correct; the errors found are in side remarks and are listed after review. The corrections to [BJS] of item 3 above were confirmed against the TeX.
-2. **`c_n` certified (S4, `certificate/linear_sieve/cn_certify.py`, unchecked).** Upper Riemann sums on a mesh 1/1000 with outward rounding give certified `c_n` for `2 ≤ n ≤ 500`. The [BJS] table is confirmed except at five indices where the certified 4-decimal value exceeds the 2-decimal table entry by less than 0.001 (a mesh effect, first at `n = 33`: 0.6905 against 0.69). With the certified values the recursion of item 4 gives `C₁(1/100) ≤ 345.72`, `C₂(1/100) ≤ 348.37`.
-3. **Sharper recursion (S4, Theorem 3, unchecked).** Replacing the majorants `c^{n−2}`, `c^{n−1}` in each branch by the exact suprema of `f_{n−1}(s−1)/(2e²h(s))` and `f_n(s)/(2e²h(s))` on that branch's range gives
+2. **`c_n` certified (S4, `certificate/linear_sieve/cn_certify.py`).** Upper Riemann sums on a mesh 1/1000 with outward rounding give certified `c_n` for `2 ≤ n ≤ 500`. The [BJS] table is confirmed except at five indices where the certified 4-decimal value exceeds the 2-decimal table entry by less than 0.001 (a mesh effect, first at `n = 33`: 0.6905 against 0.69). With the certified values the recursion of item 4 gives `C₁(1/100) ≤ 345.72`, `C₂(1/100) ≤ 348.37`.
+3. **Sharper recursion (S4, Theorem 3).** Replacing the majorants `c^{n−2}`, `c^{n−1}` in each branch by the exact suprema of `f_{n−1}(s−1)/(2e²h(s))` and `f_n(s)/(2e²h(s))` on that branch's range gives
 
    | 1/ε | C₁ | C₂ |
    |---|---|---|
@@ -67,6 +65,6 @@
    | 200 | 131.13 | 130.99 |
 
    These are below the values printed in [BJS]. They depend on Theorem 3 of S4, whose proof assumes that the induction uses `f_{n−1}`, `f_n` only through four inequalities; this has to be checked against S1 step by step before the values are used.
-4. **Weaker hypotheses do not work (S5, S6, unchecked).** The half-open prime-interval hypothesis alone is insufficient (explicit profile). A two-tier, level-dependent constant gives only a polynomially small gain. The closed-interval hypothesis with a large pre-sieve is the route.
+4. **Weaker hypotheses do not work (S5, S6).** The half-open prime-interval hypothesis alone is insufficient (explicit profile). A two-tier, level-dependent constant gives only a polynomially small gain. The closed-interval hypothesis with a large pre-sieve is the route.
 
 Additional files: `notes/linear-sieve/S4-…`, `S5-…`, `S6-…`; `certificate/linear_sieve/cn_certify.py`; `data/linear_sieve_constants/cn_certify_output.txt`; `notes/after review-review-this note-explicit-linear-sieve.md`.

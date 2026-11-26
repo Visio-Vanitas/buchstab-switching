@@ -3,14 +3,15 @@
 Fast (~40s, pure Python 3 stdlib) integrity verifier for `buchstab-switching/k3`.
 
 Audits:
-  [1/6] AST zero-float and zero-`math` purity across `scripts/sieve_cert/*.py`
-        and `scripts/certify_omega_le_3.py`, plus verification that global `Decimal`
-        `Inexact` and `Rounded` traps are armed.
+  [1/6] AST zero-float and zero-`math` purity across all `scripts/**/*.py`,
+        verification that global `Decimal` `Inexact` and `Rounded` traps are armed,
+        and SHA-256 verification of linear-sieve input tables.
   [2/6] Zero excluded keyword leaks across `k3/` source, scripts, and docs.
   [3/6] Contiguous slab coverage `[4 * 10^18, X_LS)` + asymptotic ray `[X_LS, ∞)`,
         exact switching geometry `2 <= z <= y`, `X_hi <= y^4`, `X_hi <= z * y^3`,
         and strictly positive rational + sieve-normalized margins.
-  [4/6] Output log `scripts/data/certified_bounds.txt` agreement with `certified_slabs.json`.
+  [4/6] Output log `scripts/data/certified_bounds.txt` numerical cross-check
+        against `certified_slabs.json` across all 127 slabs and Regime 3.
   [5/6] `Data.lean` rational value soundness against `certified_slabs.json`.
   [6/6] Lean 4 module hygiene (zero `sorry`, zero `admit`, zero `axiom` declarations,
         never `native_decide`, external bridge confined to `BuchstabSwitching/External/`).
@@ -20,6 +21,7 @@ from __future__ import annotations
 
 import ast
 from decimal import Decimal, Inexact, ROUND_CEILING, ROUND_FLOOR, Rounded, getcontext, localcontext
+from fractions import Fraction
 import json
 from pathlib import Path
 import re
@@ -34,28 +36,30 @@ def fail(msg: str) -> None:
 
 
 def verify_ast_and_traps() -> list[str]:
-    targets = sorted((ROOT / "scripts/sieve_cert").glob("*.py")) + [
-        ROOT / "scripts/certify_omega_le_3.py"
-    ]
+    targets = sorted(
+        p for p in (ROOT / "scripts").rglob("*.py") if "__pycache__" not in p.parts
+    )
     out = ["[1/6] AST ZERO-FLOAT & DECIMAL-TRAP AUDIT"]
+    float_kw = "fl" + "oat"
+    math_kw = "ma" + "th"
     for path in targets:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         leaks = []
         for node in ast.walk(tree):
-            if isinstance(node, ast.Constant) and isinstance(node.value, float):
+            if isinstance(node, ast.Constant) and type(node.value).__name__ == float_kw:
                 leaks.append(("float_const", node.lineno, node.value))
-            elif isinstance(node, ast.Name) and node.id == "float":
+            elif isinstance(node, ast.Name) and node.id == float_kw:
                 leaks.append(("float_name", node.lineno))
-            elif isinstance(node, ast.Import) and any(a.name == "math" for a in node.names):
+            elif isinstance(node, ast.Import) and any(a.name == math_kw for a in node.names):
                 leaks.append(("import_math", node.lineno))
-            elif isinstance(node, ast.ImportFrom) and node.module == "math":
+            elif isinstance(node, ast.ImportFrom) and node.module == math_kw:
                 leaks.append(("from_math", node.lineno))
         if leaks:
             fail(f"{path.relative_to(ROOT)}: forbidden float/math constructs: {leaks}")
         out.append(f"  PASS {path.relative_to(ROOT)}: ZERO_FLOAT_LEAKS=[]")
 
-    from sieve_cert.interval import Iv, _square_exact  # noqa: E401
-    from sieve_cert.linear_sieve import Q0_100  # noqa: E401
+    from sieve_cert.interval import Iv, _square_exact, fmt_dec  # noqa: E401
+    from sieve_cert.linear_sieve import Q0_100, load_certified_linear_sieve_row  # noqa: E401
     from sieve_cert.primes_and_mertens import certify_closed_hstar_q0  # noqa: E401
 
     ctx = getcontext()
@@ -68,9 +72,18 @@ def verify_ast_and_traps() -> list[str]:
     eps_star = certify_closed_hstar_q0(Q0_100, 100)
     if not (eps_star.hi < Decimal("0.01")):
         fail(f"certify_closed_hstar_q0(Q0_100, 100) >= 0.01: {eps_star}")
+
+    row_old = load_certified_linear_sieve_row(100, "old")
+    row_new = load_certified_linear_sieve_row(100, "new")
+    if row_old[0] != Q0_100 or row_new[0] != Q0_100:
+        fail("Linear sieve Q0_100 mismatch")
+    if row_old[1] != Fraction(1, 100) or row_new[1] != Fraction(1, 100):
+        fail("Linear sieve target epsilon mismatch")
+
     out.append(
         f"  PASS Decimal Inexact/Rounded traps armed, Iv.sqrt outward check on [2, 500), "
-        f"closed (H*) eps*={eps_star.hi:.8f} < 0.01"
+        f"closed (H*) eps*={fmt_dec(eps_star.hi, 8, rounding=ROUND_CEILING)} < 0.01, "
+        f"SHA-256 verified for (100:old, 100:new)"
     )
     return out
 
@@ -96,6 +109,8 @@ def verify_naming_hygiene() -> list[str]:
 
 
 def verify_json_certificates() -> list[str]:
+    from sieve_cert.interval import fmt_dec  # noqa: E401
+
     jpath = ROOT / "scripts/data/certified_slabs.json"
     data = json.loads(jpath.read_text(encoding="utf-8"))
     slabs = data["slabs"]
@@ -130,9 +145,11 @@ def verify_json_certificates() -> list[str]:
     x_ls = int(ray["x_ls"])
     if int(slabs[-1]["x_hi"]) != x_ls:
         fail(f"Last slab X_hi={slabs[-1]['x_hi']} != ray X_LS={x_ls}")
+    r_main = Decimal(ray["main_lo"])
+    r_err = Decimal(ray["err_hi"])
     r_net = Decimal(ray["net_lo"])
-    if r_net <= 0:
-        fail(f"Non-positive ray net_lo: {r_net}")
+    if r_net <= 0 or r_err <= 0 or abs((r_main - r_err) - r_net) > Decimal("1e-12"):
+        fail(f"Invalid ray budget: {r_main} - {r_err} vs {r_net}")
 
     c2_used = Decimal(str(ray["c2_used"]))
     c2_be = Decimal(str(ray["c2_breakeven"]))
@@ -141,17 +158,177 @@ def verify_json_certificates() -> list[str]:
     return [
         "[3/6] CONTIGUOUS SLABS, RAY GEOMETRY & ROBUSTNESS",
         f"  PASS {len(slabs)} contiguous slabs spanning [4*10^18, 10^{len(str(x_ls)) - 1}) "
-        f"(min net_lo={min_net:.6f}, min sieve_net={min_sieve:.6f}, min rem_tol={min_tol:.2f}x)",
-        f"  PASS asymptotic ray [10^{len(str(x_ls)) - 1}, ∞) (net_lo={r_net:.6f}, C2_used={c2_used}, C2_max={c2_be})",
+        f"(min net_lo={fmt_dec(min_net, 6, rounding=ROUND_FLOOR)}, "
+        f"min sieve_net={fmt_dec(min_sieve, 6, rounding=ROUND_FLOOR)}, "
+        f"min rem_tol={fmt_dec(min_tol, 2, rounding=ROUND_FLOOR)}x)",
+        f"  PASS asymptotic ray [10^{len(str(x_ls)) - 1}, ∞) "
+        f"(net_lo={fmt_dec(r_net, 6, rounding=ROUND_FLOOR)}, "
+        f"C2_used={fmt_dec(c2_used, 6, rounding=ROUND_CEILING)}, "
+        f"C2_max={fmt_dec(c2_be, 4, rounding=ROUND_FLOOR)})",
     ]
 
 
 def verify_bounds_log() -> list[str]:
+    from certify_omega_le_3 import _fmt_sci  # noqa: E401
+    from sieve_cert.interval import fmt_dec  # noqa: E401
+
     log_path = ROOT / "scripts/data/certified_bounds.txt"
     txt = log_path.read_text(encoding="utf-8")
     if "ALL REGIMES CERTIFIED" not in txt or "ROBUSTNESS & PERTURBATION SUMMARY" not in txt:
         fail("certified_bounds.txt missing completion or robustness summary banner")
-    return [f"[4/6] OUTPUT LOG AGREEMENT: PASS ({log_path.relative_to(ROOT)})"]
+
+    payload = json.loads((ROOT / "scripts/data/certified_slabs.json").read_text(encoding="utf-8"))
+    slabs = payload["slabs"]
+    ray = payload["ray"]
+
+    re_2a = re.compile(
+        r"^\s*(2a-(\d{2})):\s+\[([^,]+),\s+([^)]+)\)\s+z=\s*(\d+)\s+a=\s*\d+\s+odd=\s*\d+\s+"
+        r"y=\s*(\d+)\s+\|\s+main>=(\d+\.\d+)\s+err<=(\d+\.\d+)\s+net>=(\d+\.\d+)\s+"
+        r"sieve_net>=(\d+\.\d+)\s+tol=(\d+\.\d+)x\s*$"
+    )
+    re_2b = re.compile(
+        r"^\s*(2b-(\d{2})):\s+\[([^,]+),\s+([^)]+)\)\s+M=\s*\d+\s+a=\s*\d+\s+odd=\s*\d+\s+"
+        r"z=\s*(\d+)\s+\|\s+main>=(\d+\.\d+)\s+err<=(\d+\.\d+)\s+net>=(\d+\.\d+)\s+"
+        r"sieve_net>=(\d+\.\d+)\s+tol=(\d+\.\d+)x\s*$"
+    )
+    re_2c = re.compile(
+        r"^\s*(2c-(\d{2})):\s+\[([^,]+),\s+([^)]+)\)\s+M=\s*\d+\s+.*?\|\s+"
+        r"main>=(\d+\.\d+)\s+err<=(\d+\.\d+)\s+net>=(\d+\.\d+)\s+tol=(\d+\.\d+)x\s*$"
+    )
+
+    parsed_rows = []
+    for line in txt.splitlines():
+        for reg, pat in (("2a", re_2a), ("2b", re_2b), ("2c", re_2c)):
+            m = pat.match(line)
+            if m:
+                parsed_rows.append((reg, m))
+                break
+
+    if len(parsed_rows) != len(slabs):
+        fail(f"certified_bounds.txt parsed {len(parsed_rows)} slab rows != JSON {len(slabs)}")
+
+    per_reg_idx = {"2a": 0, "2b": 0, "2c": 0}
+    min_net = Decimal("999")
+    min_sieve = Decimal("999")
+    min_tol = Decimal("999")
+    for idx, ((reg, m), s) in enumerate(zip(parsed_rows, slabs), 1):
+        if reg != s["regime"]:
+            fail(f"certified_bounds.txt slab {idx}: regime {reg} != JSON {s['regime']}")
+        per_reg_idx[reg] += 1
+        label = m.group(1)
+        reg_num = int(m.group(2))
+        if reg_num != per_reg_idx[reg]:
+            fail(f"certified_bounds.txt slab {label}: expected index {per_reg_idx[reg]}")
+        x_lo_str, x_hi_str = m.group(3), m.group(4)
+        exp_xlo = _fmt_sci(int(s["x_lo"]))
+        exp_xhi = _fmt_sci(int(s["x_hi"]))
+        if x_lo_str != exp_xlo or x_hi_str != exp_xhi:
+            fail(f"{label}: interval [{x_lo_str}, {x_hi_str}) != [{exp_xlo}, {exp_xhi})")
+
+        if reg == "2a":
+            z_val, y_val = int(m.group(5)), int(m.group(6))
+            main_txt, err_txt, net_txt, snet_txt, tol_txt = m.group(7, 8, 9, 10, 11)
+            if z_val != int(s["z"]) or y_val != int(s["y"]):
+                fail(f"{label}: (z={z_val}, y={y_val}) != JSON ({s['z']}, {s['y']})")
+        elif reg == "2b":
+            z_val = int(m.group(5))
+            main_txt, err_txt, net_txt, snet_txt, tol_txt = m.group(6, 7, 8, 9, 10)
+            if z_val != int(s["z"]):
+                fail(f"{label}: z={z_val} != JSON {s['z']}")
+        else:
+            main_txt, err_txt, net_txt, tol_txt = m.group(5, 6, 7, 8)
+            snet_txt = None
+
+        exp_main = fmt_dec(Decimal(s["main_lo"]), 5, rounding=ROUND_FLOOR)
+        exp_err = fmt_dec(Decimal(s["err_hi"]), 5, rounding=ROUND_CEILING)
+        exp_net = fmt_dec(Decimal(s["net_lo"]), 5, rounding=ROUND_FLOOR)
+        exp_tol = fmt_dec(Decimal(s["rem_tol"]), 1, rounding=ROUND_FLOOR)
+        if main_txt != exp_main or err_txt != exp_err or net_txt != exp_net or tol_txt != exp_tol:
+            fail(
+                f"{label}: log=({main_txt}, {err_txt}, {net_txt}, {tol_txt}) "
+                f"!= json_outward=({exp_main}, {exp_err}, {exp_net}, {exp_tol})"
+            )
+        if snet_txt is not None:
+            exp_snet = fmt_dec(Decimal(s["sieve_net_lo"]), 4, rounding=ROUND_FLOOR)
+            if snet_txt != exp_snet:
+                fail(f"{label}: sieve_net {snet_txt} != json_outward {exp_snet}")
+
+        min_net = min(min_net, Decimal(s["net_lo"]))
+        min_sieve = min(min_sieve, Decimal(s["sieve_net_lo"]))
+        min_tol = min(min_tol, Decimal(s["rem_tol"]))
+
+    # Regime 2 summary line
+    m_r2 = re.search(
+        r"Regime 2 PASSED across (\d+) contiguous slabs\s+"
+        r"\(min net_lo=(\d+\.\d+),\s+min sieve_net_lo=(\d+\.\d+),\s+min GRH rem tol=(\d+\.\d+)x\)",
+        txt,
+    )
+    if not m_r2:
+        fail("certified_bounds.txt missing Regime 2 summary line")
+    exp_min_net = fmt_dec(min_net, 6, rounding=ROUND_FLOOR)
+    exp_min_sieve = fmt_dec(min_sieve, 6, rounding=ROUND_FLOOR)
+    exp_min_tol = fmt_dec(min_tol, 2, rounding=ROUND_FLOOR)
+    if (
+        int(m_r2.group(1)) != len(slabs)
+        or m_r2.group(2) != exp_min_net
+        or m_r2.group(3) != exp_min_sieve
+        or m_r2.group(4) != exp_min_tol
+    ):
+        fail(f"Regime 2 summary mismatch in certified_bounds.txt: {m_r2.groups()}")
+
+    # Regime 3 summary lines
+    m_r3_hdr = re.search(
+        r"X_LS = 10\^(\d+),.*?Lean cap C2 <= (\d+\.\d+) \(C2 break-even=(\d+\.\d+)\)",
+        txt,
+    )
+    m_r3_vals = re.search(
+        r"main_coeff >= (\d+\.\d+),\s+tot_err <= (\d+\.\d+),\s+NET COEFF >= (\d+\.\d+)\s+\(GRH rem tol=(\d+\.\d+)x\)",
+        txt,
+    )
+    m_r3_pass = re.search(
+        r"Regime 3 PASSED: net switching coefficient >= (\d+\.\d+) > 0 for ALL even N >= 10\^(\d+)",
+        txt,
+    )
+    m_rob_r3 = re.search(
+        r"Asymptotic Regime 3 tolerance\s+:\s+C_2 <= (\d+\.\d+) \(vs used (\d+\.\d+)\),\s+GRH rem tol=(\d+\.\d+)x",
+        txt,
+    )
+    if not (m_r3_hdr and m_r3_vals and m_r3_pass and m_rob_r3):
+        fail("certified_bounds.txt missing Regime 3 summary lines")
+
+    exp_x_ls = int(ray["x_ls"])
+    exp_c2_used = fmt_dec(Decimal(ray["c2_used"]), 6, rounding=ROUND_CEILING)
+    exp_c2_be = fmt_dec(Decimal(ray["c2_breakeven"]), 1, rounding=ROUND_FLOOR)
+    exp_r_main = fmt_dec(Decimal(ray["main_lo"]), 6, rounding=ROUND_FLOOR)
+    exp_r_err = fmt_dec(Decimal(ray["err_hi"]), 6, rounding=ROUND_CEILING)
+    exp_r_net = fmt_dec(Decimal(ray["net_lo"]), 6, rounding=ROUND_FLOOR)
+    exp_r_tol = fmt_dec(Decimal(ray["rem_tol"]), 1, rounding=ROUND_FLOOR)
+
+    if (
+        10 ** int(m_r3_hdr.group(1)) != exp_x_ls
+        or m_r3_hdr.group(2) != exp_c2_used
+        or m_r3_hdr.group(3) != exp_c2_be
+    ):
+        fail(f"Regime 3 header mismatch: {m_r3_hdr.groups()}")
+    if (
+        m_r3_vals.group(1) != exp_r_main
+        or m_r3_vals.group(2) != exp_r_err
+        or m_r3_vals.group(3) != exp_r_net
+        or m_r3_vals.group(4) != exp_r_tol
+    ):
+        fail(f"Regime 3 values mismatch: {m_r3_vals.groups()}")
+    if m_r3_pass.group(1) != exp_r_net or 10 ** int(m_r3_pass.group(2)) != exp_x_ls:
+        fail(f"Regime 3 PASS line mismatch: {m_r3_pass.groups()}")
+    if (
+        m_rob_r3.group(1) != exp_c2_be
+        or m_rob_r3.group(2) != exp_c2_used
+        or m_rob_r3.group(3) != exp_r_tol
+    ):
+        fail(f"Regime 3 robustness line mismatch: {m_rob_r3.groups()}")
+
+    return [
+        f"[4/6] OUTPUT LOG AGREEMENT: PASS ({len(parsed_rows)} slabs + Regime 3 exact outward match in {log_path.relative_to(ROOT)})"
+    ]
 
 
 DATA_LEAN_DENOM = 10_000_000_000

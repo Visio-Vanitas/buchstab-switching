@@ -10,7 +10,7 @@ The note splits the even `N ≥ 4` into three regimes:
   (Oliveira e Silva, Herzog and Pardi; quoted in the note, §0.6, via [BJS] §1 and [JS] §1).
 * **Regime 2**, `4·10¹⁸ ≤ N < 10⁵⁰⁰`: 58 slabs, each certified by `certificate/all_even_1p4_ext/regime2_brun.py`
   with a Brun block sieve and, under GRH, [JS, Lemma 5.1] and Schoenfeld's bound.
-* **Regime 3**, `N ≥ 10⁵⁰⁰`: the explicit linear sieve with pre-sieve, proved in `notes/linear-sieve/`
+* **Regime 3**, `N ≥ 10⁵⁰⁰`: the explicit linear sieve with pre-sieve, proved in `shared/notes/linear-sieve/`
   under the hypothesis on all closed prime intervals, again with [JS, Lemma 5.1] under GRH.
 
 None of these analytic or computational inputs is proved in Lean. Each enters as an explicit
@@ -19,7 +19,7 @@ the theorem, via the weight lemma `cardFactors_le_four_of_weight_pos` of `Weight
 
 **Status of the inputs.** Regime 2 (`4·10¹⁸ ≤ N < 10⁵⁰⁰`) is certified with a Brun block sieve and
 Regime 3 (`N ≥ 10⁵⁰⁰`) with the explicit linear sieve proved under the hypothesis on all closed prime
-intervals (`notes/proof-map.md`). The theorem `prime_add_of_lt_tailStart` records what follows from
+intervals (`k4/notes/proof-map.md`). The theorem `prime_add_of_lt_tailStart` records what follows from
 Regimes 1 and 2 alone.
 
 ## The sifted set
@@ -101,9 +101,10 @@ def GoldbachUpTo (B : ℕ) : Prop :=
 /-- **Regime 2 and 3 input.** For every even `N ∈ S` there are admissible parameters
 `z, y` (`N ≤ z y⁴`, `N < y⁵`) for which the weighted sieve sum is positive.
 
-This is what the certificate script (Regime 2) and [BJS, Theorem 6] (Regime 3) are claimed to
-give, each combined with the GRH bound [JS, Lemma 5.1] for `π(x; q, a)` (see
-`GRHInterface.lean`), [JS, Lemma 3.1] for `|A|` and the explicit Mertens bounds quoted in §0. -/
+This is what the Brun block-sieve certificate (Regime 2) and the explicit closed-interval
+linear sieve with pre-sieve (Regime 3, `shared/notes/linear-sieve/`) give, each combined with
+the GRH bound [JS, Lemma 5.1] for `π(x; q, a)` (see `GRHInterface.lean`), [JS, Lemma 3.1]
+for `|A|` and the explicit Mertens bounds quoted in §0. -/
 def WeightedSievePositiveOn (S : Set ℕ) : Prop :=
   ∀ N ∈ S, Even N → ∃ z y : ℝ, (N : ℝ) ≤ z * y ^ 4 ∧ (N : ℝ) < y ^ 5 ∧ 0 < weightedSum N z y
 
@@ -151,7 +152,7 @@ theorem exists_prime_add_of_weightedSievePositiveOn {S : Set ℕ} {N : ℕ}
   exact exists_prime_add_of_weightedSum_pos hzy hy hpos
 
 /-- **Regimes 1 and 2 only.** Every even `4 ≤ N < 10⁵⁰⁰` is `p + m` with `Ω m ≤ 4`.
-This part does not use the disputed Regime 3. -/
+This part does not use Regime 3. -/
 theorem prime_add_of_lt_tailStart (h₁ : GoldbachUpTo goldbachBound)
     (h₂ : WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)) :
     ∀ N : ℕ, 4 ≤ N → N < tailStart → Even N →

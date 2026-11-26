@@ -344,13 +344,16 @@ structure SquareEngine2ab (c : BuchstabSwitching.SlabCert) (X_lo : ℝ) : Type w
   q_sq : ℕ
   hq_sq1 : 1 ≤ q_sq
   hq_sq_rt : ((q_sq ^ 2 : ℕ) : ℝ) ≤ Real.sqrt X_lo
+  s_q2 : ℝ
+  hs_q2 : ∑ q ∈ (Finset.Ico c.z (min c.y (q_sq + 1))).filter Nat.Prime,
+    (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)) ≤ s_q2
   cnt_lo : ℝ
   hcnt_lo : (((Finset.Ico c.z (min c.y (q_sq + 1))).filter Nat.Prime).card : ℝ) ≤ cnt_lo
 
 def SquareEngine2ab.errQ2 {c : BuchstabSwitching.SlabCert} {X_lo : ℝ} (li2 X_hi : ℝ)
     (q2 : SquareEngine2ab c X_lo) : ℝ :=
   (1 / 2 : ℝ) *
-    (1 / ((c.z : ℝ) - 1) + q2.cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
+    (q2.s_q2 + q2.cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
       (if c.y ≤ q2.q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q2.q_sq : ℝ)))
 
 private lemma lower_of_engine2ab {c : BuchstabSwitching.SlabCert} {li2 X_lo : ℝ} {N : ℕ}
@@ -535,7 +538,7 @@ theorem Regime2abSlabBridge.of_sieveEngines {c : BuchstabSwitching.SlabCert}
     (Nat.cast_le.mpr (Finset.card_le_card
       (midPrimes_subset_Ico_primes N c.z (min c.y (q2.q_sq + 1))))).trans q2.hcnt_lo
   exact BuchstabSwitching.sum_squareDivisible_card_le hGRH hCls hX_lo hX_N hN_hi hN hz2 hzy
-    q2.hq_sq1 q2.hq_sq_rt hcnt_sub
+    q2.hq_sq1 q2.hq_sq_rt q2.hs_q2 hcnt_sub
 
 /-! ## 3. Regime `2c` Constructive Sieve-Engine Wiring -/
 
@@ -727,7 +730,7 @@ theorem Regime2cSlabBridge.of_sieveEngines {c : BuchstabSwitching.SlabCert}
     (Nat.cast_le.mpr (Finset.card_le_card
       (midPrimes_subset_Ico_primes N c.z (min c.y (q2.base.q_sq + 1))))).trans q2.base.hcnt_lo
   have hsq_norm := sum_squareDivisible_card_norm_le hGRH hCls hX_lo hX_N hN_hi hN hz2 hzy
-    q2.base.hq_sq1 q2.base.hq_sq_rt hcnt_sub q2.hv_pos q2.hv_le
+    q2.base.hq_sq1 q2.base.hq_sq_rt q2.base.hs_q2 hcnt_sub q2.hv_pos q2.hv_le
   simpa only [SquareEngine2c.errQ2, SquareEngine2ab.errQ2] using hsq_norm
 
 end

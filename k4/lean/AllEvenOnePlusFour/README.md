@@ -111,7 +111,7 @@ of prime factors counted with multiplicity. Some subtleties:
 
 ## Build log
 
-The full output is in `build_log.txt`. Summary: `Build completed successfully`, with **zero warnings** on all library modules (`AllEvenOnePlusFour/*`, `AxiomsCheck.lean`); the sole warning across the entire package is the expected `declaration uses sorry` at `Challenge.lean:58`, which is the challenge statement.
+The full output is in `build_log.txt`. Summary: `Build completed successfully`, with **zero warnings** on all library modules (`AllEvenOnePlusFour/*`, `AxiomsCheck.lean`); the sole warning across the entire package is the expected `declaration uses sorry` at `Challenge.lean:60`, which is the challenge statement.
 
 ## `#print axioms` output
 

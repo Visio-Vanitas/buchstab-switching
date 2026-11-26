@@ -174,6 +174,13 @@ class Iv:
     def __init__(self, lo: Scalar, hi: Scalar | None = None) -> None:
         if hi is None:
             hi = lo
+        if (
+            isinstance(lo, bool)
+            or isinstance(hi, bool)
+            or not isinstance(lo, (int, str, Decimal))
+            or not isinstance(hi, (int, str, Decimal))
+        ):
+            raise TypeError(f"Iv accepts only int, str, or Decimal (got {type(lo).__name__}, {type(hi).__name__})")
         lo_d = round_down(lo if isinstance(lo, Decimal) else Decimal(lo))
         hi_d = round_up(hi if isinstance(hi, Decimal) else Decimal(hi))
         if lo_d > hi_d:

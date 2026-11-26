@@ -3,7 +3,9 @@
   "solution_module": "BuchstabSwitching",
   "theorem_names": [
     "BuchstabSwitching.even_eq_prime_add_omegaMult_le_three",
-    "BuchstabSwitching.all_even_one_plus_three_of_premises"
+    "BuchstabSwitching.all_even_one_plus_three_of_premises",
+    "BuchstabSwitching.External.externalPremises_of_classical",
+    "BuchstabSwitching.all_even_one_plus_three_of_classical"
   ],
   "permitted_axioms": [
     "propext",

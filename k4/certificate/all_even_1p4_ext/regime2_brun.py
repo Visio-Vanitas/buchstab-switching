@@ -37,7 +37,7 @@ from fractions import Fraction
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from all_even_1p4.checks import CheckList, CertificationError  # noqa: E402
 from all_even_1p4.cited import HypothesisError, require_js_lemma_3_1, schoenfeld_denominator  # noqa: E402
-from all_even_1p4.constants import PI  # noqa: E402
+from all_even_1p4.constants import E5_OVER_3, LI_E5, PI  # noqa: E402
 from all_even_1p4.elementary import exp_iv, ln_iv  # noqa: E402
 from all_even_1p4.interval import HALF, ONE, Iv  # noqa: E402
 from all_even_1p4.prime_bounds import prime_count_upper, sum_inv_p_lower, sum_inv_p_upper  # noqa: E402
@@ -115,6 +115,7 @@ def pi_hi(x: int) -> int:
 
 def e_bound(caps, ends) -> Iv:
     """X32 Lemma D: sum_i S(T_i)^(m_i+1)/(m_i+1)!/V(T_i), T_i = primes in [ends[i], z)."""
+    assert len(caps) >= 1 and caps[0] >= 0
     z = ends[0]
     tot = Iv(0)
     for i in range(1, len(ends)):
@@ -125,6 +126,7 @@ def e_bound(caps, ends) -> Iv:
 
 def modbound(caps, ends) -> int:
     """X32 Lemma E.1: every d with chi(d) = 1 is < prod_i z_{i-1}^(m_i - m_{i-1})."""
+    assert len(caps) >= 1 and caps[0] >= 0
     r, prev = 1, 0
     for i, m in enumerate(caps):
         r *= ends[i] ** (m - prev)
@@ -168,6 +170,7 @@ T_GRID_COARSE = tuple(range(10, 86, 5))   # z_2, ..., z_{r-2} for four or more b
 def candidate_ends(caps, z, pa1, budget):
     """Block endpoints z = z_0 > z_1 > ... > z_r = p_a + 1; the last free endpoint is maximal under
     the level budget (a larger z_i shrinks T_i, which only lowers the Lemma D bound)."""
+    assert len(caps) >= 1 and caps[0] >= 0
     r = len(caps)
     c = [caps[0]] + [caps[i] - caps[i - 1] for i in range(1, r)]
     if c[0] < 0 or not all(ci >= 1 for ci in c[1:]):
@@ -253,6 +256,7 @@ def certify_brun_slab(x_lo: int, x_hi: int, m: int, a: int,
     fixed = ((low_caps, low_ends), (up_caps, up_ends)) skips the search and uses exactly these blocks
     (parity, level and every bound are still checked); used by the replay verifier."""
     checks = CheckList(f"brun slab [{x_lo}, {x_hi})")
+    checks.require("li(e^5) < e^5/3", "X26 s0.4", LI_E5, "<", E5_OVER_3)
     require_js_lemma_3_1(x_lo)
     x_lo_iv, x_hi_iv = Iv(x_lo), Iv(x_hi)
     log_x_lo, log_x_hi = ln_iv(x_lo_iv), ln_iv(x_hi_iv)
@@ -263,7 +267,9 @@ def certify_brun_slab(x_lo: int, x_hi: int, m: int, a: int,
     z_iv, y_iv = Iv(z), Iv(y)
     log_z, log_y = ln_iv(z_iv), ln_iv(y_iv)
 
+    assert a >= 1, f"a must be >= 1, got {a}"
     q1 = PRIMES[1:a + 1]
+    assert len(q1) == a, f"a={a} exceeds listed PRIMES"
     p_a = q1[-1]
     pa1 = p_a + 1
     checks.require("p_a < z", "X26 s2", p_a, "<", z)
@@ -279,6 +285,7 @@ def certify_brun_slab(x_lo: int, x_hi: int, m: int, a: int,
         if not (all(x % 2 == 1 for x in lc) and all(x % 2 == 0 for x in uc)):
             raise ParityError(f"parity rule violated: {lc} / {uc}")
         for caps, ends in ((lc, le), (uc, ue)):
+            assert len(caps) >= 1 and caps[0] >= 0
             if not (len(ends) == len(caps) + 1 and ends[0] == z and ends[-1] == pa1
                     and all(u > v for u, v in zip(ends, ends[1:])) and all(u <= v for u, v in zip(caps, caps[1:]))):
                 raise CertificationError(f"bad block structure {caps} {ends}")

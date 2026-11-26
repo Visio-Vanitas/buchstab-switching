@@ -1,16 +1,17 @@
 == toolchain
 $ lean --version
-Lean (version 4.37.0-rc1, x86_64-unknown-linux-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release)
+Lean (version 4.37.0-rc1, x86_64-w64-windows-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release)
 [exit 0]
 $ lake --version
 Lake version 5.0.0-src+0b77e12 (Lean version 4.37.0-rc1)
 [exit 0]
 == build BuchstabSwitching
 $ lake build BuchstabSwitching
-ℹ [8099/8103] Replayed BuchstabSwitching.Main
-info: BuchstabSwitching/Main.lean:78:0: 'BuchstabSwitching.even_eq_prime_add_omegaMult_le_three' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: BuchstabSwitching/Main.lean:79:0: 'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
-Build completed successfully (8103 jobs).
+ℹ [8193/8197] Replayed BuchstabSwitching.Main
+info: BuchstabSwitching/Main.lean:87:0: 'BuchstabSwitching.even_eq_prime_add_omegaMult_le_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BuchstabSwitching/Main.lean:88:0: 'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BuchstabSwitching/Main.lean:89:0: 'BuchstabSwitching.all_even_one_plus_three_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (8197 jobs).
 [exit 0]
 == axioms check
 $ lake env lean AxiomsCheckK3.lean
@@ -37,22 +38,117 @@ $ lake env lean AxiomsCheckK3.lean
 'BuchstabSwitching.exists_slab_or_ray' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.even_eq_prime_add_omegaMult_le_three' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.ray_cert_data_inst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.SieveInst.allSlabs_bridges_inst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.External.externalPremises_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.all_even_one_plus_three_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
 [exit 0]
-$ env LEAN_PATH=/home/disillusion/bs-wt-k3/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Types.olean comparator/ChallengeK3Types.lean
+$ lake env lean BuchstabSwitching/Sieve/AxiomsAudit.lean
+'BuchstabSwitching.sieveCount_shiftedSet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.sievedShifted_buchstab_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.RTrunc_odd_analytic_lb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.RTrunc_even_analytic_ub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.V2_ge_exp_neg_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.sum_elemSym_le_exp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.two_var_mertens_cond_of_excursion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.eps_large_u_two_var_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.selberg_lambda_sq_upper_sieve_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.eulerProd_mul_selbergJ_omission_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.selbergJ_two_prime_inclusion_exclusion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.selbergJ_lt_two_prime_inclusion_exclusion_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.ri_main_term_upper_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.ri_main_term_lower_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.rosser_iwaniec_pointwise_upper_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.T_sum_eq_zero_of_mem_range_prod_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.hasDerivAt_outerQuadIntegrand_deriv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.abs_second_deriv_outerQuadIntegrand_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.J_odd_asymptotic_enclosure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.H_tilde_le_cert' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.alpha0_le_636_div_1000' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.finite_buchstab_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.finite_buchstab_upper_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.C2_bjs_le_tail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.bjs_linear_sieve_lower_fHat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.bjs_linear_sieve_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.bjs_linear_sieve_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.validDecaySeq_certified' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.C2_bjs_certified_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.shiftedSet_card_gt_div_log' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.shifted_rem_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.squareDivisible_card_le_grh' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.abs_shifted_rem_div_card_le_epdNorm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.VN_two_ceil_ge_of_EulerProductVPremise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.j_full_lb_z3_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.j_over_logz_lb_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.vj_monotone_lb_uniform_even_N' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.brun_block_main_term_lb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.brun_block_sieve_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.brun_block_card_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.slice_finite_buchstab_upper_of_full' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.slice_selberg_sum_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.regime2ab_switchingBalance_lb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.regime2c_switchingBalance_lb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.SieveInst.allSlabs_bridges_inst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.closedHStarCond_Q0_100' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.regime3_lower_sieve_lb' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.regime3_upper_sieve_sum_ub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.regime3_ray_switchingBalance_lb_of_analytic' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.ray_cert_data_inst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.External.UN_ratio_ge_Uc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.External.BuchstabSeriesPremise.buchstabf_le_one_sub_sum' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.External.buchstabSeriesPremise_proved' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.External.slabSieveEnclosurePremise_of_sieveBridge' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.External.Regime2abSlabBridge.of_sieveEngines' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.External.Regime2cSlabBridge.of_sieveEngines' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.External.asymptoticRayEnclosurePremise_of_sieveBridge' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'BuchstabSwitching.External.externalPremises_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.even_eq_prime_add_omegaMult_le_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.all_even_one_plus_three_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
 [exit 0]
-$ env LEAN_PATH=/home/disillusion/bs-wt-k3/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Data.olean comparator/ChallengeK3Data.lean
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Types.olean comparator/ChallengeK3Types.lean
 [exit 0]
-$ env LEAN_PATH=/home/disillusion/bs-wt-k3/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Reduction.olean comparator/ChallengeK3Reduction.lean
-comparator/ChallengeK3Reduction.lean:71:8: warning: declaration uses `sorry`
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Data.olean comparator/ChallengeK3Data.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3MertensTwoVar.olean comparator/ChallengeK3MertensTwoVar.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3DirichletGRH.olean comparator/ChallengeK3DirichletGRH.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Schoenfeld.olean comparator/ChallengeK3Schoenfeld.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3MertensExt.olean comparator/ChallengeK3MertensExt.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3EulerV.olean comparator/ChallengeK3EulerV.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Constants.olean comparator/ChallengeK3Constants.lean
+[exit 0]
+$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Reduction.olean comparator/ChallengeK3Reduction.lean
 comparator/ChallengeK3Reduction.lean:78:8: warning: declaration uses `sorry`
+comparator/ChallengeK3Reduction.lean:90:8: warning: declaration uses `sorry`
+comparator/ChallengeK3Reduction.lean:97:8: warning: declaration uses `sorry`
+comparator/ChallengeK3Reduction.lean:103:8: warning: declaration uses `sorry`
 [exit 0]
-$ bash -c LEAN_PATH=/home/disillusion/bs-wt-k3/k3/.lake/comparator lake env leanexport ChallengeK3Reduction -- $(cat comparator/reduction-export-targets.txt) > /home/disillusion/bs-wt-k3/k3/.lake/exp/red-challenge.export
+$ bash -c LEAN_PATH='C:/bs-work/repo/k3/.lake/comparator' lake env leanexport ChallengeK3Reduction -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/c/bs-work/repo/k3/.lake/exp/red-challenge.export'
 [exit 0]
-$ bash -c lake env leanexport BuchstabSwitching -- $(cat comparator/reduction-export-targets.txt) > /home/disillusion/bs-wt-k3/k3/.lake/exp/red-solution.export
+$ bash -c lake env leanexport BuchstabSwitching -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/c/bs-work/repo/k3/.lake/exp/red-solution.export'
 [exit 0]
-sha256: 18de8b5351e864a5d59baf50b93b383a681807288754b33683fe143fe5cb1214 red-challenge.export; ab0268f3ff6d416589e36583f5017c93203f176179e4aa1ef4780f01052a0343 red-solution.export
-external kernels available: leanchecker leanchecker-paranoid nanoda_bin 
-$ lake comparator --inadvisably-no-sandbox --config /home/disillusion/bs-wt-k3/k3/comparator/reduction.json --challenge-from-export /home/disillusion/bs-wt-k3/k3/.lake/exp/red-challenge.export --solution-from-export /home/disillusion/bs-wt-k3/k3/.lake/exp/red-solution.export
+sha256: fb9d35f3f8ea4e9ab0da06ca105a6148eb58dba3675374062c9a4122455d82a5 red-challenge.export; a8dc22765c2c2c4b1ecddee7546b13055576e996e758d6750ba372a955540934 red-solution.export
+external kernels available: leanchecker-paranoid.exe leanchecker.exe nanoda_bin.exe 
+$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k3/.lake/exp/reduction.runtime.json --challenge-from-export C:/bs-work/repo/k3/.lake/exp/red-challenge.export --solution-from-export C:/bs-work/repo/k3/.lake/exp/red-solution.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 Running Lean paranoid kernel on solution
 Lean paranoid kernel accepts the solution
@@ -63,7 +159,7 @@ Lean default kernel accepts the solution
 Your solution is okay!
 [exit 0]
 == rehearsal: self-challenge (must reject sorryAx)
-$ lake comparator --inadvisably-no-sandbox --config /home/disillusion/bs-wt-k3/k3/comparator/reduction.json --challenge-from-export /home/disillusion/bs-wt-k3/k3/.lake/exp/red-challenge.export --solution-from-export /home/disillusion/bs-wt-k3/k3/.lake/exp/red-challenge.export
+$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k3/.lake/exp/reduction.runtime.json --challenge-from-export C:/bs-work/repo/k3/.lake/exp/red-challenge.export --solution-from-export C:/bs-work/repo/k3/.lake/exp/red-challenge.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 error: Illegal axiom detected: 'sorryAx'
 [exit 1]

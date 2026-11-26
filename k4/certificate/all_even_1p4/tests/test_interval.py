@@ -98,6 +98,17 @@ class OutwardnessTest(unittest.TestCase):
         with self.assertRaises(Inexact):
             Decimal(1) / Decimal(3)
 
+    def test_rejects_float(self) -> None:
+        """Iv rejects float/complex arguments at runtime."""
+        with self.assertRaises(TypeError):
+            Iv(1.0)
+        with self.assertRaises(TypeError):
+            Iv(0, 1.0)
+        with self.assertRaises(TypeError):
+            Iv(1.0, 2)
+        with self.assertRaises(TypeError):
+            _ = Iv(1) + 0.5
+
     def test_ln_exp_consistency(self) -> None:
         self.assertTrue(ln_iv(Iv(2)).lo <= LN2.hi and LN2.lo <= ln_iv(Iv(2)).hi)
         for _ in range(30):

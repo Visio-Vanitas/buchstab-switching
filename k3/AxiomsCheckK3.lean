@@ -29,3 +29,7 @@ standard axioms: `[propext, Classical.choice, Quot.sound]`.
 #print axioms BuchstabSwitching.exists_slab_or_ray
 #print axioms BuchstabSwitching.even_eq_prime_add_omegaMult_le_three
 #print axioms BuchstabSwitching.all_even_one_plus_three_of_premises
+#print axioms BuchstabSwitching.ray_cert_data_inst
+#print axioms BuchstabSwitching.SieveInst.allSlabs_bridges_inst
+#print axioms BuchstabSwitching.External.externalPremises_of_classical
+#print axioms BuchstabSwitching.all_even_one_plus_three_of_classical

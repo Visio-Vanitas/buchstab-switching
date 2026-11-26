@@ -16,8 +16,20 @@ and B = 8e/3 + 2 (2 + eps) c one has tau_n <= A tau_{n-1} + B c^{n-2} for all n 
 provided the three inequalities checked in `check_majorant` hold; summing,
     sum_{n > NMAX} tau_n <= (A tau_NMAX + B c^{NMAX-1}/(1 - c)) / (1 - A).
 """
+from decimal import Decimal, Inexact, ROUND_CEILING, Rounded, localcontext
 from fractions import Fraction as Fr
 import sys
+
+
+def _fmt_tail(f):
+    """Upward-rounded 1-decimal-place scientific notation for a Fraction (no floats)."""
+    f = Fr(f)
+    with localcontext() as ctx:
+        ctx.prec = 28
+        ctx.rounding = ROUND_CEILING
+        ctx.traps[Inexact] = False
+        ctx.traps[Rounded] = False
+        return format(Decimal(f.numerator) / Decimal(f.denominator), ".1e")
 
 
 def _up(x, places):
@@ -121,7 +133,7 @@ def main():
             r = constants(k, use_table)
             row.append("not applicable" if r is None else "%s %s" % (_up(r[0], 3), _up(r[1], 3)))
         t = constants(k, True)
-        print(k, "|", row[0], "|", row[1], "|", PAPER.get(k, ("-", "-")), "| " + (format(__import__("decimal").Decimal(str(t[2])), ".1e") if t else "0"))
+        print(k, "|", row[0], "|", row[1], "|", PAPER.get(k, ("-", "-")), "| " + (_fmt_tail(t[2]) if t else "0"))
 
 
 if __name__ == "__main__":

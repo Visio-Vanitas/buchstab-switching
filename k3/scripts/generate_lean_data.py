@@ -59,14 +59,10 @@ def main() -> None:
         comma = "," if idx + 1 < len(slabs) else ""
         lines.extend(
             [
-                f"  {{ X_lo := {s['x_lo']},",
-                f"    X_hi := {s['x_hi']},",
-                f"    z := {s['z']},",
-                f"    y := {s['y']},",
-                f"    main_num := {m_n},",
-                f"    err_num := {e_n},",
-                f"    net_num := {net_num},",
-                f"    den := {m_d} }}{comma}",
+                f"  {{ X_lo := {s['x_lo']}, X_hi := {s['x_hi']},",
+                f"    z := {s['z']}, y := {s['y']},",
+                f"    main_num := {m_n}, err_num := {e_n},",
+                f"    net_num := {net_num}, den := {m_d} }}{comma}",
             ]
         )
 

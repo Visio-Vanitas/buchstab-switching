@@ -16,8 +16,8 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, Context, Decimal, localcontext
 from fractions import Fraction
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from all_even_1p4.cited import (HypothesisError, buthe_constants, mertens_large_coeff, mertens_lower_coeff,
-                                require_js_lemma_3_1, robin_constant)
+from all_even_1p4.cited import (MERTENS_TEN12, HypothesisError, bjs_lemma_16_numerator, buthe_constants,
+                                mertens_large_coeff, mertens_lower_coeff, require_js_lemma_3_1, robin_constant)
 from all_even_1p4.checks import CertificationError
 import json, re
 from all_even_1p4.constants import U_C
@@ -164,9 +164,13 @@ def certify(p: X31Tail) -> dict:
     f_s = f_lo(s); h_s = h_upper(s)
     lb_a = f_s - eps_used * c2 * e2 * h_s
     du = (beta - ONE / m_iv) / Iv(p.slices)
-    # E(t) <= c/log t for every t >= z0: [BJS] L16 gives 2/sqrt(t) <= 2/sqrt(z0) on [z0, 1e12];
+    # E(t) <= c/log t for every t >= z0: [BJS] L16 gives 2/sqrt(t) <= 2/sqrt(z0) on [z0, 1e12] (if z0 <= 1e12);
     # [JS] (3.3) on t > max(z0, 1e12), with its range guard applied at that point.
-    c_up = max((TWO / z0.sqrt()).hi, mertens_large_coeff(max(z0.lo, Decimal(10**12))))
+    ten12 = Decimal(MERTENS_TEN12)
+    c_up = mertens_large_coeff(max(z0.lo, ten12))
+    if z0.lo <= ten12:
+        bjs_num = Iv(bjs_lemma_16_numerator(z0.lo, ten12))
+        c_up = max(c_up, (bjs_num / z0.sqrt()).hi)
     mert_coeff = Iv(c_up) + Iv(mertens_lower_coeff(z0.lo))
     q_ratio = z0 / (z0 - ONE)
     total = Iv(0)
@@ -174,6 +178,7 @@ def certify(p: X31Tail) -> dict:
         u_k = ONE / m_iv + Iv(i) * du
         u_k1 = ONE / m_iv + Iv(i + 1) * du
         sq_lo = m_iv * (HALF - alpha - u_k1)
+        assert sq_lo.lo >= ONE.lo, f"sq_lo < 1: {sq_lo}"
         phi = F_hi(sq_lo) + eps_used * c1 * e2 * h_upper(sq_lo)
         total = total + phi * q_ratio * (ln_iv(u_k1 / u_k) + mert_coeff / (u_k * log_x))
     half_sum = HALF * total
@@ -186,7 +191,7 @@ def certify(p: X31Tail) -> dict:
     c4g = sqf * (grh_remainder_coeff(log_x, x_ls) + Iv(robin_constant(x_ls)) / (sqrt_x * ln_iv(log_x)))
     req((b - Iv(3)).lo > 0, "B > 3")
     err_r1 = (ONE + HALF) * c4g / (m_iv * U_C * pow_real_iv(log_x, b - TWO))
-    err_r2 = Iv(HALF.lo * mu2_phi_coeff * HALF.lo) * c4g / (m_iv * U_C * pow_real_iv(log_x, b - Iv(3)))
+    err_r2 = (HALF * Iv(mu2_phi_coeff) * HALF) * c4g / (m_iv * U_C * pow_real_iv(log_x, b - Iv(3)))
     phi_max = F_hi(s_min) + eps_used * c1 * e2 * h_upper(s_min)
     err_rq = HALF * (ONE + delta_v) * phi_max * c4g / pow_real_iv(log_x, b - ONE)
     req((log_x - Iv(2 * p.m)).lo > 0, "log X > 2M")
@@ -209,7 +214,7 @@ def try_certify(p):
     try:
         return certify(p)
     except (Fail, HypothesisError, CertificationError) as e:
-        return dict(ok=False, e=p.e, M=p.m, B=p.b, k=p.k, fail=f"{type(e).__name__}: {e}", net_lo=-1.0)
+        return dict(ok=False, e=p.e, M=p.m, B=p.b, k=p.k, fail=f"{type(e).__name__}: {e}", net_lo=Decimal(-1))
 
 
 if __name__ == "__main__":

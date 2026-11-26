@@ -7,6 +7,7 @@ data used by both [`k4/`](../k4/README.md) (`1 + 4`) and [`k3/`](../k3/README.md
 
 | Path | Description |
 | :--- | :--- |
+| [`references/`](references/README.md) | Consolidated mathematical bibliography and verified formula/parameter tables (`selberg-and-mertens.md`, `bjs-linear-sieve-and-vj.md`; local upstream `.tex` sources in `references/sources/`, gitignored) |
 | [`notes/linear-sieve/`](notes/linear-sieve/README.md) | Explicit $\beta = 2$ Jurkat–Richert linear sieve with arbitrary pre-sieve `Q₀` under the closed-interval `(H*)` hypothesis (`S1`–`S6`), including why fixed-`z` / half-open hypotheses fail (`BJS` Theorem 6 counterexample and `Table 1` discrepancy) |
 | `notes/block-sieve/brun-block-sieve.md` | Brun combinatorial block lower/upper sieve (`Theorem A` parity truncation, explicit block remainder `E^±`, level bound, and prime-divisor omission monotonicity `Lemma C`) |
 | `certificate/linear_sieve/` | Independent stdlib-only Python certifiers (`hstar_certify.py`, `cn_certify.py`, `tau_constants.py`, `core_checks.py`) generating/auditing closed `(H*)` bounds (`hstar.log`) and explicit `C₁(ε), C₂(ε)` tables (`cn_rows_all.json`) |

@@ -1,0 +1,750 @@
+import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstDefs
+import BuchstabSwitching.Sieve.Regime2SlabBridge.Decomposition
+import Mathlib.Tactic
+
+/-!
+# Exact Prime Table `< 27000` and Certified Exact Sums / Euler Products
+
+Provides:
+1. `primesLt27000`: all `2,961` primes `< 27000`, verified complete and strictly increasing via
+   `primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by decide`;
+2. `mem_primesLt27000_iff`, `primesLt27000_nodup`, and `oddPrimesBelow_eq_filter`;
+3. `SciNat` outward-rounded interval lemmas (`subLb_le`, `divUb_le`, `divLb_le`, `trimUb_le`,
+   `trimLb_le`);
+4. Exact interval evaluators (`exactInvSubOneSumUb`, `exactInvMulPredSumUb`,
+   `exactInvPredSqSumUb`, `exactPrimeCount`, `exactProdOneSubInvPredLb`,
+   `exactProdOneSubInvPredUb`) and their soundness theorems over `[q0, q1) ⊆ [0, 27000)`.
+-/
+
+namespace BuchstabSwitching.SieveInst
+
+noncomputable section
+
+/-! ## 1. `SciNat` Outward-Rounded Interval Soundness -/
+
+namespace SciNat
+
+private lemma ofNat_toReal_pt (n : ℕ) : (ofNat n).toReal = (n : ℝ) := by
+  simp [ofNat, toReal]
+
+private lemma mul_toReal_pt (a b : SciNat) : (a.mul b).toReal = a.toReal * b.toReal := by
+  simp only [mul, toReal, Nat.cast_mul, pow_add]; ring
+
+private lemma pow10_split_pt {e₁ e₂ : ℕ} (h : e₁ ≤ e₂) :
+    (10 : ℝ) ^ e₂ = (10 : ℝ) ^ e₁ * (10 : ℝ) ^ (e₂ - e₁) := by
+  rw [← pow_add, Nat.add_sub_of_le h]
+
+private lemma add_toReal_pt (a b : SciNat) : (a.add b).toReal = a.toReal + b.toReal := by
+  unfold add toReal
+  split_ifs with he
+  · have ha : (0 : ℝ) < (10 : ℝ) ^ a.e := by positivity
+    have hd : (0 : ℝ) < (10 : ℝ) ^ (b.e - a.e) := by positivity
+    push_cast; rw [pow10_split_pt he]; field_simp [ha.ne', hd.ne']
+  · have he' : b.e ≤ a.e := le_of_not_ge he
+    have hb : (0 : ℝ) < (10 : ℝ) ^ b.e := by positivity
+    have hd : (0 : ℝ) < (10 : ℝ) ^ (a.e - b.e) := by positivity
+    push_cast; rw [pow10_split_pt he']; field_simp [hb.ne', hd.ne']
+
+private lemma ceilDiv_ge_pt {n d : ℕ} (hd : 0 < d) :
+    (n : ℝ) / (d : ℝ) ≤ (ceilDiv n d : ℝ) := by
+  rw [div_le_iff₀ (by exact_mod_cast hd)]
+  have hnat : n ≤ ceilDiv n d * d := by
+    by_cases hn : n = 0
+    · subst hn; simp
+    · unfold ceilDiv
+      simp only [hd.ne', ↓reduceIte]
+      have h1 := Nat.div_add_mod (n + d - 1) d
+      have h2 := Nat.mod_lt (n + d - 1) hd
+      have hcomm : d * ((n + d - 1) / d) = (n + d - 1) / d * d := Nat.mul_comm _ _
+      omega
+  exact_mod_cast hnat
+
+private lemma floorDiv_le_pt {n d : ℕ} (hd : 0 < d) :
+    ((n / d : ℕ) : ℝ) ≤ (n : ℝ) / (d : ℝ) := by
+  rw [le_div_iff₀ (by exact_mod_cast hd)]
+  exact_mod_cast Nat.div_mul_le_self n d
+
+lemma subLb_eq {a b : SciNat} (h : b.toReal ≤ a.toReal) :
+    (a.subLb b).toReal = a.toReal - b.toReal := by
+  unfold subLb
+  unfold toReal at h ⊢
+  split_ifs with he
+  · have hpow := pow10_split_pt he
+    have ha : (0 : ℝ) < (10 : ℝ) ^ a.e := by positivity
+    have hd : (0 : ℝ) < (10 : ℝ) ^ (b.e - a.e) := by positivity
+    have hm : b.m ≤ a.m * 10 ^ (b.e - a.e) := by
+      rw [div_le_div_iff₀ (by positivity) (by positivity), hpow] at h
+      have h1 : (b.m : ℝ) * (10 : ℝ) ^ a.e ≤
+          ((a.m : ℝ) * (10 : ℝ) ^ (b.e - a.e)) * (10 : ℝ) ^ a.e := by
+        linarith
+      exact_mod_cast le_of_mul_le_mul_right h1 ha
+    rw [Nat.cast_sub hm, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat, sub_div, hpow]
+    field_simp [ha.ne', hd.ne']
+  · have he' : b.e ≤ a.e := le_of_not_ge he
+    have hpow := pow10_split_pt he'
+    have hb : (0 : ℝ) < (10 : ℝ) ^ b.e := by positivity
+    have hd : (0 : ℝ) < (10 : ℝ) ^ (a.e - b.e) := by positivity
+    have hm : b.m * 10 ^ (a.e - b.e) ≤ a.m := by
+      rw [div_le_div_iff₀ (by positivity) (by positivity), hpow] at h
+      have h1 : ((b.m : ℝ) * (10 : ℝ) ^ (a.e - b.e)) * (10 : ℝ) ^ b.e ≤
+          (a.m : ℝ) * (10 : ℝ) ^ b.e := by
+        linarith
+      exact_mod_cast le_of_mul_le_mul_right h1 hb
+    rw [Nat.cast_sub hm, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat, sub_div, hpow]
+    field_simp [hb.ne', hd.ne']
+
+lemma subLb_le {a b : SciNat} (h : b.toReal ≤ a.toReal) :
+    (a.subLb b).toReal ≤ a.toReal - b.toReal :=
+  (subLb_eq h).le
+
+lemma divUb_le (a b : SciNat) (prec : ℕ := 24) :
+    a.toReal / b.toReal ≤ (a.divUb b prec).toReal := by
+  unfold divUb toReal
+  split_ifs with hb
+  · simp [hb]
+  · have hb_pos : 0 < b.m := Nat.pos_of_ne_zero hb
+    have hceil := ceilDiv_ge_pt (n := a.m * 10 ^ (b.e + prec)) hb_pos
+    have hpow : (0 : ℝ) < (10 : ℝ) ^ (a.e + prec) := by positivity
+    refine le_trans ?_ (div_le_div_of_nonneg_right hceil hpow.le)
+    apply le_of_eq
+    push_cast
+    field_simp [(by positivity : (10 : ℝ) ^ a.e ≠ 0), (by positivity : (10 : ℝ) ^ b.e ≠ 0),
+      (by positivity : (10 : ℝ) ^ prec ≠ 0), (by exact_mod_cast hb : (b.m : ℝ) ≠ 0)]
+    rw [pow_add, pow_add]; ring
+
+lemma divLb_le (a b : SciNat) (prec : ℕ := 24) :
+    (a.divLb b prec).toReal ≤ a.toReal / b.toReal := by
+  unfold divLb toReal
+  split_ifs with hb
+  · simp [hb]
+  · have hb_pos : 0 < b.m := Nat.pos_of_ne_zero hb
+    have hfl := floorDiv_le_pt (n := a.m * 10 ^ (b.e + prec)) hb_pos
+    have hpow : (0 : ℝ) < (10 : ℝ) ^ (a.e + prec) := by positivity
+    refine le_trans (div_le_div_of_nonneg_right hfl hpow.le) ?_
+    apply le_of_eq
+    push_cast
+    field_simp [(by positivity : (10 : ℝ) ^ a.e ≠ 0), (by positivity : (10 : ℝ) ^ b.e ≠ 0),
+      (by positivity : (10 : ℝ) ^ prec ≠ 0), (by exact_mod_cast hb : (b.m : ℝ) ≠ 0)]
+    rw [pow_add, pow_add]; ring
+
+lemma trimUb_le (a : SciNat) (maxExp : ℕ := 30) :
+    a.toReal ≤ (a.trimUb maxExp).toReal := by
+  unfold trimUb toReal
+  split_ifs with he
+  · exact le_rfl
+  · have he' : maxExp ≤ a.e := le_of_not_ge he
+    have hd_pos : 0 < 10 ^ (a.e - maxExp) := by positivity
+    have hceil := ceilDiv_ge_pt (n := a.m) hd_pos
+    have hpow : (0 : ℝ) < (10 : ℝ) ^ maxExp := by positivity
+    refine le_trans ?_ (div_le_div_of_nonneg_right hceil hpow.le)
+    apply le_of_eq
+    rw [pow10_split_pt he', Nat.cast_pow, Nat.cast_ofNat]
+    field_simp [(by positivity : (10 : ℝ) ^ maxExp ≠ 0),
+      (by positivity : (10 : ℝ) ^ (a.e - maxExp) ≠ 0)]
+
+lemma trimLb_le (a : SciNat) (maxExp : ℕ := 30) :
+    (a.trimLb maxExp).toReal ≤ a.toReal := by
+  unfold trimLb toReal
+  split_ifs with he
+  · exact le_rfl
+  · have he' : maxExp ≤ a.e := le_of_not_ge he
+    have hd_pos : 0 < 10 ^ (a.e - maxExp) := by positivity
+    have hfl := floorDiv_le_pt (n := a.m) hd_pos
+    have hpow : (0 : ℝ) < (10 : ℝ) ^ maxExp := by positivity
+    refine le_trans (div_le_div_of_nonneg_right hfl hpow.le) ?_
+    apply le_of_eq
+    rw [pow10_split_pt he', Nat.cast_pow, Nat.cast_ofNat]
+    field_simp [(by positivity : (10 : ℝ) ^ maxExp ≠ 0),
+      (by positivity : (10 : ℝ) ^ (a.e - maxExp) ≠ 0)]
+
+end SciNat
+
+/-! ## 2. Exact Prime Table `< 27000` and Completeness Proof -/
+
+private def smallPrimes163 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+   73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163]
+
+private def hasSmallFactor163 (n : ℕ) : Bool :=
+  smallPrimes163.any (fun d => d < n && n % d == 0)
+
+private def checkGapRange (lo : ℕ) : ℕ → Bool
+  | 0 => true
+  | c + 1 => hasSmallFactor163 lo && checkGapRange (lo + 1) c
+
+private def checkPrimesLoop (prev : ℕ) : List ℕ → Bool × ℕ
+  | [] => (true, prev)
+  | p :: ps =>
+    if prev < p && p < 27000 && !hasSmallFactor163 p &&
+        checkGapRange (prev + 1) (p - prev - 1) then
+      checkPrimesLoop p ps
+    else (false, 0)
+
+private def checkPrimesChunks (prev : ℕ) : List (List ℕ) → Bool
+  | [] => decide (prev < 27000) && checkGapRange (prev + 1) (27000 - prev - 1)
+  | c :: cs => let (ok, nxt) := checkPrimesLoop prev c; ok && checkPrimesChunks nxt cs
+
+def primeChunks : List (List ℕ) := [
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+   73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173,
+   179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281],
+  [283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+   419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541,
+   547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659],
+  [661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809,
+   811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941,
+   947, 953, 967, 971, 977, 983, 991, 997, 1009, 1013, 1019, 1021, 1031, 1033, 1039, 1049, 1051, 1061, 1063, 1069],
+  [1087, 1091, 1093, 1097, 1103, 1109, 1117, 1123, 1129, 1151, 1153, 1163, 1171, 1181, 1187, 1193, 1201, 1213, 1217, 1223,
+   1229, 1231, 1237, 1249, 1259, 1277, 1279, 1283, 1289, 1291, 1297, 1301, 1303, 1307, 1319, 1321, 1327, 1361, 1367, 1373,
+   1381, 1399, 1409, 1423, 1427, 1429, 1433, 1439, 1447, 1451, 1453, 1459, 1471, 1481, 1483, 1487, 1489, 1493, 1499, 1511],
+  [1523, 1531, 1543, 1549, 1553, 1559, 1567, 1571, 1579, 1583, 1597, 1601, 1607, 1609, 1613, 1619, 1621, 1627, 1637, 1657,
+   1663, 1667, 1669, 1693, 1697, 1699, 1709, 1721, 1723, 1733, 1741, 1747, 1753, 1759, 1777, 1783, 1787, 1789, 1801, 1811,
+   1823, 1831, 1847, 1861, 1867, 1871, 1873, 1877, 1879, 1889, 1901, 1907, 1913, 1931, 1933, 1949, 1951, 1973, 1979, 1987],
+  [1993, 1997, 1999, 2003, 2011, 2017, 2027, 2029, 2039, 2053, 2063, 2069, 2081, 2083, 2087, 2089, 2099, 2111, 2113, 2129,
+   2131, 2137, 2141, 2143, 2153, 2161, 2179, 2203, 2207, 2213, 2221, 2237, 2239, 2243, 2251, 2267, 2269, 2273, 2281, 2287,
+   2293, 2297, 2309, 2311, 2333, 2339, 2341, 2347, 2351, 2357, 2371, 2377, 2381, 2383, 2389, 2393, 2399, 2411, 2417, 2423],
+  [2437, 2441, 2447, 2459, 2467, 2473, 2477, 2503, 2521, 2531, 2539, 2543, 2549, 2551, 2557, 2579, 2591, 2593, 2609, 2617,
+   2621, 2633, 2647, 2657, 2659, 2663, 2671, 2677, 2683, 2687, 2689, 2693, 2699, 2707, 2711, 2713, 2719, 2729, 2731, 2741,
+   2749, 2753, 2767, 2777, 2789, 2791, 2797, 2801, 2803, 2819, 2833, 2837, 2843, 2851, 2857, 2861, 2879, 2887, 2897, 2903],
+  [2909, 2917, 2927, 2939, 2953, 2957, 2963, 2969, 2971, 2999, 3001, 3011, 3019, 3023, 3037, 3041, 3049, 3061, 3067, 3079,
+   3083, 3089, 3109, 3119, 3121, 3137, 3163, 3167, 3169, 3181, 3187, 3191, 3203, 3209, 3217, 3221, 3229, 3251, 3253, 3257,
+   3259, 3271, 3299, 3301, 3307, 3313, 3319, 3323, 3329, 3331, 3343, 3347, 3359, 3361, 3371, 3373, 3389, 3391, 3407, 3413],
+  [3433, 3449, 3457, 3461, 3463, 3467, 3469, 3491, 3499, 3511, 3517, 3527, 3529, 3533, 3539, 3541, 3547, 3557, 3559, 3571,
+   3581, 3583, 3593, 3607, 3613, 3617, 3623, 3631, 3637, 3643, 3659, 3671, 3673, 3677, 3691, 3697, 3701, 3709, 3719, 3727,
+   3733, 3739, 3761, 3767, 3769, 3779, 3793, 3797, 3803, 3821, 3823, 3833, 3847, 3851, 3853, 3863, 3877, 3881, 3889, 3907],
+  [3911, 3917, 3919, 3923, 3929, 3931, 3943, 3947, 3967, 3989, 4001, 4003, 4007, 4013, 4019, 4021, 4027, 4049, 4051, 4057,
+   4073, 4079, 4091, 4093, 4099, 4111, 4127, 4129, 4133, 4139, 4153, 4157, 4159, 4177, 4201, 4211, 4217, 4219, 4229, 4231,
+   4241, 4243, 4253, 4259, 4261, 4271, 4273, 4283, 4289, 4297, 4327, 4337, 4339, 4349, 4357, 4363, 4373, 4391, 4397, 4409],
+  [4421, 4423, 4441, 4447, 4451, 4457, 4463, 4481, 4483, 4493, 4507, 4513, 4517, 4519, 4523, 4547, 4549, 4561, 4567, 4583,
+   4591, 4597, 4603, 4621, 4637, 4639, 4643, 4649, 4651, 4657, 4663, 4673, 4679, 4691, 4703, 4721, 4723, 4729, 4733, 4751,
+   4759, 4783, 4787, 4789, 4793, 4799, 4801, 4813, 4817, 4831, 4861, 4871, 4877, 4889, 4903, 4909, 4919, 4931, 4933, 4937],
+  [4943, 4951, 4957, 4967, 4969, 4973, 4987, 4993, 4999, 5003, 5009, 5011, 5021, 5023, 5039, 5051, 5059, 5077, 5081, 5087,
+   5099, 5101, 5107, 5113, 5119, 5147, 5153, 5167, 5171, 5179, 5189, 5197, 5209, 5227, 5231, 5233, 5237, 5261, 5273, 5279,
+   5281, 5297, 5303, 5309, 5323, 5333, 5347, 5351, 5381, 5387, 5393, 5399, 5407, 5413, 5417, 5419, 5431, 5437, 5441, 5443],
+  [5449, 5471, 5477, 5479, 5483, 5501, 5503, 5507, 5519, 5521, 5527, 5531, 5557, 5563, 5569, 5573, 5581, 5591, 5623, 5639,
+   5641, 5647, 5651, 5653, 5657, 5659, 5669, 5683, 5689, 5693, 5701, 5711, 5717, 5737, 5741, 5743, 5749, 5779, 5783, 5791,
+   5801, 5807, 5813, 5821, 5827, 5839, 5843, 5849, 5851, 5857, 5861, 5867, 5869, 5879, 5881, 5897, 5903, 5923, 5927, 5939],
+  [5953, 5981, 5987, 6007, 6011, 6029, 6037, 6043, 6047, 6053, 6067, 6073, 6079, 6089, 6091, 6101, 6113, 6121, 6131, 6133,
+   6143, 6151, 6163, 6173, 6197, 6199, 6203, 6211, 6217, 6221, 6229, 6247, 6257, 6263, 6269, 6271, 6277, 6287, 6299, 6301,
+   6311, 6317, 6323, 6329, 6337, 6343, 6353, 6359, 6361, 6367, 6373, 6379, 6389, 6397, 6421, 6427, 6449, 6451, 6469, 6473],
+  [6481, 6491, 6521, 6529, 6547, 6551, 6553, 6563, 6569, 6571, 6577, 6581, 6599, 6607, 6619, 6637, 6653, 6659, 6661, 6673,
+   6679, 6689, 6691, 6701, 6703, 6709, 6719, 6733, 6737, 6761, 6763, 6779, 6781, 6791, 6793, 6803, 6823, 6827, 6829, 6833,
+   6841, 6857, 6863, 6869, 6871, 6883, 6899, 6907, 6911, 6917, 6947, 6949, 6959, 6961, 6967, 6971, 6977, 6983, 6991, 6997],
+  [7001, 7013, 7019, 7027, 7039, 7043, 7057, 7069, 7079, 7103, 7109, 7121, 7127, 7129, 7151, 7159, 7177, 7187, 7193, 7207,
+   7211, 7213, 7219, 7229, 7237, 7243, 7247, 7253, 7283, 7297, 7307, 7309, 7321, 7331, 7333, 7349, 7351, 7369, 7393, 7411,
+   7417, 7433, 7451, 7457, 7459, 7477, 7481, 7487, 7489, 7499, 7507, 7517, 7523, 7529, 7537, 7541, 7547, 7549, 7559, 7561],
+  [7573, 7577, 7583, 7589, 7591, 7603, 7607, 7621, 7639, 7643, 7649, 7669, 7673, 7681, 7687, 7691, 7699, 7703, 7717, 7723,
+   7727, 7741, 7753, 7757, 7759, 7789, 7793, 7817, 7823, 7829, 7841, 7853, 7867, 7873, 7877, 7879, 7883, 7901, 7907, 7919,
+   7927, 7933, 7937, 7949, 7951, 7963, 7993, 8009, 8011, 8017, 8039, 8053, 8059, 8069, 8081, 8087, 8089, 8093, 8101, 8111],
+  [8117, 8123, 8147, 8161, 8167, 8171, 8179, 8191, 8209, 8219, 8221, 8231, 8233, 8237, 8243, 8263, 8269, 8273, 8287, 8291,
+   8293, 8297, 8311, 8317, 8329, 8353, 8363, 8369, 8377, 8387, 8389, 8419, 8423, 8429, 8431, 8443, 8447, 8461, 8467, 8501,
+   8513, 8521, 8527, 8537, 8539, 8543, 8563, 8573, 8581, 8597, 8599, 8609, 8623, 8627, 8629, 8641, 8647, 8663, 8669, 8677],
+  [8681, 8689, 8693, 8699, 8707, 8713, 8719, 8731, 8737, 8741, 8747, 8753, 8761, 8779, 8783, 8803, 8807, 8819, 8821, 8831,
+   8837, 8839, 8849, 8861, 8863, 8867, 8887, 8893, 8923, 8929, 8933, 8941, 8951, 8963, 8969, 8971, 8999, 9001, 9007, 9011,
+   9013, 9029, 9041, 9043, 9049, 9059, 9067, 9091, 9103, 9109, 9127, 9133, 9137, 9151, 9157, 9161, 9173, 9181, 9187, 9199],
+  [9203, 9209, 9221, 9227, 9239, 9241, 9257, 9277, 9281, 9283, 9293, 9311, 9319, 9323, 9337, 9341, 9343, 9349, 9371, 9377,
+   9391, 9397, 9403, 9413, 9419, 9421, 9431, 9433, 9437, 9439, 9461, 9463, 9467, 9473, 9479, 9491, 9497, 9511, 9521, 9533,
+   9539, 9547, 9551, 9587, 9601, 9613, 9619, 9623, 9629, 9631, 9643, 9649, 9661, 9677, 9679, 9689, 9697, 9719, 9721, 9733],
+  [9739, 9743, 9749, 9767, 9769, 9781, 9787, 9791, 9803, 9811, 9817, 9829, 9833, 9839, 9851, 9857, 9859, 9871, 9883, 9887,
+   9901, 9907, 9923, 9929, 9931, 9941, 9949, 9967, 9973, 10007, 10009, 10037, 10039, 10061, 10067, 10069, 10079, 10091, 10093, 10099,
+   10103, 10111, 10133, 10139, 10141, 10151, 10159, 10163, 10169, 10177, 10181, 10193, 10211, 10223, 10243, 10247, 10253, 10259, 10267, 10271],
+  [10273, 10289, 10301, 10303, 10313, 10321, 10331, 10333, 10337, 10343, 10357, 10369, 10391, 10399, 10427, 10429, 10433, 10453, 10457, 10459,
+   10463, 10477, 10487, 10499, 10501, 10513, 10529, 10531, 10559, 10567, 10589, 10597, 10601, 10607, 10613, 10627, 10631, 10639, 10651, 10657,
+   10663, 10667, 10687, 10691, 10709, 10711, 10723, 10729, 10733, 10739, 10753, 10771, 10781, 10789, 10799, 10831, 10837, 10847, 10853, 10859],
+  [10861, 10867, 10883, 10889, 10891, 10903, 10909, 10937, 10939, 10949, 10957, 10973, 10979, 10987, 10993, 11003, 11027, 11047, 11057, 11059,
+   11069, 11071, 11083, 11087, 11093, 11113, 11117, 11119, 11131, 11149, 11159, 11161, 11171, 11173, 11177, 11197, 11213, 11239, 11243, 11251,
+   11257, 11261, 11273, 11279, 11287, 11299, 11311, 11317, 11321, 11329, 11351, 11353, 11369, 11383, 11393, 11399, 11411, 11423, 11437, 11443],
+  [11447, 11467, 11471, 11483, 11489, 11491, 11497, 11503, 11519, 11527, 11549, 11551, 11579, 11587, 11593, 11597, 11617, 11621, 11633, 11657,
+   11677, 11681, 11689, 11699, 11701, 11717, 11719, 11731, 11743, 11777, 11779, 11783, 11789, 11801, 11807, 11813, 11821, 11827, 11831, 11833,
+   11839, 11863, 11867, 11887, 11897, 11903, 11909, 11923, 11927, 11933, 11939, 11941, 11953, 11959, 11969, 11971, 11981, 11987, 12007, 12011],
+  [12037, 12041, 12043, 12049, 12071, 12073, 12097, 12101, 12107, 12109, 12113, 12119, 12143, 12149, 12157, 12161, 12163, 12197, 12203, 12211,
+   12227, 12239, 12241, 12251, 12253, 12263, 12269, 12277, 12281, 12289, 12301, 12323, 12329, 12343, 12347, 12373, 12377, 12379, 12391, 12401,
+   12409, 12413, 12421, 12433, 12437, 12451, 12457, 12473, 12479, 12487, 12491, 12497, 12503, 12511, 12517, 12527, 12539, 12541, 12547, 12553],
+  [12569, 12577, 12583, 12589, 12601, 12611, 12613, 12619, 12637, 12641, 12647, 12653, 12659, 12671, 12689, 12697, 12703, 12713, 12721, 12739,
+   12743, 12757, 12763, 12781, 12791, 12799, 12809, 12821, 12823, 12829, 12841, 12853, 12889, 12893, 12899, 12907, 12911, 12917, 12919, 12923,
+   12941, 12953, 12959, 12967, 12973, 12979, 12983, 13001, 13003, 13007, 13009, 13033, 13037, 13043, 13049, 13063, 13093, 13099, 13103, 13109],
+  [13121, 13127, 13147, 13151, 13159, 13163, 13171, 13177, 13183, 13187, 13217, 13219, 13229, 13241, 13249, 13259, 13267, 13291, 13297, 13309,
+   13313, 13327, 13331, 13337, 13339, 13367, 13381, 13397, 13399, 13411, 13417, 13421, 13441, 13451, 13457, 13463, 13469, 13477, 13487, 13499,
+   13513, 13523, 13537, 13553, 13567, 13577, 13591, 13597, 13613, 13619, 13627, 13633, 13649, 13669, 13679, 13681, 13687, 13691, 13693, 13697],
+  [13709, 13711, 13721, 13723, 13729, 13751, 13757, 13759, 13763, 13781, 13789, 13799, 13807, 13829, 13831, 13841, 13859, 13873, 13877, 13879,
+   13883, 13901, 13903, 13907, 13913, 13921, 13931, 13933, 13963, 13967, 13997, 13999, 14009, 14011, 14029, 14033, 14051, 14057, 14071, 14081,
+   14083, 14087, 14107, 14143, 14149, 14153, 14159, 14173, 14177, 14197, 14207, 14221, 14243, 14249, 14251, 14281, 14293, 14303, 14321, 14323],
+  [14327, 14341, 14347, 14369, 14387, 14389, 14401, 14407, 14411, 14419, 14423, 14431, 14437, 14447, 14449, 14461, 14479, 14489, 14503, 14519,
+   14533, 14537, 14543, 14549, 14551, 14557, 14561, 14563, 14591, 14593, 14621, 14627, 14629, 14633, 14639, 14653, 14657, 14669, 14683, 14699,
+   14713, 14717, 14723, 14731, 14737, 14741, 14747, 14753, 14759, 14767, 14771, 14779, 14783, 14797, 14813, 14821, 14827, 14831, 14843, 14851],
+  [14867, 14869, 14879, 14887, 14891, 14897, 14923, 14929, 14939, 14947, 14951, 14957, 14969, 14983, 15013, 15017, 15031, 15053, 15061, 15073,
+   15077, 15083, 15091, 15101, 15107, 15121, 15131, 15137, 15139, 15149, 15161, 15173, 15187, 15193, 15199, 15217, 15227, 15233, 15241, 15259,
+   15263, 15269, 15271, 15277, 15287, 15289, 15299, 15307, 15313, 15319, 15329, 15331, 15349, 15359, 15361, 15373, 15377, 15383, 15391, 15401],
+  [15413, 15427, 15439, 15443, 15451, 15461, 15467, 15473, 15493, 15497, 15511, 15527, 15541, 15551, 15559, 15569, 15581, 15583, 15601, 15607,
+   15619, 15629, 15641, 15643, 15647, 15649, 15661, 15667, 15671, 15679, 15683, 15727, 15731, 15733, 15737, 15739, 15749, 15761, 15767, 15773,
+   15787, 15791, 15797, 15803, 15809, 15817, 15823, 15859, 15877, 15881, 15887, 15889, 15901, 15907, 15913, 15919, 15923, 15937, 15959, 15971],
+  [15973, 15991, 16001, 16007, 16033, 16057, 16061, 16063, 16067, 16069, 16073, 16087, 16091, 16097, 16103, 16111, 16127, 16139, 16141, 16183,
+   16187, 16189, 16193, 16217, 16223, 16229, 16231, 16249, 16253, 16267, 16273, 16301, 16319, 16333, 16339, 16349, 16361, 16363, 16369, 16381,
+   16411, 16417, 16421, 16427, 16433, 16447, 16451, 16453, 16477, 16481, 16487, 16493, 16519, 16529, 16547, 16553, 16561, 16567, 16573, 16603],
+  [16607, 16619, 16631, 16633, 16649, 16651, 16657, 16661, 16673, 16691, 16693, 16699, 16703, 16729, 16741, 16747, 16759, 16763, 16787, 16811,
+   16823, 16829, 16831, 16843, 16871, 16879, 16883, 16889, 16901, 16903, 16921, 16927, 16931, 16937, 16943, 16963, 16979, 16981, 16987, 16993,
+   17011, 17021, 17027, 17029, 17033, 17041, 17047, 17053, 17077, 17093, 17099, 17107, 17117, 17123, 17137, 17159, 17167, 17183, 17189, 17191],
+  [17203, 17207, 17209, 17231, 17239, 17257, 17291, 17293, 17299, 17317, 17321, 17327, 17333, 17341, 17351, 17359, 17377, 17383, 17387, 17389,
+   17393, 17401, 17417, 17419, 17431, 17443, 17449, 17467, 17471, 17477, 17483, 17489, 17491, 17497, 17509, 17519, 17539, 17551, 17569, 17573,
+   17579, 17581, 17597, 17599, 17609, 17623, 17627, 17657, 17659, 17669, 17681, 17683, 17707, 17713, 17729, 17737, 17747, 17749, 17761, 17783],
+  [17789, 17791, 17807, 17827, 17837, 17839, 17851, 17863, 17881, 17891, 17903, 17909, 17911, 17921, 17923, 17929, 17939, 17957, 17959, 17971,
+   17977, 17981, 17987, 17989, 18013, 18041, 18043, 18047, 18049, 18059, 18061, 18077, 18089, 18097, 18119, 18121, 18127, 18131, 18133, 18143,
+   18149, 18169, 18181, 18191, 18199, 18211, 18217, 18223, 18229, 18233, 18251, 18253, 18257, 18269, 18287, 18289, 18301, 18307, 18311, 18313],
+  [18329, 18341, 18353, 18367, 18371, 18379, 18397, 18401, 18413, 18427, 18433, 18439, 18443, 18451, 18457, 18461, 18481, 18493, 18503, 18517,
+   18521, 18523, 18539, 18541, 18553, 18583, 18587, 18593, 18617, 18637, 18661, 18671, 18679, 18691, 18701, 18713, 18719, 18731, 18743, 18749,
+   18757, 18773, 18787, 18793, 18797, 18803, 18839, 18859, 18869, 18899, 18911, 18913, 18917, 18919, 18947, 18959, 18973, 18979, 19001, 19009],
+  [19013, 19031, 19037, 19051, 19069, 19073, 19079, 19081, 19087, 19121, 19139, 19141, 19157, 19163, 19181, 19183, 19207, 19211, 19213, 19219,
+   19231, 19237, 19249, 19259, 19267, 19273, 19289, 19301, 19309, 19319, 19333, 19373, 19379, 19381, 19387, 19391, 19403, 19417, 19421, 19423,
+   19427, 19429, 19433, 19441, 19447, 19457, 19463, 19469, 19471, 19477, 19483, 19489, 19501, 19507, 19531, 19541, 19543, 19553, 19559, 19571],
+  [19577, 19583, 19597, 19603, 19609, 19661, 19681, 19687, 19697, 19699, 19709, 19717, 19727, 19739, 19751, 19753, 19759, 19763, 19777, 19793,
+   19801, 19813, 19819, 19841, 19843, 19853, 19861, 19867, 19889, 19891, 19913, 19919, 19927, 19937, 19949, 19961, 19963, 19973, 19979, 19991,
+   19993, 19997, 20011, 20021, 20023, 20029, 20047, 20051, 20063, 20071, 20089, 20101, 20107, 20113, 20117, 20123, 20129, 20143, 20147, 20149],
+  [20161, 20173, 20177, 20183, 20201, 20219, 20231, 20233, 20249, 20261, 20269, 20287, 20297, 20323, 20327, 20333, 20341, 20347, 20353, 20357,
+   20359, 20369, 20389, 20393, 20399, 20407, 20411, 20431, 20441, 20443, 20477, 20479, 20483, 20507, 20509, 20521, 20533, 20543, 20549, 20551,
+   20563, 20593, 20599, 20611, 20627, 20639, 20641, 20663, 20681, 20693, 20707, 20717, 20719, 20731, 20743, 20747, 20749, 20753, 20759, 20771],
+  [20773, 20789, 20807, 20809, 20849, 20857, 20873, 20879, 20887, 20897, 20899, 20903, 20921, 20929, 20939, 20947, 20959, 20963, 20981, 20983,
+   21001, 21011, 21013, 21017, 21019, 21023, 21031, 21059, 21061, 21067, 21089, 21101, 21107, 21121, 21139, 21143, 21149, 21157, 21163, 21169,
+   21179, 21187, 21191, 21193, 21211, 21221, 21227, 21247, 21269, 21277, 21283, 21313, 21317, 21319, 21323, 21341, 21347, 21377, 21379, 21383],
+  [21391, 21397, 21401, 21407, 21419, 21433, 21467, 21481, 21487, 21491, 21493, 21499, 21503, 21517, 21521, 21523, 21529, 21557, 21559, 21563,
+   21569, 21577, 21587, 21589, 21599, 21601, 21611, 21613, 21617, 21647, 21649, 21661, 21673, 21683, 21701, 21713, 21727, 21737, 21739, 21751,
+   21757, 21767, 21773, 21787, 21799, 21803, 21817, 21821, 21839, 21841, 21851, 21859, 21863, 21871, 21881, 21893, 21911, 21929, 21937, 21943],
+  [21961, 21977, 21991, 21997, 22003, 22013, 22027, 22031, 22037, 22039, 22051, 22063, 22067, 22073, 22079, 22091, 22093, 22109, 22111, 22123,
+   22129, 22133, 22147, 22153, 22157, 22159, 22171, 22189, 22193, 22229, 22247, 22259, 22271, 22273, 22277, 22279, 22283, 22291, 22303, 22307,
+   22343, 22349, 22367, 22369, 22381, 22391, 22397, 22409, 22433, 22441, 22447, 22453, 22469, 22481, 22483, 22501, 22511, 22531, 22541, 22543],
+  [22549, 22567, 22571, 22573, 22613, 22619, 22621, 22637, 22639, 22643, 22651, 22669, 22679, 22691, 22697, 22699, 22709, 22717, 22721, 22727,
+   22739, 22741, 22751, 22769, 22777, 22783, 22787, 22807, 22811, 22817, 22853, 22859, 22861, 22871, 22877, 22901, 22907, 22921, 22937, 22943,
+   22961, 22963, 22973, 22993, 23003, 23011, 23017, 23021, 23027, 23029, 23039, 23041, 23053, 23057, 23059, 23063, 23071, 23081, 23087, 23099],
+  [23117, 23131, 23143, 23159, 23167, 23173, 23189, 23197, 23201, 23203, 23209, 23227, 23251, 23269, 23279, 23291, 23293, 23297, 23311, 23321,
+   23327, 23333, 23339, 23357, 23369, 23371, 23399, 23417, 23431, 23447, 23459, 23473, 23497, 23509, 23531, 23537, 23539, 23549, 23557, 23561,
+   23563, 23567, 23581, 23593, 23599, 23603, 23609, 23623, 23627, 23629, 23633, 23663, 23669, 23671, 23677, 23687, 23689, 23719, 23741, 23743],
+  [23747, 23753, 23761, 23767, 23773, 23789, 23801, 23813, 23819, 23827, 23831, 23833, 23857, 23869, 23873, 23879, 23887, 23893, 23899, 23909,
+   23911, 23917, 23929, 23957, 23971, 23977, 23981, 23993, 24001, 24007, 24019, 24023, 24029, 24043, 24049, 24061, 24071, 24077, 24083, 24091,
+   24097, 24103, 24107, 24109, 24113, 24121, 24133, 24137, 24151, 24169, 24179, 24181, 24197, 24203, 24223, 24229, 24239, 24247, 24251, 24281],
+  [24317, 24329, 24337, 24359, 24371, 24373, 24379, 24391, 24407, 24413, 24419, 24421, 24439, 24443, 24469, 24473, 24481, 24499, 24509, 24517,
+   24527, 24533, 24547, 24551, 24571, 24593, 24611, 24623, 24631, 24659, 24671, 24677, 24683, 24691, 24697, 24709, 24733, 24749, 24763, 24767,
+   24781, 24793, 24799, 24809, 24821, 24841, 24847, 24851, 24859, 24877, 24889, 24907, 24917, 24919, 24923, 24943, 24953, 24967, 24971, 24977],
+  [24979, 24989, 25013, 25031, 25033, 25037, 25057, 25073, 25087, 25097, 25111, 25117, 25121, 25127, 25147, 25153, 25163, 25169, 25171, 25183,
+   25189, 25219, 25229, 25237, 25243, 25247, 25253, 25261, 25301, 25303, 25307, 25309, 25321, 25339, 25343, 25349, 25357, 25367, 25373, 25391,
+   25409, 25411, 25423, 25439, 25447, 25453, 25457, 25463, 25469, 25471, 25523, 25537, 25541, 25561, 25577, 25579, 25583, 25589, 25601, 25603],
+  [25609, 25621, 25633, 25639, 25643, 25657, 25667, 25673, 25679, 25693, 25703, 25717, 25733, 25741, 25747, 25759, 25763, 25771, 25793, 25799,
+   25801, 25819, 25841, 25847, 25849, 25867, 25873, 25889, 25903, 25913, 25919, 25931, 25933, 25939, 25943, 25951, 25969, 25981, 25997, 25999,
+   26003, 26017, 26021, 26029, 26041, 26053, 26083, 26099, 26107, 26111, 26113, 26119, 26141, 26153, 26161, 26171, 26177, 26183, 26189, 26203],
+  [26209, 26227, 26237, 26249, 26251, 26261, 26263, 26267, 26293, 26297, 26309, 26317, 26321, 26339, 26347, 26357, 26371, 26387, 26393, 26399,
+   26407, 26417, 26423, 26431, 26437, 26449, 26459, 26479, 26489, 26497, 26501, 26513, 26539, 26557, 26561, 26573, 26591, 26597, 26627, 26633,
+   26641, 26647, 26669, 26681, 26683, 26687, 26693, 26699, 26701, 26711, 26713, 26717, 26723, 26729, 26731, 26737, 26759, 26777, 26783, 26801],
+  [26813, 26821, 26833, 26839, 26849, 26861, 26863, 26879, 26881, 26891, 26893, 26903, 26921, 26927, 26947, 26951, 26953, 26959, 26981, 26987,
+   26993]
+]
+
+/-- Complete list of all `2,961` primes `< 27000` in strictly increasing order. -/
+def primesLt27000 : List ℕ := primeChunks.flatten
+
+lemma primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by decide
+
+private lemma small164_check :
+    (List.range 164).all (fun q => q ∈ smallPrimes163 || q < 2 ||
+      [2, 3, 5, 7, 11].any (fun d => d < q && q % d == 0)) = true := by decide
+
+private lemma smallPrimes163_ge2 : ∀ d ∈ smallPrimes163, 2 ≤ d := by decide
+
+private lemma prime_of_not_hasSmallFactor163 {n : ℕ} (hn2 : 2 ≤ n) (hn : n < 27000)
+    (hsf : hasSmallFactor163 n = false) : n.Prime := by
+  by_contra hnp
+  have hm_pr := Nat.minFac_prime (by omega : n ≠ 1)
+  have hm_lt : n.minFac < n := lt_of_le_of_ne (Nat.minFac_le (by omega)) (fun h => hnp (h ▸ hm_pr))
+  have hm_sq : n.minFac ^ 2 ≤ n := Nat.minFac_sq_le_self (by omega) hnp
+  have hm_lt165 : n.minFac < 165 := by nlinarith
+  have hm_ne164 : n.minFac ≠ 164 := by
+    intro h164
+    have hd2 : 2 ∣ n.minFac := by omega
+    have heq := (Nat.prime_dvd_prime_iff_eq Nat.prime_two hm_pr).mp hd2
+    omega
+  have hm_lt164 : n.minFac < 164 := by omega
+  have hall := List.all_eq_true.mp small164_check n.minFac (List.mem_range.mpr hm_lt164)
+  simp only [Bool.or_eq_true, decide_eq_true_eq, List.any_eq_true, Bool.and_eq_true,
+    beq_iff_eq] at hall
+  have hm_mem : n.minFac ∈ smallPrimes163 := by
+    rcases hall with (hm | h2) | ⟨d, hdm, hdl, hmod⟩
+    · exact hm
+    · exact absurd hm_pr.two_le (by omega)
+    · have hd2 : 2 ≤ d := by
+        simp only [List.mem_cons, List.not_mem_nil, or_false] at hdm
+        rcases hdm with rfl | rfl | rfl | rfl | rfl <;> omega
+      rcases hm_pr.eq_one_or_self_of_dvd d (Nat.dvd_of_mod_eq_zero hmod) with rfl | rfl <;> omega
+  have hbad := List.any_eq_false.mp hsf n.minFac hm_mem
+  simp [hm_lt, Nat.dvd_iff_mod_eq_zero.mp (Nat.minFac_dvd n)] at hbad
+
+private lemma hasSmallFactor163_not_prime {n : ℕ} (hsf : hasSmallFactor163 n = true) :
+    ¬ n.Prime := by
+  intro hpr
+  rcases List.any_eq_true.mp hsf with ⟨d, hd_mem, hd_prop⟩
+  simp only [Bool.and_eq_true, decide_eq_true_eq, beq_iff_eq] at hd_prop
+  have hd2 := smallPrimes163_ge2 d hd_mem
+  rcases hpr.eq_one_or_self_of_dvd d (Nat.dvd_of_mod_eq_zero hd_prop.2) with rfl | rfl <;> omega
+
+private lemma checkGapRange_sound : ∀ (c lo : ℕ), checkGapRange lo c = true →
+    ∀ n : ℕ, lo ≤ n → n < lo + c → ¬ n.Prime := by
+  intro c
+  induction c with
+  | zero => intro lo _ n h1 h2; omega
+  | succ c ih =>
+    intro lo h n h1 h2
+    simp only [checkGapRange, Bool.and_eq_true] at h
+    rcases eq_or_lt_of_le h1 with rfl | hlt
+    · exact hasSmallFactor163_not_prime h.1
+    · exact ih (lo + 1) h.2 n (by omega) (by omega)
+
+private lemma checkPrimesLoop_sound : ∀ (ps : List ℕ) (prev : ℕ),
+    1 ≤ prev → (checkPrimesLoop prev ps).1 = true →
+    prev ≤ (checkPrimesLoop prev ps).2 ∧ ps.Pairwise (· < ·) ∧
+      (∀ p ∈ ps, prev < p ∧ p ≤ (checkPrimesLoop prev ps).2 ∧ p < 27000 ∧ p.Prime) ∧
+      (∀ n : ℕ, prev < n → n ≤ (checkPrimesLoop prev ps).2 → n ∉ ps → ¬ n.Prime) := by
+  intro ps
+  induction ps with
+  | nil =>
+    intro prev _ _
+    simp only [checkPrimesLoop]
+    exact ⟨le_rfl, List.Pairwise.nil, (fun _ h => by cases h), fun n h1 h2 _ => by omega⟩
+  | cons p ps ih =>
+    intro prev hprev h
+    simp only [checkPrimesLoop] at h
+    split_ifs at h with hcond
+    · have hres : checkPrimesLoop prev (p :: ps) = checkPrimesLoop p ps := by
+        simp only [checkPrimesLoop, hcond, ↓reduceIte]
+      rw [hres]
+      simp only [Bool.and_eq_true, Bool.not_eq_true', decide_eq_true_eq] at hcond
+      rcases hcond with ⟨⟨⟨hp_gt, hp_lt⟩, hsf⟩, hgap⟩
+      have hp_pr := prime_of_not_hasSmallFactor163 (by omega) hp_lt hsf
+      have hrec := ih p (by omega) h
+      refine ⟨(hp_gt.le).trans hrec.1,
+        List.pairwise_cons.mpr ⟨fun q hq => (hrec.2.2.1 q hq).1, hrec.2.1⟩,
+        fun q hq => ?_, fun n hn1 hn2 hn_mem => ?_⟩
+      · rcases List.mem_cons.mp hq with rfl | hq
+        · exact ⟨hp_gt, hrec.1, hp_lt, hp_pr⟩
+        · exact ⟨hp_gt.trans (hrec.2.2.1 q hq).1, (hrec.2.2.1 q hq).2⟩
+      · simp only [List.mem_cons, not_or] at hn_mem
+        rcases lt_or_gt_of_ne hn_mem.1 with hnp | hpn
+        · exact checkGapRange_sound (p - prev - 1) (prev + 1) hgap n (by omega) (by omega)
+        · exact hrec.2.2.2 n hpn hn2 hn_mem.2
+
+private lemma checkPrimesChunks_sound : ∀ (cs : List (List ℕ)) (prev : ℕ),
+    1 ≤ prev → checkPrimesChunks prev cs = true →
+    cs.flatten.Pairwise (· < ·) ∧
+      (∀ p ∈ cs.flatten, prev < p ∧ p < 27000 ∧ p.Prime) ∧
+      (∀ n : ℕ, prev < n → n < 27000 → n ∉ cs.flatten → ¬ n.Prime) := by
+  intro cs
+  induction cs with
+  | nil =>
+    intro prev _ h
+    simp only [checkPrimesChunks, Bool.and_eq_true, decide_eq_true_eq] at h
+    exact ⟨List.Pairwise.nil, (fun _ h1 => by cases h1), fun n h1 h2 _ =>
+      checkGapRange_sound (27000 - prev - 1) (prev + 1) h.2 n (by omega) (by omega)⟩
+  | cons c cs ih =>
+    intro prev hprev h
+    simp only [checkPrimesChunks, Bool.and_eq_true] at h
+    have hloop := checkPrimesLoop_sound c prev hprev h.1
+    have hrec := ih (checkPrimesLoop prev c).2 (hprev.trans hloop.1) h.2
+    refine ⟨?_, fun p hp => ?_, fun n h1 h2 hmem => ?_⟩
+    · simp only [List.flatten_cons]
+      exact List.pairwise_append.mpr ⟨hloop.2.1, hrec.1, fun a ha b hb =>
+        lt_of_le_of_lt (hloop.2.2.1 a ha).2.1 (hrec.2.1 b hb).1⟩
+    · simp only [List.flatten_cons, List.mem_append] at hp
+      exact hp.elim (fun h => ⟨(hloop.2.2.1 p h).1, (hloop.2.2.1 p h).2.2⟩)
+        (fun h => ⟨lt_of_le_of_lt hloop.1 (hrec.2.1 p h).1, (hrec.2.1 p h).2⟩)
+    · simp only [List.flatten_cons, List.mem_append, not_or] at hmem
+      exact (le_or_gt n (checkPrimesLoop prev c).2).elim
+        (fun hn => hloop.2.2.2 n h1 hn hmem.1) (fun hn => hrec.2.2 n hn h2 hmem.2)
+
+theorem primesLt27000_pairwise_lt : primesLt27000.Pairwise (· < ·) :=
+  (checkPrimesChunks_sound primeChunks 1 le_rfl primesLt27000_chain_ok).1
+
+theorem primesLt27000_nodup : primesLt27000.Nodup :=
+  primesLt27000_pairwise_lt.imp (fun {_ _} h => Nat.ne_of_lt h)
+
+theorem mem_primesLt27000_iff {p : ℕ} : p ∈ primesLt27000 ↔ p < 27000 ∧ p.Prime := by
+  have hs := checkPrimesChunks_sound primeChunks 1 le_rfl primesLt27000_chain_ok
+  constructor
+  · intro hp
+    exact (hs.2.1 p hp).2
+  · rintro ⟨hp27, hp_pr⟩
+    by_contra hmem
+    exact hs.2.2 p hp_pr.two_le hp27 hmem hp_pr
+
+theorem oddPrimesBelow_eq_filter {z : ℕ} (hz : z ≤ 27000) :
+    BuchstabSwitching.fullOddPrimesBelow z =
+      (primesLt27000.filter (fun p => 3 ≤ p ∧ p < z)).toFinset := by
+  ext p
+  simp only [BuchstabSwitching.fullOddPrimesBelow_mem_iff, List.mem_toFinset, List.mem_filter,
+    decide_eq_true_eq, mem_primesLt27000_iff]
+  constructor
+  · rintro ⟨hpz, hp_pr, hp2⟩
+    exact ⟨⟨lt_of_lt_of_le hpz hz, hp_pr⟩, ⟨by omega, hpz⟩⟩
+  · rintro ⟨⟨_, hp_pr⟩, ⟨hp3, hpz⟩⟩
+    exact ⟨hpz, hp_pr, by omega⟩
+
+/-! ## 3. Exact Prime Sums, Counts, and Euler Products on `[q0, q1) ⊆ [0, 27000)` -/
+
+private lemma filter_ico_primes_eq {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) :
+    (Finset.Ico q0 q1).filter Nat.Prime =
+      (primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)).toFinset := by
+  ext q
+  simp only [Finset.mem_filter, Finset.mem_Ico, List.mem_toFinset, List.mem_filter,
+    decide_eq_true_eq, mem_primesLt27000_iff]
+  constructor
+  · rintro ⟨⟨hq0, hq1'⟩, hpr⟩
+    exact ⟨⟨lt_of_lt_of_le hq1' hq1, hpr⟩, ⟨hq0, hq1'⟩⟩
+  · rintro ⟨⟨_, hpr⟩, ⟨hq0, hq1'⟩⟩
+    exact ⟨⟨hq0, hq1'⟩, hpr⟩
+
+private lemma foldl_add_le (ps : List ℕ) (f : ℕ → ℝ) (term : ℕ → SciNat)
+    (hterm : ∀ q ∈ ps, f q ≤ (term q).toReal) :
+    ∀ acc : SciNat, acc.toReal + (ps.map f).sum ≤
+      (ps.foldl (fun a q => a.add (term q)) acc).toReal := by
+  induction ps with
+  | nil => intro acc; simp
+  | cons p tl ih =>
+    intro acc
+    have hp := hterm p List.mem_cons_self
+    have htl : ∀ q ∈ tl, f q ≤ (term q).toReal := fun q hq => hterm q (List.mem_cons_of_mem p hq)
+    have hrec := ih htl (acc.add (term p))
+    rw [List.foldl_cons, List.map_cons, List.sum_cons]
+    rw [SciNat.add_toReal_pt] at hrec
+    linarith
+
+private lemma foldl_mul_trimLb_le (ps : List ℕ) (f : ℕ → ℝ) (term : ℕ → SciNat) (prec : ℕ)
+    (hf : ∀ q ∈ ps, 0 ≤ f q) (hterm : ∀ q ∈ ps, (term q).toReal ≤ f q) :
+    ∀ acc : SciNat, (ps.foldl (fun a q => (a.mul (term q)).trimLb prec) acc).toReal ≤
+      acc.toReal * (ps.map f).prod := by
+  induction ps with
+  | nil => intro acc; simp
+  | cons p tl ih =>
+    intro acc
+    have htl_nn : ∀ q ∈ tl, 0 ≤ f q := fun q hq => hf q (List.mem_cons_of_mem p hq)
+    have hp_le : (term p).toReal ≤ f p := hterm p List.mem_cons_self
+    have htl_le : ∀ q ∈ tl, (term q).toReal ≤ f q := fun q hq => hterm q (List.mem_cons_of_mem p hq)
+    have hrec := ih htl_nn htl_le ((acc.mul (term p)).trimLb prec)
+    have hstep : ((acc.mul (term p)).trimLb prec).toReal ≤ acc.toReal * f p := by
+      calc ((acc.mul (term p)).trimLb prec).toReal
+          ≤ (acc.mul (term p)).toReal := SciNat.trimLb_le _ prec
+        _ = acc.toReal * (term p).toReal := SciNat.mul_toReal_pt _ _
+        _ ≤ acc.toReal * f p := mul_le_mul_of_nonneg_left hp_le acc.toReal_nonneg
+    have hprod_nn : 0 ≤ (tl.map f).prod := List.prod_nonneg (by
+      intro x hx
+      rcases List.mem_map.mp hx with ⟨q, hq, rfl⟩
+      exact htl_nn q hq)
+    rw [List.foldl_cons, List.map_cons, List.prod_cons]
+    calc (tl.foldl (fun a q => (a.mul (term q)).trimLb prec) ((acc.mul (term p)).trimLb prec)).toReal
+        ≤ ((acc.mul (term p)).trimLb prec).toReal * (tl.map f).prod := hrec
+      _ ≤ (acc.toReal * f p) * (tl.map f).prod := mul_le_mul_of_nonneg_right hstep hprod_nn
+      _ = acc.toReal * (f p * (tl.map f).prod) := by ring
+
+private lemma prod_le_foldl_mul_trimUb (ps : List ℕ) (f : ℕ → ℝ) (term : ℕ → SciNat) (prec : ℕ)
+    (hf : ∀ q ∈ ps, 0 ≤ f q) (hterm : ∀ q ∈ ps, f q ≤ (term q).toReal) :
+    ∀ acc : SciNat, acc.toReal * (ps.map f).prod ≤
+      (ps.foldl (fun a q => (a.mul (term q)).trimUb prec) acc).toReal := by
+  induction ps with
+  | nil => intro acc; simp
+  | cons p tl ih =>
+    intro acc
+    have htl_nn : ∀ q ∈ tl, 0 ≤ f q := fun q hq => hf q (List.mem_cons_of_mem p hq)
+    have hp_le : f p ≤ (term p).toReal := hterm p List.mem_cons_self
+    have htl_le : ∀ q ∈ tl, f q ≤ (term q).toReal := fun q hq => hterm q (List.mem_cons_of_mem p hq)
+    have hrec := ih htl_nn htl_le ((acc.mul (term p)).trimUb prec)
+    have hstep : acc.toReal * f p ≤ ((acc.mul (term p)).trimUb prec).toReal := by
+      calc acc.toReal * f p
+          ≤ acc.toReal * (term p).toReal := mul_le_mul_of_nonneg_left hp_le acc.toReal_nonneg
+        _ = (acc.mul (term p)).toReal := (SciNat.mul_toReal_pt _ _).symm
+        _ ≤ ((acc.mul (term p)).trimUb prec).toReal := SciNat.trimUb_le _ prec
+    have hprod_nn : 0 ≤ (tl.map f).prod := List.prod_nonneg (by
+      intro x hx
+      rcases List.mem_map.mp hx with ⟨q, hq, rfl⟩
+      exact htl_nn q hq)
+    rw [List.foldl_cons, List.map_cons, List.prod_cons]
+    calc acc.toReal * (f p * (tl.map f).prod)
+        = (acc.toReal * f p) * (tl.map f).prod := by ring
+      _ ≤ ((acc.mul (term p)).trimUb prec).toReal * (tl.map f).prod :=
+          mul_le_mul_of_nonneg_right hstep hprod_nn
+      _ ≤ (tl.foldl (fun a q => (a.mul (term q)).trimUb prec) ((acc.mul (term p)).trimUb prec)).toReal :=
+          hrec
+
+private lemma foldl_filter_flatten {α β : Type} (f : β → α → β) (p : α → Bool) :
+    ∀ (cs : List (List α)) (b : β),
+      cs.foldl (fun acc c => (c.filter p).foldl f acc) b = (cs.flatten.filter p).foldl f b
+  | [], _ => rfl
+  | c :: cs, b => by
+    simp only [List.foldl_cons, List.flatten_cons, List.filter_append, List.foldl_append]
+    exact foldl_filter_flatten f p cs _
+
+private lemma count_filter_flatten {α : Type} (p : α → Bool) :
+    ∀ (cs : List (List α)) (b : ℕ),
+      cs.foldl (fun acc c => acc + (c.filter p).length) b = b + (cs.flatten.filter p).length
+  | [], _ => by simp
+  | c :: cs, b => by
+    simp only [List.foldl_cons, List.flatten_cons, List.filter_append, List.length_append]
+    rw [count_filter_flatten p cs]; omega
+
+private lemma foldl_filter_primesLt27000_eq {β : Type} (f : β → ℕ → β) (p : ℕ → Bool) (b : β) :
+    (primesLt27000.filter p).foldl f b = primeChunks.foldl (fun acc c => (c.filter p).foldl f acc) b := by
+  rw [primesLt27000]
+  exact (foldl_filter_flatten f p primeChunks b).symm
+
+/-- Outward upper bound on `∑_{q ∈ Ico q0 q1, q prime} 1 / (q - 1)` for `q1 ≤ 27000`. -/
+def exactInvSubOneSumUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
+  primeChunks.foldl (fun acc c => (c.filter (fun q => q0 ≤ q ∧ q < q1)).foldl
+    (fun a q => a.add (SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q - 1)) prec)) acc) ⟨0, prec⟩
+
+theorem sum_inv_sub_one_le_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
+    ∑ q ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 : ℝ) / ((q : ℝ) - 1) ≤
+      (exactInvSubOneSumUb q0 q1 prec).toReal := by
+  set ps := primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)
+  rw [filter_ico_primes_eq hq1, List.sum_toFinset _ (primesLt27000_nodup.filter _)]
+  have hfold := foldl_add_le ps (fun q => (1 : ℝ) / ((q : ℝ) - 1))
+    (fun q => SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q - 1)) prec) (fun q hq => by
+      have hpr := (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hq)).2
+      have hdiv := SciNat.divUb_le (SciNat.ofNat 1) (SciNat.ofNat (q - 1)) prec
+      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, Nat.cast_sub hpr.one_lt.le] at hdiv
+      simpa using hdiv) ⟨0, prec⟩
+  have hzero : (⟨0, prec⟩ : SciNat).toReal = 0 := by simp [SciNat.toReal]
+  rw [hzero, zero_add] at hfold
+  dsimp only [ps] at hfold
+  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
+
+/-- Outward upper bound on `∑_{q ∈ Ico q0 q1, q prime} 1 / (q * (q - 1))` for `q1 ≤ 27000`. -/
+def exactInvMulPredSumUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
+  primeChunks.foldl (fun acc c => (c.filter (fun q => q0 ≤ q ∧ q < q1)).foldl
+    (fun a q => a.add (SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q * (q - 1))) prec)) acc) ⟨0, prec⟩
+
+theorem sum_inv_mul_pred_le_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
+    ∑ q ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)) ≤
+      (exactInvMulPredSumUb q0 q1 prec).toReal := by
+  set ps := primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)
+  rw [filter_ico_primes_eq hq1, List.sum_toFinset _ (primesLt27000_nodup.filter _)]
+  have hfold := foldl_add_le ps (fun q => (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)))
+    (fun q => SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q * (q - 1))) prec) (fun q hq => by
+      have hpr := (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hq)).2
+      have hdiv := SciNat.divUb_le (SciNat.ofNat 1) (SciNat.ofNat (q * (q - 1))) prec
+      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, Nat.cast_mul, Nat.cast_sub hpr.one_lt.le] at hdiv
+      simpa using hdiv) ⟨0, prec⟩
+  have hzero : (⟨0, prec⟩ : SciNat).toReal = 0 := by simp [SciNat.toReal]
+  rw [hzero, zero_add] at hfold
+  dsimp only [ps] at hfold
+  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
+
+/-- Outward upper bound on `∑_{q ∈ Ico q0 q1, q prime} 1 / (q - 1)^2` for `q1 ≤ 27000`. -/
+def exactInvPredSqSumUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
+  primeChunks.foldl (fun acc c => (c.filter (fun q => q0 ≤ q ∧ q < q1)).foldl
+    (fun a q => a.add (SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat ((q - 1) ^ 2)) prec)) acc) ⟨0, prec⟩
+
+theorem sum_inv_pred_sq_le_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
+    ∑ q ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 : ℝ) / ((q : ℝ) - 1) ^ 2 ≤
+      (exactInvPredSqSumUb q0 q1 prec).toReal := by
+  set ps := primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)
+  rw [filter_ico_primes_eq hq1, List.sum_toFinset _ (primesLt27000_nodup.filter _)]
+  have hfold := foldl_add_le ps (fun q => (1 : ℝ) / ((q : ℝ) - 1) ^ 2)
+    (fun q => SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat ((q - 1) ^ 2)) prec) (fun q hq => by
+      have hpr := (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hq)).2
+      have hdiv := SciNat.divUb_le (SciNat.ofNat 1) (SciNat.ofNat ((q - 1) ^ 2)) prec
+      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, Nat.cast_pow, Nat.cast_sub hpr.one_lt.le] at hdiv
+      simpa using hdiv) ⟨0, prec⟩
+  have hzero : (⟨0, prec⟩ : SciNat).toReal = 0 := by simp [SciNat.toReal]
+  rw [hzero, zero_add] at hfold
+  dsimp only [ps] at hfold
+  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
+
+/-- Exact count of primes in `[q0, q1)` for `q1 ≤ 27000`. -/
+def exactPrimeCount (q0 q1 : ℕ) : ℕ :=
+  primeChunks.foldl (fun acc c => acc + (c.filter (fun q => q0 ≤ q ∧ q < q1)).length) 0
+
+theorem card_ico_primes_eq_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) :
+    ((Finset.Ico q0 q1).filter Nat.Prime).card = exactPrimeCount q0 q1 := by
+  rw [filter_ico_primes_eq hq1, List.toFinset_card_of_nodup (primesLt27000_nodup.filter _)]
+  have heq : exactPrimeCount q0 q1 = (primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)).length := by
+    simpa [exactPrimeCount, primesLt27000] using
+      count_filter_flatten (fun q => decide (q0 ≤ q ∧ q < q1)) primeChunks 0
+  exact heq.symm
+
+private lemma one_sub_inv_pred_props {p : ℕ} (hp : p.Prime) :
+    0 ≤ (1 : ℝ) - 1 / ((p : ℝ) - 1) ∧
+      (1 : ℝ) - 1 / ((p : ℝ) - 1) = ((p - 2 : ℕ) : ℝ) / ((p - 1 : ℕ) : ℝ) := by
+  have hp2 : 2 ≤ p := hp.two_le; have hp1 : 1 ≤ p := by omega
+  have hp2r : (2 : ℝ) ≤ (p : ℝ) := by exact_mod_cast hp2
+  have hden : (p : ℝ) - 1 ≠ 0 := by linarith
+  refine ⟨?_, ?_⟩
+  · have : 1 / ((p : ℝ) - 1) ≤ 1 := by rw [div_le_one (by linarith)]; linarith
+    linarith
+  · rw [Nat.cast_sub hp2, Nat.cast_sub hp1]; push_cast; field_simp [hden]; ring
+
+/-- Outward lower bound on `∏_{p ∈ Ico q0 q1, p prime} (1 - 1 / (p - 1))` for `q1 ≤ 27000`. -/
+def exactProdOneSubInvPredLb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
+  primeChunks.foldl (fun acc c => (c.filter (fun p => q0 ≤ p ∧ p < q1)).foldl
+    (fun a p => (a.mul (SciNat.divLb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec)).trimLb prec)
+    acc) ⟨1, 0⟩
+
+/-- Outward upper bound on `∏_{p ∈ Ico q0 q1, p prime} (1 - 1 / (p - 1))` for `q1 ≤ 27000`. -/
+def exactProdOneSubInvPredUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
+  primeChunks.foldl (fun acc c => (c.filter (fun p => q0 ≤ p ∧ p < q1)).foldl
+    (fun a p => (a.mul (SciNat.divUb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec)).trimUb prec)
+    acc) ⟨1, 0⟩
+
+theorem exactProdOneSubInvPredLb_le {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
+    (exactProdOneSubInvPredLb q0 q1 prec).toReal ≤
+      ∏ p ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) := by
+  set ps := primesLt27000.filter (fun p => q0 ≤ p ∧ p < q1)
+  have hnd : ps.Nodup := primesLt27000_nodup.filter _
+  rw [filter_ico_primes_eq hq1, List.prod_toFinset _ hnd]
+  have hfold := foldl_mul_trimLb_le ps (fun p => (1 : ℝ) - 1 / ((p : ℝ) - 1))
+    (fun p => SciNat.divLb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec) prec
+    (fun p hp => (one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2).1)
+    (fun p hp => by
+      have hprop := one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2
+      have hdiv := SciNat.divLb_le (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec
+      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, ← hprop.2] at hdiv; exact hdiv) ⟨1, 0⟩
+  have hone : (⟨1, 0⟩ : SciNat).toReal = 1 := by simp [SciNat.toReal]
+  rw [hone, one_mul] at hfold
+  dsimp only [ps] at hfold
+  exact (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _)).symm.trans_le hfold
+
+theorem le_exactProdOneSubInvPredUb {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
+    ∏ p ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) ≤
+      (exactProdOneSubInvPredUb q0 q1 prec).toReal := by
+  set ps := primesLt27000.filter (fun p => q0 ≤ p ∧ p < q1)
+  have hnd : ps.Nodup := primesLt27000_nodup.filter _
+  rw [filter_ico_primes_eq hq1, List.prod_toFinset _ hnd]
+  have hfold := prod_le_foldl_mul_trimUb ps (fun p => (1 : ℝ) - 1 / ((p : ℝ) - 1))
+    (fun p => SciNat.divUb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec) prec
+    (fun p hp => (one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2).1)
+    (fun p hp => by
+      have hprop := one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2
+      have hdiv := SciNat.divUb_le (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec
+      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, ← hprop.2] at hdiv; exact hdiv) ⟨1, 0⟩
+  have hone : (⟨1, 0⟩ : SciNat).toReal = 1 := by simp [SciNat.toReal]
+  rw [hone, one_mul] at hfold
+  dsimp only [ps] at hfold
+  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
+
+theorem VN_two_eq_prod_Ico (z : ℕ) :
+    External.VN 2 z = ∏ p ∈ (Finset.Ico 3 z).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) := by
+  unfold External.VN
+  congr 1
+  ext p
+  simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_Ico]
+  constructor
+  · rintro ⟨hpz, hp_pr, hp2⟩
+    have hne : p ≠ 2 := fun h => hp2 (h ▸ dvd_rfl)
+    exact ⟨⟨lt_of_le_of_ne hp_pr.two_le hne.symm, hpz⟩, hp_pr⟩
+  · rintro ⟨⟨hp3, hpz⟩, hp_pr⟩
+    exact ⟨hpz, hp_pr, fun h => by have := Nat.le_of_dvd (by norm_num) h; omega⟩
+
+theorem exactProdOneSubInvPredLb_le_VN_two {z : ℕ} (hz : z ≤ 27000) (prec : ℕ := 24) :
+    (exactProdOneSubInvPredLb 3 z prec).toReal ≤ External.VN 2 z := by
+  rw [VN_two_eq_prod_Ico]
+  exact exactProdOneSubInvPredLb_le hz prec
+
+theorem VN_two_le_exactProdOneSubInvPredUb {z : ℕ} (hz : z ≤ 27000) (prec : ℕ := 24) :
+    External.VN 2 z ≤ (exactProdOneSubInvPredUb 3 z prec).toReal := by
+  rw [VN_two_eq_prod_Ico]
+  exact le_exactProdOneSubInvPredUb hz prec
+
+end
+
+end BuchstabSwitching.SieveInst

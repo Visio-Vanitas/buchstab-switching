@@ -4,6 +4,7 @@ import BuchstabSwitching.Sieve.Regime3RayBridge.DeltaVMonotonicity
 import BuchstabSwitching.Sieve.Regime3RayBridge.StripAndErrorMonotonicity
 import BuchstabSwitching.Sieve.Regime3RayBridge.LowerSieve
 import BuchstabSwitching.Sieve.OneStepSwitching
+import BuchstabSwitching.Sieve.OddSquarefreeBounds.ConstantBounds
 import BuchstabSwitching.Sieve.SelbergAsymptoticBridge
 import BuchstabSwitching.Sieve.ShiftedPrimeRemainder
 import BuchstabSwitching.External.MertensSums.ReciprocalPrimeSums
@@ -312,7 +313,6 @@ lemma regime3_upper_strip_gsum_le {M0 : ℝ} (hM : External.MertensPrimeSumPremi
   exact hsum1.trans (mul_le_mul_of_nonneg_left hsum_q_le hqratio_nn)
 
 private lemma regime3_upper_phi_sum_le (consts : External.CertifiedConstants)
-    (hH_tilde : H_tilde ≤ consts.H_tilde) (halpha0 : alpha0 ≤ consts.alpha0)
     {N z : ℕ} (hN_pos : 0 < (N : ℝ)) (hN_ge1 : (1 : ℝ) ≤ (N : ℝ))
     (P_z : Finset ℕ)
     (hD_xi_props : ∀ (xi0 L0 : ℕ), L0 ∈ D_xi P_z xi0 →
@@ -320,7 +320,7 @@ private lemma regime3_upper_phi_sum_le (consts : External.CertifiedConstants)
     {r_k : ℝ} (hD_sqrt : ((Nat.floor ((z : ℝ) ^ r_k) : ℝ) ^ 2 ≤ Real.sqrt (N : ℝ))) :
     1 + ∑ L0 ∈ D_xi P_z ((Nat.floor ((z : ℝ) ^ r_k)) ^ 2),
         (3 : ℝ) ^ L0.primeFactors.card / (Nat.totient L0 : ℝ) ≤
-      1 + (consts.H_tilde * ((0.25 : ℝ) * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3 := by
+      1 + ((13 / 10 : ℝ) * ((0.25 : ℝ) * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3 := by
   set xi_k : ℕ := Nat.floor ((z : ℝ) ^ r_k)
   have hD_sub : D_xi P_z (xi_k ^ 2) ⊆
       (Finset.Icc 1 (Nat.floor (Real.sqrt (N : ℝ)))).filter (fun L0 => Odd L0 ∧ Squarefree L0) := by
@@ -344,20 +344,21 @@ private lemma regime3_upper_phi_sum_le (consts : External.CertifiedConstants)
     rw [hcf_eq]
     exact div_le_self (by rw [consts.C_f0_eq]; norm_num) hsqrt_ge1
   have hr_le : (1 / 2 : ℝ) * Real.log (Real.sqrt (N : ℝ)) + alpha0 + C_F0 / Real.sqrt (N : ℝ) ≤
-      (0.25 : ℝ) * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0 := by linarith
+      (0.25 : ℝ) * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0 := by
+    linarith [alpha0_le_636_div_1000]
   have hr_nn : 0 ≤ (1 / 2 : ℝ) * Real.log (Real.sqrt (N : ℝ)) + alpha0 + C_F0 / Real.sqrt (N : ℝ) :=
     add_nonneg (add_nonneg (mul_nonneg (by norm_num) hls) alpha0_pos.le)
       (div_nonneg C_F0_pos.le (Real.sqrt_nonneg _))
   have hinner : H_tilde * ((1 / 2 : ℝ) * Real.log (Real.sqrt (N : ℝ)) + alpha0 + C_F0 / Real.sqrt (N : ℝ)) ≤
-      consts.H_tilde * ((0.25 : ℝ) * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0) :=
-    mul_le_mul hH_tilde hr_le hr_nn consts.H_tilde_pos.le
+      (13 / 10 : ℝ) * ((0.25 : ℝ) * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0) :=
+    mul_le_mul H_tilde_le_cert hr_le hr_nn (by norm_num)
   have hinner_nn : 0 ≤ H_tilde * ((1 / 2 : ℝ) * Real.log (Real.sqrt (N : ℝ)) + alpha0 +
       C_F0 / Real.sqrt (N : ℝ)) :=
     mul_nonneg H_tilde_nonneg hr_nn
   calc 1 + ∑ L0 ∈ D_xi P_z (xi_k ^ 2), (3 : ℝ) ^ L0.primeFactors.card / (Nat.totient L0 : ℝ)
       ≤ 1 + (H_tilde * ((1 / 2 : ℝ) * Real.log (Real.sqrt (N : ℝ)) + alpha0 +
           C_F0 / Real.sqrt (N : ℝ))) ^ 3 := add_le_add le_rfl (hsum1.trans hsum2)
-    _ ≤ 1 + (consts.H_tilde * ((0.25 : ℝ) * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3 :=
+    _ ≤ 1 + ((13 / 10 : ℝ) * ((0.25 : ℝ) * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3 :=
         add_le_add le_rfl (pow_le_pow_left₀ hinner_nn hinner 3)
 
 private lemma regime3_midPrimes_card_le {N z y : ℕ}
@@ -429,7 +430,7 @@ private lemma rayErrAq2_mul_scale_eq (consts : External.CertifiedConstants) {N :
     (hN_pos : 0 < (N : ℝ)) (hlogN_pos : 0 < Real.log (N : ℝ)) :
     (rayOddSf (N : ℝ) * (N : ℝ) ^ rayBeta 16) *
         ((rayCPt consts (N : ℝ) * Real.sqrt (N : ℝ) * Real.log (N : ℝ)) *
-          (1 + (consts.H_tilde * (0.25 * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3)) =
+          (1 + ((13 / 10 : ℝ) * (0.25 * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3)) =
       2 * rayErrAq2 consts 16 (N : ℝ) * (16 * consts.U_c * (N : ℝ) / (Real.log (N : ℝ)) ^ 2) := by
   have hlog_ne : Real.log (N : ℝ) ≠ 0 := hlogN_pos.ne'
   have hUc_ne : consts.U_c ≠ 0 := consts.U_c_pos.ne'
@@ -450,13 +451,13 @@ private lemma rayErrAq2_mul_scale_eq (consts : External.CertifiedConstants) {N :
   rw [h16_cast]
   calc (rayOddSf (N : ℝ) * (N : ℝ) ^ rayBeta 16) *
         ((rayCPt consts (N : ℝ) * Real.sqrt (N : ℝ) * Real.log (N : ℝ)) *
-          (1 + (consts.H_tilde * (0.25 * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3))
+          (1 + ((13 / 10 : ℝ) * (0.25 * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3))
       = rayOddSf (N : ℝ) * rayCPt consts (N : ℝ) *
           ((N : ℝ) ^ rayBeta 16 * Real.sqrt (N : ℝ)) * Real.log (N : ℝ) *
-          (1 + (consts.H_tilde * (0.25 * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3) := by ring
+          (1 + ((13 / 10 : ℝ) * (0.25 * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) := by ring
     _ = rayOddSf (N : ℝ) * rayCPt consts (N : ℝ) *
           ((N : ℝ) * Real.exp ((rayBeta 16 - (0.5 : ℝ)) * Real.log (N : ℝ))) * Real.log (N : ℝ) *
-          (1 + (consts.H_tilde * (0.25 * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3) := by
+          (1 + ((13 / 10 : ℝ) * (0.25 * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) := by
         rw [hpow_eq]
     _ = _ := by
         field_simp [hlog_ne, hUc_ne]
@@ -482,7 +483,6 @@ lemma rayErrAq1Int_nonneg (consts : External.CertifiedConstants) {N : ℕ}
     hrp.le
 
 lemma regime3_upper_aq2_le (consts : External.CertifiedConstants)
-    (hH_tilde : H_tilde ≤ consts.H_tilde) (halpha0 : alpha0 ≤ consts.alpha0)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises consts.li2)
     {L N : ℕ} (hN : asymptoticCert.X_LS ≤ N)
@@ -557,8 +557,8 @@ lemma regime3_upper_aq2_le (consts : External.CertifiedConstants)
       let xi_k := Nat.floor ((z : ℝ) ^ r_k)
       (1 + ∑ L0 ∈ D_xi P_z (xi_k ^ 2),
         (3 : ℝ) ^ L0.primeFactors.card / (Nat.totient L0 : ℝ)) ≤
-      1 + (consts.H_tilde * ((0.25 : ℝ) * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3 :=
-    fun k => regime3_upper_phi_sum_le consts hH_tilde halpha0 hN_pos hN_ge1
+      1 + ((13 / 10 : ℝ) * ((0.25 : ℝ) * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3 :=
+    fun k => regime3_upper_phi_sum_le consts hN_pos hN_ge1
       P_z hD_xi_props (hD_le_sqrt k)
   have hq_rem_bd : ∀ q ∈ midPrimes N z y,
       |sieveRem (shiftedSet N) (fun _ => (1 : ℝ)) gTotRay q| ≤
@@ -580,11 +580,10 @@ lemma regime3_upper_aq2_le (consts : External.CertifiedConstants)
   have hmid_card_le : ((midPrimes N z y).card : ℝ) ≤
       rayOddSf (N : ℝ) * (N : ℝ) ^ rayBeta 16 :=
     regime3_midPrimes_card_le hN_pos hlogN_pos hz_pos hz3 hz_le_z0 rfl hy_le_beta
-  set G_fac : ℝ := 1 + (consts.H_tilde * ((0.25 : ℝ) * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3
+  set G_fac : ℝ :=
+    1 + ((13 / 10 : ℝ) * ((0.25 : ℝ) * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3
   have hG_nn : 0 ≤ G_fac := by
-    have ha : 0 ≤ consts.alpha0 := by linarith [consts.alpha0_bounds.1]
     have hc : 0 ≤ consts.C_f0 := by rw [consts.C_f0_eq]; norm_num
-    have hh := consts.H_tilde_pos
     positivity
   have hrem_nn : 0 ≤ rayCPt consts (N : ℝ) * Real.sqrt (N : ℝ) * Real.log (N : ℝ) := by
     have := rayCPt_nonneg consts hN_pos (by linarith [Real.exp_one_lt_d9, hlogN_ge])
@@ -616,7 +615,8 @@ lemma regime3_upper_aq2_le (consts : External.CertifiedConstants)
           dsimp only
           have hc4 := rayC4g_nonneg consts hN_pos (by linarith [Real.exp_one_lt_d9, hlogN_ge])
           have hUc := consts.U_c_pos
-          have hG : 0 ≤ 1 + (consts.H_tilde * (0.25 * Real.log (N : ℝ) + consts.alpha0 + consts.C_f0)) ^ 3 :=
+          have hG : 0 ≤ 1 + ((13 / 10 : ℝ) *
+              (0.25 * Real.log (N : ℝ) + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3 :=
             hG_nn
           have hexp : 0 ≤ Real.exp ((rayBeta 16 - (0.5 : ℝ)) * Real.log (N : ℝ)) :=
             (Real.exp_pos _).le

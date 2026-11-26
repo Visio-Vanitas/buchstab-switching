@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" alt="buchstab-switching logo" width="128" />
+</p>
+
 # buchstab-switching
 
 Explicit conditional Chen-type representations $N = p + m$ for **every** even integer $N \ge 4$
@@ -30,7 +34,7 @@ GRH enters both certificates only through the explicit AP prime-counting bound o
 ### `k4/` (`1 + 4`)
 ```bash
 cd k4/certificate
-python3 -m pytest -q all_even_1p4/tests
+python3 -m unittest discover -s all_even_1p4/tests -t .
 python3 -I all_even_1p4_ext/replay.py ../data/certificate/ladder_4e18_500_all.json ../data/certificate/tail/tail_at_500.json
 
 cd ../lean/AllEvenOnePlusFour
@@ -48,6 +52,7 @@ lake build
 lake env lean BuchstabSwitching/Sieve/AxiomsAudit.lean
 lake env lean AxiomsCheckK3.lean
 python3 scripts/quick_verify.py
-python3 scripts/certify_omega_le_3.py   # regenerates certified_bounds.txt, certified_slabs.json, Data.lean
+python3 scripts/certify_omega_le_3.py   # regenerates scripts/data/certified_bounds.txt and scripts/data/certified_slabs.json
+python3 scripts/generate_lean_data.py   # regenerates BuchstabSwitching/Certificates/Data.lean from certified_slabs.json
 bash comparator/run_comparator.sh
 ```

@@ -167,7 +167,7 @@ Both are coprime to $N$ because only primes not dividing $N$ are sieved, and bot
 ## What is not proved here
 
 - The numbers in the estimates subsection are hand estimates with floats and approximate Mertens values. They are not certified; only the script output would be.
-- The script below has not been run.
+- The draft script below has been superseded for certification by `k4/certificate/all_even_1p4_ext/regime2_brun.py` (which uses `all_even_1p4`'s outward-rounded interval arithmetic, certified `grh_remainder_coeff`, Schoenfeld RH bound, and `[JS]`/`[BJS]` Mertens bounds).
 - EXTERNAL INPUTS:
   1. Rosser–Schoenfeld (1962): $|\sum_{p\le x}1/p-\log\log x-B|<1/(2\log^2x)$ for $x\ge286$, and $\pi(x)<1.25506\,x/\log x$ for $x>1$.
   2. The note's (∗) with its constant $c_\pi(X_{lo})$. The script uses a **placeholder** `C_PI = 10`, which is not a proven value and must be replaced by the package's value. Since the remainders are about $e^{-35}$, any value up to $10^{10}$ would not change the outcome.
@@ -285,7 +285,7 @@ def M_lo(x):
     if x <= PB + 1:
         return PP_LO[bisect_left(PR, x)]
     L = ln_lo(x)
-    sub = UP.add(UP.divide(D(1), UP.multiply(D(2), UP.multiply(L, L))),
+    sub = UP.add(UP.divide(D(1), DN.multiply(D(2), DN.multiply(L, L))),
                  UP.divide(D(1), D(x)))                       # 1/(2log^2)+1/x
     return DN.subtract(DN.add(ln_lo(L), B_LO), sub)
 

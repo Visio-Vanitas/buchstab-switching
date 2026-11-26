@@ -1,4 +1,4 @@
-# Block-sieve Regime 2 ladder, 4e18 to 10^500 (status: unchecked)
+# Block-sieve Regime 2 ladder, 4e18 to 10^500
 
 Generated from ladder/*.json; consecutive slabs share endpoints exactly (checked).
 

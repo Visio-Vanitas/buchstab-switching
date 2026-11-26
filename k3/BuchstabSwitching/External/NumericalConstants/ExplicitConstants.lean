@@ -4,23 +4,17 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Tactic
 
 /-!
-# Explicit Numerical Constants and Finite-Table Enclosure Interfaces
+# Explicit Numerical Constants and Analytic Sieve Formulas
 
-Collects the certified numerical constants, finite-prime-table Mertens excursion checks,
-and analytic-to-rational certificate interfaces corresponding to:
+Collects the certified numerical constants and analytic sieve formulas corresponding to:
 - `k3/scripts/sieve_cert/constants.py` (`M0`, `U_c`, `H0 = 2 / U_c`, `eGamma`, `eNegGamma`,
   `alpha0`, `C_f0 = 0.78`, `H_tilde`, `C_J`, `li2`, `C2_twin`, `H_sigma`);
-- `k3/scripts/sieve_cert/primes_and_mertens.py` (`eps_sup_two_var`, `c_pi_iv`, `epd_norm_iv`,
-  `li_ratio_ub`);
-- `k3/scripts/sieve_cert/regime_slabs.py` (`certify_slab_2a`, `certify_slab_2b`,
-  `certify_slab_2c`);
-- `k3/scripts/sieve_cert/regime_asymptotic.py` (`certify_asymptotic_ray` at `X_LS = 10^600`).
+- `k3/scripts/sieve_cert/primes_and_mertens.py` (`c_pi_iv`, `epd_norm_iv`, `li_ratio_ub`);
+- `k3/scripts/sieve_cert/regime_slabs.py` (`v_full_lb` in `certify_slab_2c`).
 
 No `axiom` or `sorry` declarations appear in this module: `CertifiedConstants` packages the
-real values and their outward rational enclosures as a `Type` record, while
-`FiniteMertensExcursionPremise`, `SlabNumericCertPremise`, and `RayNumericCertPremise` isolate
-the finite-table and interval-arithmetic verification obligations as explicit `Prop` predicates
-for later contributors to discharge against Mathlib.
+real values and their outward rational enclosures as a `Type` record, alongside `cPi`, `epdNorm`,
+`liRatioUb`, `vFullLb`, `shiftedCoprimeCount`, `vProd`, and `switchingBalanceReal`.
 -/
 
 namespace BuchstabSwitching.External
@@ -124,18 +118,6 @@ end CertifiedConstants
 
 /-! ## 2. Analytic Sieve Auxiliary Formulas (`primes_and_mertens.py`, `regime_*.py`) -/
 
-/-- Pre-prime Mertens excursion `∑_{r < q} 1/r - log (log q) - M0`. -/
-noncomputable def mertensBefore (M0 : ℝ) (q : ℕ) : ℝ :=
-  (∑ r ∈ (Finset.range q).filter Nat.Prime, (1 : ℝ) / r) - Real.log (Real.log q) - M0
-
-/-- Post-prime Mertens excursion `∑_{r ≤ p} 1/r - log (log p) - M0`. -/
-noncomputable def mertensAfter (M0 : ℝ) (p : ℕ) : ℝ :=
-  (∑ r ∈ (Finset.range (p + 1)).filter Nat.Prime, (1 : ℝ) / r) - Real.log (Real.log p) - M0
-
-/-- Quadratic logarithm-tail multiplier `(-log (1 - 1/u) - 1/u) / (1/u)^2`. -/
-noncomputable def logTailCoeff (u : ℝ) : ℝ :=
-  (-Real.log (1 - 1 / u) - 1 / u) / (1 / u) ^ 2
-
 /--
 Grenié–Molteni (2019) / Johnston–Starichkova Lemma 5.1 explicit AP prime-counting constant
 `c_π(X)` evaluated at `X > 1` (`primes_and_mertens.py:c_pi_iv`).
@@ -186,115 +168,5 @@ noncomputable def switchingBalanceReal (N z y : ℕ) : ℝ :=
       ((((Finset.range N).filter (fun p => p.Prime ∧ ¬ p ∣ N ∧
           (∀ r ∈ Finset.range z, r.Prime → ¬ r ∣ N - p) ∧ q ∣ N - p)).card : ℝ) +
        (((Finset.range N).filter (fun p => p.Prime ∧ ¬ p ∣ N ∧ q ^ 2 ∣ N - p)).card : ℝ))
-
-/-! ## 3. Finite Mertens Excursion Check (`primes_and_mertens.py:eps_sup_two_var`) -/
-
-/--
-Causal finite-prime-table Mertens excursion enclosure for cutoff `p_star ≥ 3` on `[p_star, 25000]`,
-joined with the `x > 25000 > exp(10.1)` Mertens tail (`2 / (exp(5.05) * 10.1)`) and the
-twin-prime and quadratic prime-reciprocal tails, certifying `ε_sup(p_star) ≤ eps_ub`.
--/
-def TwoVarMertensExcursion (consts : CertifiedConstants) (p_star : ℕ) (eps_ub : ℝ) : Prop :=
-  ∃ D_max twin_tail s2_tail : ℝ,
-    (∀ q ∈ (Finset.Icc p_star 25000).filter Nat.Prime,
-      ∀ p ∈ (Finset.Icc p_star 25000).filter Nat.Prime, q ≤ p →
-        mertensAfter consts.M0 p - mertensBefore consts.M0 q ≤ D_max) ∧
-    (∀ q ∈ (Finset.Icc p_star 25000).filter Nat.Prime,
-      2 / (Real.exp (5.05 : ℝ) * (10.1 : ℝ)) -
-        min (mertensBefore consts.M0 q) (-(2.964e-6 : ℝ) / Real.log p_star) ≤ D_max) ∧
-    (∀ S : Finset ℕ, (∀ p ∈ S, p.Prime ∧ p_star ≤ p) →
-      (∏ p ∈ S, ((p : ℝ) - 1) ^ 2 / ((p : ℝ) * ((p : ℝ) - 2))) ≤ twin_tail) ∧
-    (∀ S : Finset ℕ, (∀ p ∈ S, p.Prime ∧ p_star ≤ p) →
-      (∑ p ∈ S, (1 : ℝ) / (p : ℝ) ^ 2) ≤ s2_tail) ∧
-    twin_tail * Real.exp (D_max + logTailCoeff p_star * s2_tail) - 1 ≤ eps_ub
-
-/--
-Certified finite prime-table running-minimum bounds on `[p_star, 25000]` matching
-`primes_and_mertens.py:eps_sup_two_var`:
-- `p_star = 251`: `ε_sup(251) ≤ 0.0100583` (hence `≤ 1/99`, unlocking BJS Table 1 `k = 99, C_2 = 345`);
-- `p_star = 131`: `ε_sup(131) ≤ 0.0151218`;
-- `p_star = 29`:  `ε_sup(29)  ≤ 0.0620804`.
--/
-def FiniteMertensExcursionPremise : Prop :=
-  ∀ consts : CertifiedConstants,
-    TwoVarMertensExcursion consts 251 (0.0100583 : ℝ) ∧
-    TwoVarMertensExcursion consts 131 (0.0151218 : ℝ) ∧
-    TwoVarMertensExcursion consts 29 (0.0620804 : ℝ)
-
-/-- Elementary check that the `p_star = 251` threshold `0.0100583` satisfies `99 * ε ≤ 1`. -/
-theorem eps_251_bound_le_inv_99 : (0.0100583 : ℝ) ≤ (1 : ℝ) / 99 := by
-  norm_num
-
-/-! ## 4. Analytic-to-Rational Slab & Asymptotic Ray Certificate Interfaces -/
-
-/--
-Normalized analytic slab certificate premise linking a `SlabCert` `c` (`c.main_lb`, `c.err_ub`)
-to the analytic lower-bound / remainder decomposition evaluated by `certify_slab_2a`,
-`certify_slab_2b`, and `certify_slab_2c` (`k3/scripts/sieve_cert/regime_slabs.py`).
-
-- For regimes `2a`/`2b` (`c.X_hi ≤ 10^84`), the normalization scale is `|A_N|`.
-- For regime `2c` (`10^84 ≤ c.X_lo`), the normalization scale is `|A_N| * V_N(c.z)`.
--/
-def SlabNumericCertPremise (c : SlabCert) : Prop :=
-  ∀ consts : CertifiedConstants,
-    ∀ N : ℕ, Even N → c.X_lo ≤ N → N < c.X_hi →
-      ∃ scale main_norm err_norm : ℝ,
-        0 < scale ∧
-        (if c.X_hi ≤ 10 ^ 84 then scale = (shiftedCoprimeCount N : ℝ)
-         else scale = (shiftedCoprimeCount N : ℝ) * vProd N c.z) ∧
-        (c.main_lb : ℝ) ≤ main_norm ∧
-        err_norm ≤ (c.err_ub : ℝ) ∧
-        0 ≤ epdNorm consts c.X_lo ∧
-        0 < liRatioUb c.X_lo ∧
-        (10 ^ 84 ≤ c.X_lo → vFullLb consts c.z ≤ vProd N c.z) ∧
-        (main_norm - err_norm) * scale ≤ switchingBalanceReal N c.z c.y
-
-/-- Analytic `5`-term asymptotic ray error bound evaluated at `X_LS` by `certify_asymptotic_ray`
-(`k3/scripts/sieve_cert/regime_asymptotic.py:136-165`) for `m_div = 16`, `Q0_100`,
-`b_a = 5/2`, `b_q = 11/2`, and `β = (1 - 1/16) / 3 + 10^-9`, matching `rayErrorSumInt`. -/
-noncomputable def rayErrorSum (consts : CertifiedConstants) (X_LS : ℝ) : ℝ :=
-  let m : ℝ := 16
-  let b_a : ℝ := 5 / 2
-  let b_q : ℝ := 11 / 2
-  let beta : ℝ := (1 - 1 / m) / 3 + (1e-9 : ℝ)
-  let log_x : ℝ := Real.log X_LS
-  let z0 : ℝ := Real.exp (log_x / m)
-  let z_int_lb : ℝ := z0 - 1
-  let sqrt_x : ℝ := Real.exp ((1 / 2 : ℝ) * log_x)
-  let c_pt : ℝ :=
-    cPi consts X_LS + 1 / (16 * Real.pi) + (1.3841 : ℝ) / (sqrt_x * Real.log log_x)
-  let odd_sf : ℝ := 4 / Real.pi ^ 2 + 1 / Real.exp ((0.1 : ℝ) * log_x)
-  let c4g : ℝ := odd_sf * c_pt
-  let mert_coeff : ℝ := (6.836e-6 : ℝ) + (2.964e-6 : ℝ)
-  let sum_q_inv : ℝ :=
-    Real.log (beta * m) + mert_coeff / ((1 / m) * log_x) + 1 / (z_int_lb - 1)
-  let err_r1 : ℝ := c4g / (m * consts.U_c * Real.rpow log_x (b_a - 2))
-  let err_aq1 : ℝ :=
-    ((0.0625 : ℝ) * c_pt * sum_q_inv / (m * consts.U_c)) *
-      ((0.5 : ℝ) * log_x + 6) ^ 2 / Real.rpow log_x (b_q - 3)
-  let y_over_n : ℝ := Real.exp ((beta - (0.5 : ℝ)) * log_x)
-  let g_phi_n05 : ℝ := consts.H_tilde * ((0.25 : ℝ) * log_x + consts.alpha0 + consts.C_f0)
-  let err_aq2 : ℝ :=
-    (0.5 : ℝ) * c4g * y_over_n * log_x ^ 3 * (1 + g_phi_n05 ^ 3) / (m * consts.U_c)
-  let err_q2 : ℝ := log_x ^ 2 / (2 * m * consts.U_c * (z_int_lb - 1))
-  let err_one : ℝ := log_x ^ 2 / (m * consts.U_c * X_LS)
-  err_r1 + err_aq1 + err_aq2 + err_q2 + err_one
-
-/--
-Normalized analytic ray certificate premise linking a `RayCert` `r` (specifically
-`asymptoticCert` with `r.X_LS = 10^600`, `r.main_lb`, `r.err_ub`) to the analytic ray formula
-evaluated at `X_LS = 10^600` by `certify_asymptotic_ray` (`regime_asymptotic.py`) with
-`m_div = 16`, pre-sieve `Q0_100`, Lean-certified `C_2 ≤ 494`, and normalization `rayScale`
-(the active bridge `AsymptoticRayEnclosure` uses `rayErrorSumInt` and `rayScale` directly).
--/
-def RayNumericCertPremise (r : RayCert) : Prop :=
-  ∀ consts : CertifiedConstants,
-    ∀ N : ℕ, Even N → r.X_LS ≤ N →
-      ∃ (z y : ℕ) (scale main_coeff : ℝ),
-        2 ≤ z ∧ z ≤ y ∧ N ≤ y ^ 4 ∧ N ≤ z * y ^ 3 ∧ 0 < scale ∧
-        scale = (shiftedCoprimeCount N : ℝ) * vProd N z ∧
-        (r.main_lb : ℝ) ≤ main_coeff ∧
-        rayErrorSum consts (r.X_LS : ℝ) ≤ (r.err_ub : ℝ) ∧
-        (main_coeff - rayErrorSum consts (r.X_LS : ℝ)) * scale ≤ switchingBalanceReal N z y
 
 end BuchstabSwitching.External

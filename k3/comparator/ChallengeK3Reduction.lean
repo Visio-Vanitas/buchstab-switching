@@ -1,7 +1,13 @@
 import ChallengeK3Data
+import ChallengeK3MertensTwoVar
+import ChallengeK3DirichletGRH
+import ChallengeK3Schoenfeld
+import ChallengeK3MertensExt
+import ChallengeK3EulerV
+import ChallengeK3Constants
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.NumberTheory.LSeries.DirichletContinuation
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 namespace BuchstabSwitching
@@ -37,10 +43,6 @@ def SmallEvenPremise : Prop :=
   ∀ N : ℕ, Even N → 4 ≤ N → N < finiteCutoff →
     ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p + q = N
 
-def DirichletLNonvanishingRightOfHalf : Prop :=
-  ∀ (N : ℕ) [NeZero N] (χ : DirichletCharacter ℂ N) (s : ℂ),
-    1 / 2 < s.re → (χ ≠ 1 ∨ s ≠ 1) → DirichletCharacter.LFunction χ s ≠ 0
-
 def SlabSieveEnclosurePremise : Prop :=
   DirichletLNonvanishingRightOfHalf →
     ∀ c ∈ BuchstabSwitching.allSlabs, ∀ N : ℕ,
@@ -61,6 +63,23 @@ structure ExternalPremises : Prop where
   slab_enclosure : SlabSieveEnclosurePremise
   ray_enclosure : AsymptoticRayEnclosurePremise
 
+def RobinOmegaBound : Prop :=
+  ∀ N : ℕ, 3 ≤ N →
+    (N.primeFactors.card : ℝ) < (1.3841 : ℝ) * Real.log N / Real.log (Real.log N)
+
+structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
+  small_even : SmallEvenPremise
+  js_ap : JSLemma51Premise consts.li2
+  schoenfeld : SchoenfeldPrimePremise consts.li2
+  robin : RobinOmegaBound
+  mertens : MertensPrimeSumPremise consts.M0
+  euler_v : EulerProductVPremise consts.U_c consts.eNegGamma
+
+theorem externalPremises_of_classical
+    {consts : CertifiedConstants} (hCls : ClassicalBasicLemmas consts) :
+    ExternalPremises := by
+  sorry
+
 end External
 
 open scoped ArithmeticFunction.Omega
@@ -78,6 +97,13 @@ theorem even_eq_prime_add_omegaMult_le_three
 theorem all_even_one_plus_three_of_premises
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hExt : External.ExternalPremises) :
+    AllEvenPrimePlusAlmostPrime 3 := by
+  sorry
+
+theorem all_even_one_plus_three_of_classical
+    (consts : External.CertifiedConstants)
+    (hGRH : External.DirichletLNonvanishingRightOfHalf)
+    (hCls : External.ClassicalBasicLemmas consts) :
     AllEvenPrimePlusAlmostPrime 3 := by
   sorry
 

@@ -1,6 +1,6 @@
 == toolchain
 $ lean --version
-Lean (version 4.37.0-rc1, x86_64-unknown-linux-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release)
+Lean (version 4.37.0-rc1, x86_64-w64-windows-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release)
 [exit 0]
 $ lake --version
 Lake version 5.0.0-src+0b77e12 (Lean version 4.37.0-rc1)
@@ -14,45 +14,32 @@ warning: Challenge.lean:60:8: declaration uses `sorry`
 Build completed successfully (18309 jobs).
 [exit 0]
 == setup 1: comparator.json (challenge Challenge.lean, theorem all_even_one_plus_four)
-$ bash -c lake env leanexport Challenge -- $(cat export-targets.txt) > /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/challenge.export
+$ bash -c lake env leanexport Challenge -- $(tr -d '\r' < export-targets.txt) > '/c/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/challenge.export'
 [exit 0]
-$ bash -c lake env leanexport AllEvenOnePlusFour -- $(cat export-targets.txt) > /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/solution.export
+$ bash -c lake env leanexport AllEvenOnePlusFour -- $(tr -d '\r' < export-targets.txt) > '/c/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/solution.export'
 PANIC at LeanExport.dumpConstant LeanExport.Basic:254:48: Constant all_even_one_plus_four not found in environment.
-backtrace:
-/home/disillusion/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa6085a5) [0x77f721c085a5]
-/home/disillusion/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa5fec44) [0x77f721bfec44]
-/home/disillusion/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(lean_panic_fn_borrowed+0x2b) [0x77f721bfed7b]
-leanexport(panic spec at LeanExport.dumpConstant+0x279) [0x617d009d93f9]
-leanexport(List.forIn'.loop [arity↓] spec at LeanExport.dumpEnv+0x262) [0x617d009f20c2]
-leanexport(LeanExport.dumpEnv [λ]+0x167) [0x617d009f2537]
-leanexport(LeanExport.dumpEnv [boxed, λ]+0x13) [0x617d009f2793]
-leanexport(LeanExport.M.run [arity↓]+0x33) [0x617d009c8f63]
-/home/disillusion/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa5fcd47) [0x77f721bfcd47]
-/home/disillusion/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa5fd135) [0x77f721bfd135]
-/lib/x86_64-linux-gnu/libc.so.6(+0x9cb64) [0x77f71729cb64]
-/lib/x86_64-linux-gnu/libc.so.6(+0x129e8c) [0x77f717329e8c]
-[exit 134]
+[exit 127]
 sha256: 970a0d21cfbe8ebb4b409518d987ceb8526cb4308814889d159469eb802cca84 challenge.export; a445d4858a1c7ba12794d0e721bda7c038c3851bb486a14f93b7bdc0f4b15b88 solution.export
-external kernels available: leanchecker leanchecker-paranoid nanoda_bin 
-$ lake comparator --inadvisably-no-sandbox --config /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/comparator.json --challenge-from-export /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/challenge.export --solution-from-export /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/solution.export
+external kernels available: leanchecker-paranoid.exe leanchecker.exe nanoda_bin.exe 
+$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/comparator.runtime.json --challenge-from-export C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/challenge.export --solution-from-export C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/solution.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 error: Const not found in solution: 'all_even_one_plus_four'
 [exit 1]
 == setup 2: comparator/reduction.json (challenge comparator/ChallengeReduction.lean, the conditional reduction)
-$ env LEAN_PATH=/home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReductionStatement.olean comparator/ChallengeReductionStatement.lean
+$ env LEAN_PATH=C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReductionStatement.olean comparator/ChallengeReductionStatement.lean
 [exit 0]
-$ env LEAN_PATH=/home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReductionWeights.olean comparator/ChallengeReductionWeights.lean
+$ env LEAN_PATH=C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReductionWeights.olean comparator/ChallengeReductionWeights.lean
 [exit 0]
-$ env LEAN_PATH=/home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReduction.olean comparator/ChallengeReduction.lean
+$ env LEAN_PATH=C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReduction.olean comparator/ChallengeReduction.lean
 comparator/ChallengeReduction.lean:56:8: warning: declaration uses `sorry`
 comparator/ChallengeReduction.lean:60:8: warning: declaration uses `sorry`
 [exit 0]
-$ bash -c LEAN_PATH=/home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/comparator lake env leanexport ChallengeReduction -- $(cat comparator/reduction-export-targets.txt) > /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export
+$ bash -c LEAN_PATH='C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/comparator' lake env leanexport ChallengeReduction -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/c/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export'
 [exit 0]
-$ bash -c lake env leanexport AllEvenOnePlusFour -- $(cat comparator/reduction-export-targets.txt) > /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/red-solution.export
+$ bash -c lake env leanexport AllEvenOnePlusFour -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/c/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/red-solution.export'
 [exit 0]
 sha256: bbdc89ac80f77a351e817c36b839cf6c5f32ea768b6f5a89a52823300b66c6fd red-challenge.export; 574f8e3a0f432daa08b7a6a7c5a219623dff4fc6ea7c08285d582f562423ef3d red-solution.export
-$ lake comparator --inadvisably-no-sandbox --config /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/comparator/reduction.json --challenge-from-export /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export --solution-from-export /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/red-solution.export
+$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/reduction.runtime.json --challenge-from-export C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export --solution-from-export C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/red-solution.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 Running Lean paranoid kernel on solution
 Lean paranoid kernel accepts the solution
@@ -63,7 +50,7 @@ Lean default kernel accepts the solution
 Your solution is okay!
 [exit 0]
 == rehearsal: setup 2 with the challenge itself as solution (must be rejected for sorryAx)
-$ lake comparator --inadvisably-no-sandbox --config /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/comparator/reduction.json --challenge-from-export /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export --solution-from-export /home/disillusion/bs-wt-k3/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export
+$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/reduction.runtime.json --challenge-from-export C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export --solution-from-export C:/bs-work/repo/k4/lean/AllEvenOnePlusFour/.lake/exp/red-challenge.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 error: Illegal axiom detected: 'sorryAx'
 [exit 1]

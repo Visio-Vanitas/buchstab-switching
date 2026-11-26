@@ -17,6 +17,7 @@ import unittest
 from pathlib import Path
 
 PACKAGE = Path(__file__).resolve().parent.parent
+EXT_PACKAGE = PACKAGE.parent / "all_even_1p4_ext"
 FORBIDDEN_MODULES = {"math", "cmath", "random", "statistics", "numpy"}
 FORBIDDEN_NAMES = {"float", "complex", "round"}
 FORBIDDEN_ATTRS = {"time", "perf_counter", "monotonic", "process_time"}
@@ -24,6 +25,10 @@ FORBIDDEN_ATTRS = {"time", "perf_counter", "monotonic", "process_time"}
 
 def package_modules() -> list[Path]:
     return sorted(PACKAGE.glob("*.py"))
+
+
+def ext_modules() -> list[Path]:
+    return sorted(EXT_PACKAGE.glob("*.py"))
 
 
 def violations(path: Path) -> list[str]:
@@ -52,9 +57,12 @@ class NoFloatTest(unittest.TestCase):
         names = {p.name for p in package_modules()}
         for required in ("interval.py", "elementary.py", "constants.py", "cited.py", "regime2.py", "regime3.py"):
             self.assertIn(required, names)
+        ext_names = {p.name for p in ext_modules()}
+        for required in ("brun_crosscheck.py", "brun_ladder.py", "regime2_brun.py", "replay.py", "sieve_fF.py", "tail_at_500.py", "tail_x31.py"):
+            self.assertIn(required, ext_names)
 
     def test_static_scan(self) -> None:
-        found = [v for p in package_modules() for v in violations(p)]
+        found = [v for p in package_modules() + ext_modules() for v in violations(p)]
         self.assertEqual(found, [], "\n".join(found))
 
     def test_scanner_detects_floats(self) -> None:

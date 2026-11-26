@@ -303,7 +303,7 @@ noncomputable def rayErrAq1Int (consts : External.CertifiedConstants) (M : ℕ) 
 
 noncomputable def rayErrAq2 (consts : External.CertifiedConstants) (M : ℕ) (X : ℝ) : ℝ :=
   let y_over_n := Real.exp ((rayBeta M - (0.5 : ℝ)) * Real.log X)
-  let g_phi_n05 := consts.H_tilde * ((0.25 : ℝ) * Real.log X + consts.alpha0 + consts.C_f0)
+  let g_phi_n05 := (13 / 10 : ℝ) * ((0.25 : ℝ) * Real.log X + (636 / 1000 : ℝ) + consts.C_f0)
   (0.5 : ℝ) * rayC4g consts X * y_over_n * Real.log X ^ 3 * (1 + g_phi_n05 ^ 3) /
     ((M : ℝ) * consts.U_c)
 
@@ -472,23 +472,22 @@ theorem rayErrAq2_antitone (consts : External.CertifiedConstants) {M : ℕ} (hM 
   have hlog₁₂ : Real.log X₁ ≤ Real.log X₂ := Real.log_le_log hX₁_pos hX₁₂
   have hlog₂_40 : (40 : ℝ) ≤ Real.log X₂ := hlog₁_40.trans hlog₁₂
   have hlog₂_e : Real.exp 1 < Real.log X₂ := lt_of_lt_of_le hlog₁_e hlog₁₂
-  set A : ℝ := consts.H_tilde * (0.25 : ℝ)
-  set B : ℝ := consts.H_tilde * (consts.alpha0 + consts.C_f0)
-  have hA_nn : 0 ≤ A := mul_nonneg consts.H_tilde_pos.le (by norm_num)
+  set A : ℝ := (13 / 10 : ℝ) * (0.25 : ℝ)
+  set B : ℝ := (13 / 10 : ℝ) * ((636 / 1000 : ℝ) + consts.C_f0)
+  have hA_nn : 0 ≤ A := by dsimp [A]; norm_num
   have hB_nn : 0 ≤ B := by
-    have h1 : 0 ≤ consts.alpha0 := by linarith [consts.alpha0_bounds.1]
     have h2 : 0 ≤ consts.C_f0 := by rw [consts.C_f0_eq]; norm_num
-    exact mul_nonneg consts.H_tilde_pos.le (by linarith)
+    dsimp [B]; positivity
   have hexpand : ∀ u : ℝ,
       Real.exp ((rayBeta M - 0.5) * u) * u ^ 3 *
-        (1 + (consts.H_tilde * (0.25 * u + consts.alpha0 + consts.C_f0)) ^ 3) =
+        (1 + ((13 / 10 : ℝ) * (0.25 * u + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) =
       (1 + B ^ 3) * (u ^ 3 * Real.exp (-c * u)) +
       (3 * A * B ^ 2) * (u ^ 4 * Real.exp (-c * u)) +
       (3 * A ^ 2 * B) * (u ^ 5 * Real.exp (-c * u)) +
       A ^ 3 * (u ^ 6 * Real.exp (-c * u)) := by
     intro u
     have hc_neg : (rayBeta M - 0.5) * u = -c * u := by simp only [c]; ring
-    have hlin : consts.H_tilde * (0.25 * u + consts.alpha0 + consts.C_f0) = A * u + B := by
+    have hlin : (13 / 10 : ℝ) * (0.25 * u + (636 / 1000 : ℝ) + consts.C_f0) = A * u + B := by
       simp only [A, B]; ring
     rw [hc_neg, hlin]
     ring
@@ -503,9 +502,9 @@ theorem rayErrAq2_antitone (consts : External.CertifiedConstants) {M : ℕ} (hM 
     exact antitoneOn_pow_mul_exp_neg k hc (hkc.trans hlog₁_40) (hkc.trans hlog₂_40) hlog₁₂
   have hmid_le :
       Real.exp ((rayBeta M - 0.5) * Real.log X₂) * Real.log X₂ ^ 3 *
-        (1 + (consts.H_tilde * (0.25 * Real.log X₂ + consts.alpha0 + consts.C_f0)) ^ 3) ≤
+        (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₂ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) ≤
       Real.exp ((rayBeta M - 0.5) * Real.log X₁) * Real.log X₁ ^ 3 *
-        (1 + (consts.H_tilde * (0.25 * Real.log X₁ + consts.alpha0 + consts.C_f0)) ^ 3) := by
+        (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₁ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) := by
     rw [hexpand (Real.log X₁), hexpand (Real.log X₂)]
     have p3 := hpoly_anti 3 (by norm_num)
     have p4 := hpoly_anti 4 (by norm_num)
@@ -517,9 +516,9 @@ theorem rayErrAq2_antitone (consts : External.CertifiedConstants) {M : ℕ} (hM 
     have c3 : 0 ≤ A ^ 3 := by positivity
     nlinarith
   have hmid_nn : 0 ≤ Real.exp ((rayBeta M - 0.5) * Real.log X₂) * Real.log X₂ ^ 3 *
-      (1 + (consts.H_tilde * (0.25 * Real.log X₂ + consts.alpha0 + consts.C_f0)) ^ 3) := by
+      (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₂ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) := by
     have : 0 ≤ A * Real.log X₂ + B := by nlinarith
-    have hlin : consts.H_tilde * (0.25 * Real.log X₂ + consts.alpha0 + consts.C_f0) =
+    have hlin : (13 / 10 : ℝ) * (0.25 * Real.log X₂ + (636 / 1000 : ℝ) + consts.C_f0) =
         A * Real.log X₂ + B := by simp only [A, B]; ring
     rw [hlin]
     positivity
@@ -531,17 +530,17 @@ theorem rayErrAq2_antitone (consts : External.CertifiedConstants) {M : ℕ} (hM 
   have hleft : (0.5 : ℝ) * rayC4g consts X₂ ≤ (0.5 : ℝ) * rayC4g consts X₁ := by linarith
   calc (0.5 : ℝ) * rayC4g consts X₂ *
         Real.exp ((rayBeta M - 0.5) * Real.log X₂) * Real.log X₂ ^ 3 *
-          (1 + (consts.H_tilde * (0.25 * Real.log X₂ + consts.alpha0 + consts.C_f0)) ^ 3)
+          (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₂ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3)
       = ((0.5 : ℝ) * rayC4g consts X₂) *
           (Real.exp ((rayBeta M - 0.5) * Real.log X₂) * Real.log X₂ ^ 3 *
-            (1 + (consts.H_tilde * (0.25 * Real.log X₂ + consts.alpha0 + consts.C_f0)) ^ 3)) := by ring
+            (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₂ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3)) := by ring
     _ ≤ ((0.5 : ℝ) * rayC4g consts X₁) *
           (Real.exp ((rayBeta M - 0.5) * Real.log X₁) * Real.log X₁ ^ 3 *
-            (1 + (consts.H_tilde * (0.25 * Real.log X₁ + consts.alpha0 + consts.C_f0)) ^ 3)) :=
+            (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₁ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3)) :=
         mul_le_mul hleft hmid_le hmid_nn (by linarith)
     _ = (0.5 : ℝ) * rayC4g consts X₁ *
           Real.exp ((rayBeta M - 0.5) * Real.log X₁) * Real.log X₁ ^ 3 *
-            (1 + (consts.H_tilde * (0.25 * Real.log X₁ + consts.alpha0 + consts.C_f0)) ^ 3) := by ring
+            (1 + ((13 / 10 : ℝ) * (0.25 * Real.log X₁ + (636 / 1000 : ℝ) + consts.C_f0)) ^ 3) := by ring
 
 theorem rayErrQ2Int_antitone (consts : External.CertifiedConstants) {M : ℕ} (hM : 1 ≤ M)
     {X₁ X₂ : ℝ} (hX₁_pos : 0 < X₁) (hlog₁ : 10 * (M : ℝ) ≤ Real.log X₁) (hX₁₂ : X₁ ≤ X₂) :

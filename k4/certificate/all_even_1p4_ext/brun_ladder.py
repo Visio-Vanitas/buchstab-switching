@@ -7,11 +7,14 @@ probe  E_LIST WIDTH OUT Ms as small|big   one slab [10^e, 10^e * WIDTH) per e (W
 Ms / as: comma lists or ranges "24-30".
 """
 import sys, os, json, time
-from decimal import Decimal
+from decimal import Context, Decimal, ROUND_HALF_EVEN, localcontext
 from fractions import Fraction
 from multiprocessing import Pool
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from all_even_1p4.interval import ERROR_TRAPS
 from all_even_1p4_ext import regime2_brun as RB
+
+_DISP_CTX = Context(prec=28, rounding=ROUND_HALF_EVEN, traps=ERROR_TRAPS)
 
 MULTS = [Fraction(10**10), Fraction(10**5), Fraction(100), Fraction(10), Fraction(5), Fraction(2),
          Fraction(5, 4), Fraction(11, 10), Fraction(101, 100)]
@@ -33,21 +36,25 @@ def rng(s):
 
 
 def fmt(x):
-    return f"{Decimal(str(RB.ln_iv(RB.Iv(x)).lo)) / Decimal(str(RB.ln_iv(RB.Iv(10)).hi)):.3f}"
+    lo = RB.ln_iv(RB.Iv(x)).lo
+    ln10_hi = RB.ln_iv(RB.Iv(10)).hi
+    with localcontext(_DISP_CTX):
+        return f"{lo / ln10_hi:.3f}"
 
 
 def job(args):
     x_lo, x_hi, M, a, caps = args
     kw = {} if caps is None else dict(low_caps=caps[0], up_caps=caps[1])
-    t = time.time()
+    t = time.perf_counter_ns()
     r = RB.try_brun(x_lo, x_hi, M, a, **kw)
     if r is None:
         return None
+    ds = (time.perf_counter_ns() - t) // 10**8
     return dict(x_lo=str(x_lo), x_hi=str(x_hi), M=M, a=a, z=r.z, y=r.y, low_caps=r.low_caps, low_ends=r.low_ends,
                 up_caps=r.up_caps, up_ends=r.up_ends, E_minus_hi=str(r.e_minus.hi), E_plus_hi=str(r.e_plus.hi),
                 bracket_lo=str(r.bracket.lo), main_lo=str(r.main.lo), err_a_hi=str(r.err_a.hi),
                 err_aq_hi=str(r.err_aq.hi), err_q2_hi=str(r.err_q2.hi), err_hi=str(r.err_total.hi),
-                net_lo=str(r.net.lo), n_d_low=str(r.n_d_low), n_d_up=str(r.n_d_up), sec=f"{time.time() - t:.1f}")
+                net_lo=str(r.net.lo), n_d_low=str(r.n_d_low), n_d_up=str(r.n_d_up), sec=f"{ds // 10}.{ds % 10}")
 
 
 def best(P, x_lo, x_hi, Ms, As, caps=None):
@@ -95,12 +102,13 @@ def probe(es, width, out, Ms, As, which):
         for e in es:
             x = int(e[1:]) if e.startswith('x') else 10 ** int(e)
             xh = x * w.numerator // w.denominator
-            t = time.time()
+            t = time.perf_counter_ns()
             r = best(P, x, xh, Ms, As, caps)
+            s = (time.perf_counter_ns() - t) // 10**9
             print(f"e={e} w={width}: " + ("NOT certified" if r is None else
                   f"M={r['M']} a={r['a']} low={r['low_caps']} up={r['up_caps']} E+<={Decimal(r['E_plus_hi']):.3e} "
                   f"main>={Decimal(r['main_lo']):.4e} err<={Decimal(r['err_hi']):.2e} net>={Decimal(r['net_lo']):.4e}")
-                  + f" t={time.time() - t:.0f}s", flush=True)
+                  + f" t={s}s", flush=True)
             R.append(dict(e=e, width=width, result=r))
             json.dump(R, open(out, 'w'), indent=0)
     print("DONE", flush=True)

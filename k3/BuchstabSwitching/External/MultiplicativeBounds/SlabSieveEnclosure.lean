@@ -429,21 +429,27 @@ theorem sum_squareDivisible_card_norm_le {li2 X_lo X_hi : ℝ} {N z y q_sq : ℕ
     (hX_lo : 4 * (10 : ℝ) ^ 18 ≤ X_lo) (hX_N : X_lo ≤ (N : ℝ)) (hN_hi : (N : ℝ) < X_hi)
     (hN : Even N) (hz2 : 2 ≤ z) (hzy : z ≤ y)
     (hq_sq1 : 1 ≤ q_sq) (hq_sq_rt : ((q_sq ^ 2 : ℕ) : ℝ) ≤ Real.sqrt X_lo)
-    {cnt_lo v_full_lb : ℝ}
+    {s_q2 cnt_lo v_full_lb : ℝ}
+    (hs_q2 : ∑ q ∈ (Finset.Ico z (min y (q_sq + 1))).filter Nat.Prime,
+      (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)) ≤ s_q2)
     (hcnt_lo :
       (((BuchstabSwitching.midPrimes N z (min y (q_sq + 1))).card : ℝ)) ≤ cnt_lo)
     (hv_pos : 0 < v_full_lb) (hv_le : v_full_lb ≤ VN 2 z) :
     (1 / 2 : ℝ) * ∑ q ∈ BuchstabSwitching.midPrimes N z y,
         ((BuchstabSwitching.squareDivisibleShifted N q).card : ℝ) ≤
       ((1 / 2 : ℝ) *
-        (1 / ((z : ℝ) - 1) + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
+        (s_q2 + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
           (if y ≤ q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q_sq : ℝ))) / v_full_lb) *
         (((BuchstabSwitching.shiftedCoprimePrimes N).card : ℝ) * VN N z) := by
   have hbase := BuchstabSwitching.sum_squareDivisible_card_le hGRH hCls hX_lo hX_N hN_hi hN hz2 hzy
-    hq_sq1 hq_sq_rt hcnt_lo
+    hq_sq1 hq_sq_rt hs_q2 hcnt_lo
   have hV_ge : v_full_lb ≤ VN N z := hv_le.trans (BuchstabSwitching.VN_two_le_VN hN z)
   have hdiv_ge1 : 1 ≤ VN N z / v_full_lb := (one_le_div hv_pos).mpr hV_ge
-  have hz_real : (2 : ℝ) ≤ (z : ℝ) := by exact_mod_cast hz2
+  have hs_q2_nn : 0 ≤ s_q2 := by
+    refine le_trans (Finset.sum_nonneg fun q hq => ?_) hs_q2
+    have hq2 : (2 : ℝ) ≤ (q : ℝ) := by exact_mod_cast (Finset.mem_filter.mp hq).2.two_le
+    have hq1 : (0 : ℝ) < (q : ℝ) - 1 := by linarith
+    positivity
   have hcnt_nn : 0 ≤ cnt_lo := (Nat.cast_nonneg _).trans hcnt_lo
   have hepd_nn := epdNormFn_nonneg_local hGRH hCls hX_lo
   have hXhi_ge1 : 1 ≤ X_hi := by linarith
@@ -451,24 +457,23 @@ theorem sum_squareDivisible_card_norm_le {li2 X_lo X_hi : ℝ} {N z y q_sq : ℕ
   have htail_nn : 0 ≤ (if y ≤ q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q_sq : ℝ)) := by
     split_ifs <;> positivity
   have hcoeff_nn : 0 ≤ (1 / 2 : ℝ) *
-      (1 / ((z : ℝ) - 1) + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
+      (s_q2 + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
         (if y ≤ q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q_sq : ℝ))) *
       ((BuchstabSwitching.shiftedCoprimePrimes N).card : ℝ) := by
-    have hz1 : 0 < (z : ℝ) - 1 := by linarith
     positivity
   calc (1 / 2 : ℝ) * ∑ q ∈ BuchstabSwitching.midPrimes N z y,
           ((BuchstabSwitching.squareDivisibleShifted N q).card : ℝ)
       ≤ (1 / 2 : ℝ) *
-          (1 / ((z : ℝ) - 1) + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
+          (s_q2 + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
             (if y ≤ q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q_sq : ℝ))) *
           ((BuchstabSwitching.shiftedCoprimePrimes N).card : ℝ) := hbase
     _ ≤ (1 / 2 : ℝ) *
-          (1 / ((z : ℝ) - 1) + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
+          (s_q2 + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
             (if y ≤ q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q_sq : ℝ))) *
           ((BuchstabSwitching.shiftedCoprimePrimes N).card : ℝ) * (VN N z / v_full_lb) :=
         le_mul_of_one_le_right hcoeff_nn hdiv_ge1
     _ = ((1 / 2 : ℝ) *
-          (1 / ((z : ℝ) - 1) + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
+          (s_q2 + cnt_lo * BuchstabSwitching.epdNormFn X_lo li2 X_lo +
             (if y ≤ q_sq + 1 then (0 : ℝ) else Real.log X_hi / (q_sq : ℝ))) / v_full_lb) *
           (((BuchstabSwitching.shiftedCoprimePrimes N).card : ℝ) * VN N z) := by ring
 

@@ -75,7 +75,17 @@ theorem all_even_one_plus_three_of_premises
   refine ⟨p, m, hp, hm_pos, hpN.symm, ?_⟩
   simpa [ArithmeticFunction.cardFactors_apply, omegaMult] using hm
 
+/-- End-to-end conditional `1 + 3` theorem directly from the six classical premises in
+`External.ClassicalBasicLemmas consts` plus GRH (`External.DirichletLNonvanishingRightOfHalf`). -/
+theorem all_even_one_plus_three_of_classical
+    (consts : External.CertifiedConstants)
+    (hGRH : External.DirichletLNonvanishingRightOfHalf)
+    (hCls : External.ClassicalBasicLemmas consts) :
+    AllEvenPrimePlusAlmostPrime 3 :=
+  all_even_one_plus_three_of_premises hGRH (External.externalPremises_of_classical hCls)
+
 #print axioms even_eq_prime_add_omegaMult_le_three
 #print axioms all_even_one_plus_three_of_premises
+#print axioms all_even_one_plus_three_of_classical
 
 end BuchstabSwitching

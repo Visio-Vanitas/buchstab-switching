@@ -10,17 +10,22 @@ Prints, for the same slab:
       R- <= 1 <= R+; every certified main lower bound must be <= U.
 """
 import sys, os
-from decimal import Decimal
+from decimal import Context, Decimal, ROUND_HALF_EVEN, localcontext
 from fractions import Fraction
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from all_even_1p4.regime2 import SlabParams, certify_slab
-from all_even_1p4.interval import Iv, ONE, HALF
+from all_even_1p4.interval import ERROR_TRAPS, Iv, ONE, HALF
 from all_even_1p4.elementary import ln_iv, exp_iv
 from all_even_1p4.prime_bounds import sum_inv_p_lower, sum_inv_p_upper
 from all_even_1p4.primes import PRIMES, P_CUT
 from all_even_1p4_ext import regime2_brun as RB
 
-f = lambda x: f"{Decimal(str(x)):.6e}"
+_DISP_CTX = Context(prec=28, rounding=ROUND_HALF_EVEN, traps=ERROR_TRAPS)
+
+
+def f(x):
+    with localcontext(_DISP_CTX):
+        return f"{Decimal(str(x)):.6e}"
 e0, e1, M, a, mo, me = map(int, sys.argv[1:7])
 x_lo, x_hi = 10 ** e0, 10 ** e1
 r = certify_slab(SlabParams(0, x_lo, x_hi, M, a, mo, me))
@@ -49,4 +54,6 @@ U = (v_hi * (ONE - HALF * sig_lo)).hi
 print(f"(4) upper reference U <= {f(U)}  (V<={f(v_hi.hi)}, sum_q 1/(q-1) >= {f(sig_lo.lo)})")
 ok = all(x <= U for x in (r.main.lo, b1.main.lo, b2.main.lo))
 print("consistency: every certified main lower bound <= U:", ok)
-print("single-block block certificate vs package main: ratio", f"{Decimal(str(b1.main.lo)) / Decimal(str(r.main.lo)):.6f}")
+with localcontext(_DISP_CTX):
+    ratio = f"{b1.main.lo / r.main.lo:.6f}"
+print("single-block block certificate vs package main: ratio", ratio)
