@@ -38,6 +38,10 @@ lake build 2>&1 | tee build_log.txt
 lake env lean AxiomsCheck.lean
 ```
 
+## Comparator
+
+`comparator/run_comparator.sh` builds the project and runs `lake comparator` (Lean paranoid, nanoda and default kernels) on two setups. The output is in `comparator_output.txt`. `comparator.json` (the unconditional `all_even_one_plus_four`) is rejected because the library does not prove it. `comparator/reduction.json` (the two reduction theorems against `comparator/ChallengeReduction.lean`) is accepted with only `propext`, `Quot.sound` and `Classical.choice`.
+
 ## Files
 
 | File | Content | Status |
