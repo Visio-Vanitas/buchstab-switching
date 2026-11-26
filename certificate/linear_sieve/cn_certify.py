@@ -13,6 +13,15 @@ f_n = 0 on [n+2, oo), so the grid [a_n, n+2] is exhaustive (no tail bound needed
 """
 import sys
 from decimal import Decimal as D, getcontext, ROUND_CEILING
+
+
+def _up(x, places):
+    """Exact upward decimal rounding of a Fraction/Decimal/int, for display (no floats)."""
+    from fractions import Fraction
+    from decimal import Decimal
+    q = Fraction(x) * 10 ** places
+    n = -((-q.numerator) // q.denominator)
+    return str(Decimal(n).scaleb(-places))
 from fractions import Fraction as Fr
 from itertools import accumulate
 from operator import mul
@@ -209,9 +218,8 @@ def main():
             if r is None:
                 print(k, name, "not applicable")
             else:
-                print("1/eps=%d %s: C1<=%.3f C2<=%.3f tau2<=%.4f tau3<=%.4f" %
-                      (k, name, float(r[0]) + 5e-4, float(r[1]) + 5e-4,
-                       float(r[2][0]) + 5e-5, float(r[2][1]) + 5e-5))
+                print("1/eps=%d %s: C1<=%s C2<=%s tau2<=%s tau3<=%s" %
+                      (k, name, _up(r[0], 3), _up(r[1], 3), _up(r[2][0], 4), _up(r[2][1], 4)))
 
 
 if __name__ == "__main__":

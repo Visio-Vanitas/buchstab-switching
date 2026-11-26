@@ -44,17 +44,17 @@ All inequalities are checked by a stdlib-only Python certificate: integers and d
 | `notes/linear-sieve/` | the explicit linear sieve with pre-sieve under the closed-interval hypothesis (S1–S4), and why weaker hypotheses do not suffice (S5–S6) |
 | `notes/block-sieve/` | the Brun block sieve used for `4·10^18 <= N < 10^500` |
 | `certificate/` | stdlib-only Python: `all_even_1p4/` (interval layer, cited bounds, remainders, tests), `all_even_1p4_ext/` (block-sieve slabs, linear-sieve tail, replay), `linear_sieve/` (certification of the pre-sieve hypothesis and of the constants `C_1`, `C_2`) |
-| `data/` | certified ladder and tail (`x32_brun_integrated/`), pre-sieve and constant certificates (`x31_tail_n3/`, `x31_linear_sieve/`), replay logs |
+| `data/` | certified ladder and tail (`certificate/`), pre-sieve and constant certificates (`linear_sieve_inputs/`, `linear_sieve_constants/`), replay logs |
 | `lean/AllEvenOnePlusFour/` | Lake project (Lean `v4.37.0-rc1`, Mathlib `31ce06ea`): `Challenge.lean` (Mathlib-only statement), kernel-checked weight lemma (`w(a) > 0 ⟹ Ω(a) ≤ 4`), and the reduction of the theorem to explicit analytic hypotheses (stated with the earlier split point `10^170`). `#print axioms`: `propext`, `Classical.choice`, `Quot.sound`. The analytic number theory is not formalised. |
 
-Labels such as `X26`, `X31`, `X32` in code comments refer to the frame note, the linear-sieve notes and the block-sieve note respectively.
+Labels such as `X26`, `X31`, `X32` in code comments and raw logs refer to the frame note, the linear-sieve notes and the block-sieve note respectively.
 
 ## Reproduce
 
 ```
 cd certificate
 python3 -m pytest -q all_even_1p4/tests
-python3 -I all_even_1p4_ext/replay.py ../data/x32_brun_integrated/ladder_4e18_500_all.json ../data/x32_brun_integrated/tail/tail_at_500.json
+python3 -I all_even_1p4_ext/replay.py ../data/certificate/ladder_4e18_500_all.json ../data/certificate/tail/tail_at_500.json
 ```
 
 The replay re-certifies all 58 slabs and the tail from the recorded parameters (a few minutes) and ends with `ALL PASS`.

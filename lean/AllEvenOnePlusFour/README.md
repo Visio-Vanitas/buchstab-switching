@@ -5,11 +5,10 @@ A Lean 4 / Mathlib formalisation skeleton for the statement
 > Under GRH for Dirichlet L-functions, every even N ≥ 4 is p + η with p prime and
 > Ω(η) ≤ 4, where Ω counts prime factors with multiplicity.
 
-Mathematical source: `notes/all-even-1p4-under-grh.md` in this repository. The combinatorial
+Mathematical source: `notes/proof-map.md` in this repository. The combinatorial
 core and the reduction to the analytic inputs are kernel-checked. Every analytic or
 computational input is an explicit `Prop` hypothesis, one per regime; none is an `axiom`.
-The Regime 3 hypothesis (N ≥ 10^170) is not yet supported by the note; see the repository
-README.
+Regime 2 covers `4·10^18 ≤ N < 10^500` (block sieve), Regime 3 covers `N ≥ 10^500` (linear sieve).
 
 ## Status: compiled (2026-11-25)
 
@@ -72,8 +71,8 @@ lake env lean AxiomsCheck.lean
 | Field | Regime | Statement | Source |
 |---|---|---|---|
 | `regime1 : GoldbachUpTo (4·10¹⁸)` | 1, 4 ≤ N ≤ 4·10¹⁸ | Goldbach for even N in that range | Oliveira e Silva–Herzog–Pardi, a computation (quoted via [BJS] §1 and [JS] §1; the primary paper was not read) |
-| `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10¹⁷⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | The certificate script `certify_all_even_1p4.py` (30 Bonferroni slabs), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
-| `regime3 : WeightedSievePositiveOn (Set.Ici (10¹⁷⁰))` | 3 | The same statement for N ≥ 10¹⁷⁰ | [BJS] Theorem 6 (arXiv:2207.09452v6, explicit linear sieve, Table 1 row 100), with [BJS] Lemma 38, [BS] Lemmas 4 and 5, and [JS] Lemma 5.1. **Not established**: the proof of [BJS] Theorem 6 uses its hypothesis at all lower levels, where the note's parameters violate it. |
+| `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10⁵⁰⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | The certificate script `certify_all_even_1p4.py` (30 Bonferroni slabs), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
+| `regime3 : WeightedSievePositiveOn (Set.Ici (10⁵⁰⁰))` | 3 | The same statement for N ≥ 10¹⁷⁰ | [BJS] Theorem 6 (arXiv:2207.09452v6, explicit linear sieve, Table 1 row 100), with [BJS] Lemma 38, [BS] Lemmas 4 and 5, and [JS] Lemma 5.1. **Not established**: the proof of [BJS] Theorem 6 uses its hypothesis at all lower levels, where the note's parameters violate it. |
 
 In `ConditionalInputs`, `regime2` and `regime3` take the form
 `DirichletLNonvanishingRightOfHalf → …`, so the role of GRH is visible in the statement.

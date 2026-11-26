@@ -123,7 +123,7 @@ Evidence for equivalence:
    - every field of the Regime 3 result;
    - all constants;
    - the benchmark output.
-2. **Consistency check.** `test_reference_matches_original_output` confirms that this reference agrees with the committed text output `data/certify_all_even_1p4_output.txt` to its 6 printed decimals.
+2. **Consistency check.** `test_reference_matches_original_output` confirms that this reference agrees with the committed text output `tests/data/earlier_split_output.txt` to its 6 printed decimals.
 3. **Comparison.** The full regression test runs the package and compares every one of these values.
 
 **Result of the comparison.** Every returned value is identical in all 90 digits, in both directions of every interval. This covers:

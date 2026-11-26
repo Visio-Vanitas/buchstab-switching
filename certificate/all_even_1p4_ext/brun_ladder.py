@@ -7,6 +7,7 @@ probe  E_LIST WIDTH OUT Ms as small|big   one slab [10^e, 10^e * WIDTH) per e (W
 Ms / as: comma lists or ranges "24-30".
 """
 import sys, os, json, time
+from decimal import Decimal
 from fractions import Fraction
 from multiprocessing import Pool
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -32,7 +33,7 @@ def rng(s):
 
 
 def fmt(x):
-    return f"{float(str(RB.ln_iv(RB.Iv(x)).lo)) / float(str(RB.ln_iv(RB.Iv(10)).hi)):.3f}"
+    return f"{Decimal(str(RB.ln_iv(RB.Iv(x)).lo)) / Decimal(str(RB.ln_iv(RB.Iv(10)).hi)):.3f}"
 
 
 def job(args):
@@ -46,12 +47,12 @@ def job(args):
                 up_caps=r.up_caps, up_ends=r.up_ends, E_minus_hi=str(r.e_minus.hi), E_plus_hi=str(r.e_plus.hi),
                 bracket_lo=str(r.bracket.lo), main_lo=str(r.main.lo), err_a_hi=str(r.err_a.hi),
                 err_aq_hi=str(r.err_aq.hi), err_q2_hi=str(r.err_q2.hi), err_hi=str(r.err_total.hi),
-                net_lo=str(r.net.lo), n_d_low=str(r.n_d_low), n_d_up=str(r.n_d_up), sec=round(time.time() - t, 1))
+                net_lo=str(r.net.lo), n_d_low=str(r.n_d_low), n_d_up=str(r.n_d_up), sec=f"{time.time() - t:.1f}")
 
 
 def best(P, x_lo, x_hi, Ms, As, caps=None):
     res = [r for r in P.map(job, [(x_lo, x_hi, M, a, caps) for M in Ms for a in As], chunksize=1) if r]
-    return max(res, key=lambda r: float(r['net_lo'])) if res else None
+    return max(res, key=lambda r: Decimal(r['net_lo'])) if res else None
 
 
 def ladder(e0, e1, out, Ms, As, caps=None):
@@ -68,8 +69,8 @@ def ladder(e0, e1, out, Ms, As, caps=None):
                 if r:
                     i += 1; r['slab'] = i; L.append(r)
                     print(f"slab {i}: [10^{fmt(x)}, 10^{fmt(xh)}) M={r['M']} a={r['a']} low={r['low_caps']} "
-                          f"up={r['up_caps']} E-<={float(r['E_minus_hi']):.2e} E+<={float(r['E_plus_hi']):.3e} "
-                          f"main>={float(r['main_lo']):.4e} err<={float(r['err_hi']):.2e} net>={float(r['net_lo']):.4e}",
+                          f"up={r['up_caps']} E-<={Decimal(r['E_minus_hi']):.2e} E+<={Decimal(r['E_plus_hi']):.3e} "
+                          f"main>={Decimal(r['main_lo']):.4e} err<={Decimal(r['err_hi']):.2e} net>={Decimal(r['net_lo']):.4e}",
                           flush=True)
                     json.dump(L, open(out, 'w'), indent=0)
                     x = xh
@@ -83,7 +84,7 @@ def ladder(e0, e1, out, Ms, As, caps=None):
         if u['x_hi'] != v['x_lo']:
             raise RuntimeError(f"gap between slabs {u['slab']} and {v['slab']}")
     print(f"DONE {len(L)} slabs from {L[0]['x_lo'][:4]}.. to 10^{fmt(int(L[-1]['x_hi']))}, contiguous (checked), "
-          f"least net {min(float(r['net_lo']) for r in L):.4e}", flush=True)
+          f"least net {min(Decimal(r['net_lo']) for r in L):.4e}", flush=True)
 
 
 def probe(es, width, out, Ms, As, which):
@@ -97,8 +98,8 @@ def probe(es, width, out, Ms, As, which):
             t = time.time()
             r = best(P, x, xh, Ms, As, caps)
             print(f"e={e} w={width}: " + ("NOT certified" if r is None else
-                  f"M={r['M']} a={r['a']} low={r['low_caps']} up={r['up_caps']} E+<={float(r['E_plus_hi']):.3e} "
-                  f"main>={float(r['main_lo']):.4e} err<={float(r['err_hi']):.2e} net>={float(r['net_lo']):.4e}")
+                  f"M={r['M']} a={r['a']} low={r['low_caps']} up={r['up_caps']} E+<={Decimal(r['E_plus_hi']):.3e} "
+                  f"main>={Decimal(r['main_lo']):.4e} err<={Decimal(r['err_hi']):.2e} net>={Decimal(r['net_lo']):.4e}")
                   + f" t={time.time() - t:.0f}s", flush=True)
             R.append(dict(e=e, width=width, result=r))
             json.dump(R, open(out, 'w'), indent=0)

@@ -19,6 +19,15 @@ provided the three inequalities checked in `check_majorant` hold; summing,
 from fractions import Fraction as Fr
 import sys
 
+
+def _up(x, places):
+    """Exact upward decimal rounding of a Fraction/Decimal/int, for display (no floats)."""
+    from fractions import Fraction
+    from decimal import Decimal
+    q = Fraction(x) * 10 ** places
+    n = -((-q.numerator) // q.denominator)
+    return str(Decimal(n).scaleb(-places))
+
 DIGITS = 40
 SCALE = 10 ** DIGITS
 
@@ -110,9 +119,9 @@ def main():
         row = []
         for use_table in (True, False):
             r = constants(k, use_table)
-            row.append("not applicable" if r is None else "%.3f %.3f" % (float(r[0]) + 5e-4, float(r[1]) + 5e-4))
+            row.append("not applicable" if r is None else "%s %s" % (_up(r[0], 3), _up(r[1], 3)))
         t = constants(k, True)
-        print(k, "|", row[0], "|", row[1], "|", PAPER.get(k, ("-", "-")), "| %.1e" % (float(t[2]) if t else 0))
+        print(k, "|", row[0], "|", row[1], "|", PAPER.get(k, ("-", "-")), "| " + (format(__import__("decimal").Decimal(str(t[2])), ".1e") if t else "0"))
 
 
 if __name__ == "__main__":

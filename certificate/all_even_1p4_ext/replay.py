@@ -7,6 +7,7 @@ from 4e18 to exactly 10^500, and re-runs each tail certificate (inputs read from
 recorded (e, M, B, k, recursion, mesh, slices), requiring e = 500 and the recorded net. Prints sha256 of both inputs.
 """
 import sys, os, json, hashlib, time
+from decimal import Decimal
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from all_even_1p4_ext.regime2_brun import certify_brun_slab
 from all_even_1p4_ext.tail_x31 import X31Tail, certify
@@ -23,7 +24,7 @@ for i, r in enumerate(L, 1):
         s = certify_brun_slab(x_lo, x_hi, r["M"], r["a"],
                               fixed=((r["low_caps"], r["low_ends"]), (r["up_caps"], r["up_ends"])))
         ok = (s.z == r["z"] and str(s.y) == str(r["y"]) and str(s.net.lo) == r["net_lo"] and s.net.lo > 0)
-        msg = f"net>={float(str(s.net.lo)):.6e}" + ("" if ok else f" MISMATCH recorded {r['net_lo'][:12]} z {s.z}/{r['z']}")
+        msg = f"net>={Decimal(str(s.net.lo)):.6e}" + ("" if ok else f" MISMATCH recorded {r['net_lo'][:12]} z {s.z}/{r['z']}")
     except Exception as e:
         ok, msg = False, f"{type(e).__name__}: {e}"
     bad += not ok

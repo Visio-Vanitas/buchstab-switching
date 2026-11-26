@@ -11,8 +11,8 @@ The proof splits the even integers into three ranges with exact integer endpoint
 | Range | Method | Where proved | Certificate | Least margin |
 |---|---|---|---|---|
 | `4 ≤ N ≤ 4·10^18` | numerical verification of Goldbach (`Ω(η) = 1`) | quoted, frame note §0.6 | none | not applicable |
-| `4·10^18 ≤ N < 10^500` | weighted inequality (1.1) with the Brun block sieve, 58 contiguous slabs | frame note §1–§2, block-sieve note | `data/x32_brun_integrated/ladder_4e18_500_all.json`, replay log | net `≥ 1.68·10^-3` (slab `[10^390, 10^400)`); relative margin smallest in slab 1 (`1.82·10^-3` of main `2.43·10^-2`) |
-| `N ≥ 10^500` | weighted inequality (1.1) with the explicit linear sieve with pre-sieve | frame note §1, linear-sieve notes | `data/x32_brun_integrated/tail/tail_at_500.json` | net `≥ 0.0752` (sharper recursion), `≥ 0.0391` (old recursion) |
+| `4·10^18 ≤ N < 10^500` | weighted inequality (1.1) with the Brun block sieve, 58 contiguous slabs | frame note §1–§2, block-sieve note | `data/certificate/ladder_4e18_500_all.json`, replay log | net `≥ 1.68·10^-3` (slab `[10^390, 10^400)`); relative margin smallest in slab 1 (`1.82·10^-3` of main `2.43·10^-2`) |
+| `N ≥ 10^500` | weighted inequality (1.1) with the explicit linear sieve with pre-sieve | frame note §1, linear-sieve notes | `data/certificate/tail/tail_at_500.json` | net `≥ 0.0752` (sharper recursion), `≥ 0.0391` (old recursion) |
 
 ## 2. The common frame
 
@@ -30,9 +30,9 @@ A lower-bound sieve is applied to the first term, an upper-bound sieve to each `
 
 Blocks of primes `B_1` (largest) … `B_r`, with caps `m_1 ≤ … ≤ m_r` on the number of prime factors of `d` in `B_1 ∪ … ∪ B_i`; all caps odd give a lower-bound sieve, all even an upper-bound sieve (Theorem A). The sieve sum is `V·(1 ∓ E)` with `0 ≤ E ≤ Σ_i S_i^{m_i+1} / ((m_i+1)!·V_i)` (Lemmas B.3, D), and the level is at most `∏ z_{i−1}^{m_i − m_{i−1}}` (Lemma E). The script `certificate/all_even_1p4_ext/regime2_brun.py` (`certify_brun_slab`) evaluates (1.1) on a slab `[X_lo, X_hi)` in interval arithmetic with the package's inputs and checks the level conditions as exact integers.
 
-- Ladder: `data/x32_brun_integrated/LADDER_TABLE.md` (58 slabs, parameters and nets).
-- Replay: `certificate/all_even_1p4_ext/replay.py` re-certifies each slab from the recorded parameters with no search and checks that the endpoints are contiguous from `4·10^18` to `10^500`; log in `data/x32_brun_integrated/replay/`.
-- Cross-check against the Bonferroni sieve of the frame note on `[10^200, 10^205)`: `data/x32_brun_integrated/crosscheck_200_205.txt`.
+- Ladder: `data/certificate/LADDER_TABLE.md` (58 slabs, parameters and nets).
+- Replay: `certificate/all_even_1p4_ext/replay.py` re-certifies each slab from the recorded parameters with no search and checks that the endpoints are contiguous from `4·10^18` to `10^500`; log in `data/certificate/replay/`.
+- Cross-check against the Bonferroni sieve of the frame note on `[10^200, 10^205)`: `data/certificate/crosscheck_200_205.txt`.
 
 ## 4. Tail: the explicit linear sieve
 
@@ -47,7 +47,7 @@ Final parameters, `ε = 1/80`:
 
 ## 5. Checks
 
-Each part (the weighted inequality and its remainder terms, the block sieve, the corrected linear sieve and its constants, and the certificate code for both computed ranges) was read by several independent readers, each part at least twice, with no error found. Every certified number was reproduced by an independent replay from the recorded parameters with no search (`data/x32_brun_integrated/replay/`).
+Each part (the weighted inequality and its remainder terms, the block sieve, the corrected linear sieve and its constants, and the certificate code for both computed ranges) was read by several independent readers, each part at least twice, with no error found. Every certified number was reproduced by an independent replay from the recorded parameters with no search (`data/certificate/replay/`).
 
 ## 6. What the theorem still rests on without a check at source
 
@@ -58,9 +58,9 @@ Each part (the weighted inequality and its remainder terms, the block sieve, the
 
 ## 7. Reproduce
 
-See `data/x32_brun_integrated/README.md` (ladder segments, cross-check, tail) and
+See `data/certificate/README.md` (ladder segments, cross-check, tail) and
 
 ```
 cd certificate
-python3 -I all_even_1p4_ext/replay.py ../data/x32_brun_integrated/ladder_4e18_500_all.json ../data/x32_brun_integrated/tail/tail_at_500.json
+python3 -I all_even_1p4_ext/replay.py ../data/certificate/ladder_4e18_500_all.json ../data/certificate/tail/tail_at_500.json
 ```

@@ -35,12 +35,12 @@ def grid(h: int = 200):
 
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                        "data", "x31_tail_n3")
+                        "data", "linear_sieve_inputs")
 
 
 HSTAR_SHA256 = "9db0e31b2ff56e623eb512ab7f058bc5e247a4ba0fbe6e9cfce04e0839ce4eb4"
-CN_SHA256 = "0f7736057abbe91f15d7daca84ce7e57ae65ee20518ee90c8943b03a37679544"
-"""sha256 of the committed data/x31_tail_n3/logs/hstar.log and cn_rows_all.json; load_inputs refuses other files."""
+CN_SHA256 = "b931b6798c2c9f35cba30ead4c54c668d544b79c9a1989aa705352d55d09b906"
+"""sha256 of the committed data/linear_sieve_inputs/logs/hstar.log and cn_rows_all.json; load_inputs refuses other files."""
 
 _DEC = re.compile(r"^[0-9]+(?:\.[0-9]+)?$")
 
@@ -200,7 +200,7 @@ def certify(p: X31Tail) -> dict:
     return dict(ok=net.lo > 0 and main_bracket.lo > 0, e=p.e, M=p.m, B=p.b, k=p.k, rec=p.rec, grid_h=p.grid_h,
                 slices=p.slices, alpha=str(alpha_dec), s=S(s), s_min=S(s_min),
                 f_s=S(f_s), lb_a=S(lb_a), half_sum=U(half_sum), main=S(main), R1=U(err_r1), R2=U(err_r2), rq=U(err_rq),
-                q2=U(err_q2), err=U(err), net=S(net), net_lo=float(str(net.lo)))
+                q2=U(err_q2), err=U(err), net=S(net), net_lo=str(net.lo))
 
 
 def try_certify(p):

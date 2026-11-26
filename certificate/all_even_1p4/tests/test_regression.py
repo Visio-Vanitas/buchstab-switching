@@ -30,7 +30,7 @@ from all_even_1p4.regime2 import SLABS, SlabResult, certify_slab
 
 HERE = Path(__file__).resolve().parent
 REFERENCE = json.loads((HERE / "data" / "original_reference.json").read_text())
-ORIGINAL_OUTPUT = HERE.parent.parent.parent / "data" / "certify_all_even_1p4_output.txt"
+ORIGINAL_OUTPUT = HERE / "data" / "earlier_split_output.txt"
 TOLERANCE = Fraction(1, 10**80)
 FULL = os.environ.get("ALL_EVEN_1P4_FULL") == "1"
 
