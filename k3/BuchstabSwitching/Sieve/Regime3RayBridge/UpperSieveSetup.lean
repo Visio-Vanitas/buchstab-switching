@@ -404,7 +404,7 @@ private lemma regime3_midPrimes_card_le {N z y : ℕ}
     have hsq_exp : Real.exp ((0.1 : ℝ) * Real.log (N : ℝ)) =
         Real.sqrt (Real.exp ((0.2 : ℝ) * Real.log (N : ℝ))) := by
       rw [← Real.sqrt_sq (Real.exp_pos ((0.1 : ℝ) * Real.log (N : ℝ))).le, sq, ← Real.exp_add]
-      congr 1; ring
+      congr 2; ring
     rw [hsq_exp]
     exact Real.sqrt_le_sqrt hy_ge_exp02
   have hinv_le : Real.sqrt (y : ℝ) ≤ (1 / Real.exp ((0.1 : ℝ) * Real.log (N : ℝ))) * (y : ℝ) := by

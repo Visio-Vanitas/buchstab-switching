@@ -196,8 +196,7 @@ theorem abs_shifted_rem_div_card_le_epdNorm {li2 X_lo : ℝ} {N d : ℕ}
   have hN_real : 4 * (10 : ℝ) ^ 18 ≤ (N : ℝ) := hX_lo.trans hX_N
   have hN_pos : (0 : ℝ) < (N : ℝ) := lt_of_lt_of_le (by norm_num) hN_real
   have hlogN_pos : 0 < Real.log (N : ℝ) := by linarith [forty_le_log_of_four_mul_pow18 hN_real]
-  have hS : External.SchoenfeldRHBound li2 := hCls.schoenfeld hGRH
-  have hli2_nonneg : 0 ≤ li2 := (li2_bounds_of_schoenfeld hS).1.le.trans' (by norm_num)
+  have hli2_nonneg : 0 ≤ li2 := hCls.li2_bounds.1.le.trans' (by norm_num)
   have hrem := shifted_rem_bound hGRH hCls hX_lo hX_N hd hd_sqrt hcop
   have hcard := shiftedSet_card_gt_div_log hGRH hCls hN_real
   have hdiv :

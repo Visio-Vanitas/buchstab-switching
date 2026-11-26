@@ -107,10 +107,10 @@ def _exp_dec(x: Decimal, r) -> Decimal:
     return _round_floor(val) if r == ROUND_FLOOR else _round_ceil(val)
 
 
-def fmt_dec(d: Decimal, places: int, rounding=ROUND_FLOOR) -> str:
+def fmt_dec(d: Decimal, places: int, rounding: str = ROUND_FLOOR) -> str:
     """Format a Decimal with explicit directed rounding inside a safe localcontext."""
     fmt_str = f"1e-{places}" if places > 0 else "1"
-    with directed_context(rounding, PREC):
+    with directed_context(rounding, 120):
         q = d.quantize(Decimal(fmt_str))
     return f"{q:.{places}f}"
 

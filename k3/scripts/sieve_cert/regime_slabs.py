@@ -333,7 +333,11 @@ def certify_slab_2b(spec: Slab2BSpec) -> SlabCertificate:
                 num_q_sl = pi_ub_iv(q1_iv, ln_iv(q1_iv)) - Iv(cnt_lo, cnt_lo)
             else:
                 l0, l1 = ln_iv(q0_iv), ln_iv(q1_iv)
-                num_q_sl = (q1_iv - q0_iv) / l0 + (q1_iv.sqrt() * l1 + q0_iv.sqrt() * l0) / (Iv(8, 8) * PI)
+                num_q_sl = (
+                    (q1_iv - q0_iv) / l0
+                    + (q1_iv.sqrt() * l1 + q0_iv.sqrt() * l0) / (Iv(8, 8) * PI)
+                    + Iv(1, 1)
+                )
             q_max = q1 - 1
 
         best_main = sq

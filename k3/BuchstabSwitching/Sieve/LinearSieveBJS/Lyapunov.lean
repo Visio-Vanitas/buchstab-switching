@@ -77,7 +77,7 @@ private lemma E_bjs_step_from_contraction {c_seq : ℕ → ℝ} {ε κ γ : ℝ}
     (hε0 : 0 < ε) (hc : ValidDecaySeq c_seq)
     {m : ℕ} (hm1 : 1 ≤ m)
     (hIH : ∀ t, 1 ≤ t → E_bjs (1 + ε) m t ≤ ε * tauBJS c_seq ε m * Real.exp 2 * h_bjs t)
-    {s : ℝ} (hs2 : 2 ≤ s) (hs_lt : s < (m : ℝ) + 3)
+    {s : ℝ} (hs2 : 2 ≤ s) (hm_dom : (if Even m then (2 : ℝ) else 1) ≤ s - 1) (hs_lt : s < (m : ℝ) + 3)
     (hE_eq : E_bjs (1 + ε) (m + 1) s =
       ε * (fHat m (s - 1) + E_bjs (1 + ε) m (s - 1)) +
         ((1 + ε) / s) * (∫ t in s..((m : ℝ) + 4), E_bjs (1 + ε) m (t - 1)) +
@@ -93,7 +93,7 @@ private lemma E_bjs_step_from_contraction {c_seq : ℕ → ℝ} {ε κ γ : ℝ}
   have hK1 : 1 ≤ 1 + ε := by linarith
   have hτ_nn : 0 ≤ tauBJS c_seq ε m := tauBJS_nonneg hε0.le (fun k hk => (hc.1 k hk).1.le) m
   have hf_pt : fHat m (s - 1) ≤ 2 * Real.exp 2 * (c_seq m) ^ (m - 1) * h_bjs (s - 1) :=
-    hc.2 m (s - 1) hm1 hs_sub1
+    hc.2 m (s - 1) hm1 hm_dom
   have hE_pt : E_bjs (1 + ε) m (s - 1) ≤ ε * tauBJS c_seq ε m * Real.exp 2 * h_bjs (s - 1) :=
     hIH (s - 1) hs_sub1
   have hE_int : ∫ t in s..((m : ℝ) + 4), E_bjs (1 + ε) m (t - 1) ≤
@@ -114,7 +114,7 @@ private lemma E_bjs_step_from_contraction {c_seq : ℕ → ℝ} {ε κ γ : ℝ}
   have hf_int_eq : (ε / s) * ∫ t in s..((m : ℝ) + 4), fHat m (t - 1) = ε * fHat (m + 1) s := by
     rw [hf_tail]; field_simp [hs0.ne']
   have hf_succ : fHat (m + 1) s ≤ 2 * Real.exp 2 * (c_seq (m + 1)) ^ m * h_bjs s := by
-    simpa using hc.2 (m + 1) s (by omega) hs1
+    simpa using hc.2 (m + 1) s (by omega) (by split_ifs <;> linarith)
   have h1 : ε * (fHat m (s - 1) + E_bjs (1 + ε) m (s - 1)) ≤
       ε * Real.exp 2 * (2 * (c_seq m) ^ (m - 1) + ε * tauBJS c_seq ε m) * (γ * h_bjs s) := by
     have hsum : fHat m (s - 1) + E_bjs (1 + ε) m (s - 1) ≤
@@ -180,7 +180,7 @@ private lemma E_bjs_step_tilde {c_seq : ℕ → ℝ} {ε : ℝ}
     simpa only [E_bjs] using h0
   have hs0 : 0 < s := by linarith
   have hf_pt : fHat (m' + 1) 2 ≤ 2 * Real.exp 2 * (c_seq (m' + 1)) ^ m' * h_bjs 2 := by
-    simpa using hc.2 (m' + 1) 2 hm1 (by norm_num)
+    simpa using hc.2 (m' + 1) 2 hm1 (by split_ifs <;> norm_num)
   have hE_pt : E_bjs (1 + ε) (m' + 1) 2 ≤
       ε * tauBJS c_seq ε (m' + 1) * Real.exp 2 * h_bjs 2 := hIH 2 (by norm_num)
   have hE_int : ∫ t in (3 : ℝ)..((m' + 1 : ℕ) : ℝ) + 4, E_bjs (1 + ε) (m' + 1) (t - 1) ≤
@@ -236,7 +236,7 @@ private lemma E_bjs_step_tilde {c_seq : ℕ → ℝ} {ε : ℝ}
     congr 1
     linarith
   have hf_succ : fHat (m' + 2) s ≤ 2 * Real.exp 2 * (c_seq (m' + 2)) ^ (m' + 1) * h_bjs s := by
-    simpa using hc.2 (m' + 2) s (by omega) hs1
+    simpa using hc.2 (m' + 2) s (by omega) (by simp only [hev, ↓reduceIte]; exact hs1)
   have hτ1_nn : 0 ≤ tauBJS c_seq ε (m' + 1) :=
     tauBJS_nonneg hε0.le (fun k hk => (hc.1 k hk).1.le) (m' + 1)
   have hc1_nn : 0 ≤ (c_seq (m' + 1)) ^ m' := pow_nonneg (hc.1 (m' + 1) hm1).1.le m'
@@ -406,6 +406,7 @@ theorem E_bjs_le_tauBJS {c_seq : ℕ → ℝ} {ε : ℝ} (hε0 : 0 < ε) (_hε :
                 E_bjs (1 + ε) (m' + 2) u ≤
                   ε * xiTermBJS κ γ c_seq ε (m' + 2) (tauBJS c_seq ε (m' + 1)) * Real.exp 2 * h_bjs u :=
               fun hh hH => E_bjs_step_from_contraction hε0 hc hm1 hIH hu2
+                (by simp only [Nat.even_add_one.mp hev, ↓reduceIte]; linarith)
                 (by rw [hcast_m1]; exact hu_lt) hE_eq hf_tail hh hH
             have hτ_def : tauBJS c_seq ε (m' + 2) =
                 max (xiTermBJS kappa2 (gammaBJS 2) c_seq ε (m' + 2) (tauBJS c_seq ε (m' + 1)))
@@ -483,6 +484,7 @@ theorem E_bjs_le_tauBJS {c_seq : ℕ → ℝ} {ε : ℝ} (hε0 : 0 < ε) (_hε :
             have hf_tail := (fHat_tail_integral (m' + 1) hm1 (s := s) (M := ((m' + 1 : ℕ) : ℝ) + 4)
               (by push_cast; linarith)).2 hodd hs3
             have hE_xi := E_bjs_step_from_contraction hε0 hc hm1 hIH (by linarith)
+              (by split_ifs <;> linarith)
               (by rw [hcast_m1]; exact hs_lt) hE_eq hf_tail (h_bjs_sub_one_le.2.1 hs3)
               (H_bjs_le_three hs3 (by push_cast; linarith))
             have hle : xiTermBJS kappa3 (gammaBJS 3) c_seq ε (m' + 2) (tauBJS c_seq ε (m' + 1)) ≤

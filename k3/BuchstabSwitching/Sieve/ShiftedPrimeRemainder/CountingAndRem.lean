@@ -24,6 +24,7 @@ structure ClassicalPrimePremises (li2 : ℝ) : Prop where
   js_ap : External.JSLemma51Premise li2
   schoenfeld : External.SchoenfeldPrimePremise li2
   robin : External.RobinOmegaBound
+  li2_bounds : (1 / 3 : ℝ) < li2 ∧ li2 < 3
 
 end Premises
 
@@ -231,34 +232,6 @@ lemma exp_one_ge_2716_div_1000 : (2716 / 1000 : ℝ) ≤ Real.exp 1 := by
   norm_num [Finset.sum_range_succ, Nat.factorial] at hsum
   linarith
 
-private lemma two_div_three_lt_log_two : (2 / 3 : ℝ) < Real.log 2 := by
-  have hexp_lt : Real.exp (2 / 3 : ℝ) < 2 := by
-    by_contra hle
-    push Not at hle
-    have hpow : (2 : ℝ) ^ 3 ≤ (Real.exp (2 / 3 : ℝ)) ^ 3 := pow_le_pow_left₀ (by norm_num) hle 3
-    have hexp3 : (Real.exp (2 / 3 : ℝ)) ^ 3 = (Real.exp 1) ^ 2 := by
-      rw [← Real.exp_natCast_mul, ← Real.exp_natCast_mul]
-      norm_num
-    rw [hexp3] at hpow
-    have hexp2_lt : (Real.exp 1) ^ 2 < (274 / 100 : ℝ) ^ 2 :=
-      pow_lt_pow_left₀ External.exp_one_lt_274_div_100 (Real.exp_pos 1).le (by norm_num)
-    norm_num at hpow hexp2_lt
-    linarith
-  calc (2 / 3 : ℝ) = Real.log (Real.exp (2 / 3 : ℝ)) := (Real.log_exp _).symm
-    _ < Real.log 2 := Real.log_lt_log (Real.exp_pos _) hexp_lt
-
-private lemma log_three_lt_two : Real.log 3 < 2 := by
-  have hlt : (3 : ℝ) < Real.exp 2 := by
-    have h1 : (3 : ℝ) < (27 / 10 : ℝ) ^ 2 := by norm_num
-    have h2 : (27 / 10 : ℝ) ^ 2 ≤ (Real.exp 1) ^ 2 :=
-      pow_le_pow_left₀ (by norm_num) exp_one_ge_27_div_10 2
-    have h3 : (Real.exp 1) ^ 2 = Real.exp 2 := by
-      rw [← Real.exp_natCast_mul]
-      norm_num
-    linarith
-  calc Real.log 3 < Real.log (Real.exp 2) := Real.log_lt_log (by norm_num) hlt
-    _ = 2 := Real.log_exp 2
-
 lemma forty_le_log_of_four_mul_pow18 {x : ℝ} (hx : 4 * (10 : ℝ) ^ 18 ≤ x) :
     (40 : ℝ) ≤ Real.log x := by
   have hexp40 : Real.exp 40 ≤ 4 * (10 : ℝ) ^ 18 := by
@@ -301,60 +274,6 @@ private lemma thirteen_le_omegaUpperFn_of_four_mul_pow18 {x : ℝ} (hx : 4 * (10
   unfold External.omegaUpperFn
   rw [mul_div_assoc]
   nlinarith
-
-/-- Any `SchoenfeldRHBound li2` automatically constrains `li2 ∈ (1 / 3, 3)` by specializing
-at `x = 3`. -/
-theorem li2_bounds_of_schoenfeld {li2 : ℝ} (hS : External.SchoenfeldRHBound li2) :
-    (1 / 3 : ℝ) < li2 ∧ li2 < 3 := by
-  have h3 := hS 3 (le_refl 3)
-  have hpi3 : External.primeCounting 3 = 2 := by
-    have hnat : External.primeCounting ((3 : ℕ) : ℝ) = 2 := by
-      rw [External.primeCounting_nat 3]
-      decide
-    simpa using hnat
-  rw [hpi3] at h3
-  have hcont : ContinuousOn (fun t : ℝ => 1 / Real.log t) (Set.Icc 2 3) := by
-    intro t ht
-    have ht1 : 1 < t := by linarith [ht.1]
-    have ht0 : t ≠ 0 := by linarith
-    have hl0 : Real.log t ≠ 0 := ne_of_gt (Real.log_pos ht1)
-    exact (continuousAt_const.div (Real.continuousAt_log ht0) hl0).continuousWithinAt
-  have hint1 : IntervalIntegrable (fun t : ℝ => 1 / Real.log t) MeasureTheory.volume 2 3 := by
-    rw [← Set.uIcc_of_le (by norm_num : (2 : ℝ) ≤ 3)] at hcont
-    exact hcont.intervalIntegrable
-  have hLi3_le : External.offsetLogIntegral 3 ≤ 3 / 2 := by
-    unfold External.offsetLogIntegral
-    calc ∫ t in (2 : ℝ)..3, 1 / Real.log t
-        ≤ ∫ _ in (2 : ℝ)..3, (3 / 2 : ℝ) := by
-          refine intervalIntegral.integral_mono_on (by norm_num) hint1 intervalIntegrable_const ?_
-          intro t ht
-          have hlog_ge : (2 / 3 : ℝ) ≤ Real.log t :=
-            two_div_three_lt_log_two.le.trans (Real.log_le_log (by norm_num) ht.1)
-          have hinv : 1 / Real.log t ≤ 1 / (2 / 3 : ℝ) :=
-            one_div_le_one_div_of_le (by norm_num) hlog_ge
-          linarith
-      _ = 3 / 2 := by
-          rw [intervalIntegral.integral_const, smul_eq_mul]
-          norm_num
-  have hLi3_nonneg : 0 ≤ External.offsetLogIntegral 3 :=
-    External.offsetLogIntegral_nonneg (by norm_num)
-  have herr_lt : Real.sqrt 3 * Real.log 3 / (8 * Real.pi) < 1 / 6 := by
-    have hsqrt3 : Real.sqrt 3 < 2 := by
-      rw [Real.sqrt_lt' (by norm_num)]
-      norm_num
-    have hlog3_pos : 0 < Real.log 3 := Real.log_pos (by norm_num)
-    have hnum_lt : Real.sqrt 3 * Real.log 3 < 4 := by
-      nlinarith [log_three_lt_two, Real.sqrt_nonneg 3]
-    have hden_gt : 24 < 8 * Real.pi := by linarith [Real.pi_gt_three]
-    have h1 : Real.sqrt 3 * Real.log 3 / (8 * Real.pi) < 4 / (8 * Real.pi) :=
-      div_lt_div_of_pos_right hnum_lt (by positivity)
-    have h2 : (4 : ℝ) / (8 * Real.pi) < 4 / 24 :=
-      div_lt_div_of_pos_left (by norm_num) (by norm_num) hden_gt
-    linarith
-  have hdiff := abs_sub_le_iff.mp h3
-  dsimp only [External.logIntegral] at hdiff
-  push_cast at hdiff
-  constructor <;> linarith
 
 end ElementaryBounds
 
@@ -409,8 +328,9 @@ theorem shifted_rem_bound {li2 X_lo : ℝ} {N d : ℕ}
   have hN_ge3 : 3 ≤ N := by
     have : (3 : ℝ) ≤ (N : ℝ) := le_trans (by norm_num) hN_real
     exact_mod_cast this
+  have hN_ge2657 : (2657 : ℝ) ≤ (N : ℝ) := le_trans (by norm_num) hN_real
   have hS : External.SchoenfeldRHBound li2 := hCls.schoenfeld hGRH
-  have hli2_bd := (li2_bounds_of_schoenfeld hS)
+  have hli2_bd := hCls.li2_bounds
   have hli2_abs : |li2| ≤ 3 := abs_le.mpr ⟨by linarith, by linarith⟩
   have hom_ge : |li2| ≤ External.omegaUpperFn (N : ℝ) :=
     hli2_abs.trans (by linarith [thirteen_le_omegaUpperFn_of_four_mul_pow18 hN_real])
@@ -421,7 +341,7 @@ theorem shifted_rem_bound {li2 X_lo : ℝ} {N d : ℕ}
   have hrh : |(External.primeCounting (N : ℝ) : ℝ) -
       (External.offsetLogIntegral (N : ℝ) + li2)| ≤
       Real.sqrt (N : ℝ) * Real.log (N : ℝ) / (8 * Real.pi) := by
-    simpa [External.logIntegral] using hS (N : ℝ) (by exact_mod_cast hN_ge3)
+    simpa [External.logIntegral] using hS (N : ℝ) hN_ge2657
   have hphi2 : (2 : ℝ) ≤ (Nat.totient d : ℝ) := by exact_mod_cast two_le_totient_of_three_le hd
   have hphi_pos : 0 < (Nat.totient d : ℝ) := by linarith
   have hom_lt := hCls.robin.lt_omegaUpperFn hN_ge3

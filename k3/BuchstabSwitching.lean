@@ -29,6 +29,7 @@ import BuchstabSwitching.External.EulerProductV.ProductAsymptotic
 import BuchstabSwitching.External.BuchstabSeries.DelayDiffEqIdentity
 import BuchstabSwitching.External.NumericalConstants.ExplicitConstants
 import BuchstabSwitching.External.MultiplicativeBounds.SlabSieveEnclosure
+import BuchstabSwitching.External.MultiplicativeBounds.SlabSieveEngineWiring
 import BuchstabSwitching.External.LinearSieve.AsymptoticRayEnclosure
 import BuchstabSwitching.External.Bridge
 import BuchstabSwitching.Main

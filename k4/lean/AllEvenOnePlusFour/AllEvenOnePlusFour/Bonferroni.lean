@@ -42,7 +42,8 @@ theorem truncated_alternating_sum_choose_le_of_odd (k : ℕ) {m : ℕ} (hm : Odd
     ∑ j ∈ range (m + 1), ((-1) ^ j * k.choose j : ℤ) ≤ if k = 0 then 1 else 0 := by
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact (truncated_alternating_sum_choose_zero m).le.trans (by simp)
-  · rw [truncated_alternating_sum_choose hk, hm.neg_one_pow, if_neg hk.ne']
+  · rw [truncated_alternating_sum_choose hk, hm.neg_one_pow]
+    simp only [hk.ne', ↓reduceIte]
     have h0 : (0 : ℤ) ≤ ((k - 1).choose m : ℤ) := Nat.cast_nonneg _
     linarith
 
@@ -52,7 +53,8 @@ theorem le_truncated_alternating_sum_choose_of_even (k : ℕ) {m : ℕ} (hm : Ev
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact (by simp : (if (0 : ℕ) = 0 then (1 : ℤ) else 0) ≤ 1).trans
       (truncated_alternating_sum_choose_zero m).ge
-  · rw [truncated_alternating_sum_choose hk, hm.neg_one_pow, if_neg hk.ne']
+  · rw [truncated_alternating_sum_choose hk, hm.neg_one_pow]
+    simp only [hk.ne', ↓reduceIte]
     have h0 : (0 : ℤ) ≤ ((k - 1).choose m : ℤ) := Nat.cast_nonneg _
     linarith
 

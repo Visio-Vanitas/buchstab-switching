@@ -34,13 +34,15 @@ def grid(h: int = 200):
     return _GRIDS[h]
 
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                        "data", "linear_sieve_inputs")
+DATA_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
+    "shared", "data", "linear_sieve_inputs",
+)
 
 
 HSTAR_SHA256 = "9db0e31b2ff56e623eb512ab7f058bc5e247a4ba0fbe6e9cfce04e0839ce4eb4"
 CN_SHA256 = "b931b6798c2c9f35cba30ead4c54c668d544b79c9a1989aa705352d55d09b906"
-"""sha256 of the committed data/linear_sieve_inputs/logs/hstar.log and cn_rows_all.json; load_inputs refuses other files."""
+"""sha256 of the committed shared/data/linear_sieve_inputs/logs/hstar.log and cn_rows_all.json; load_inputs refuses other files."""
 
 _DEC = re.compile(r"^[0-9]+(?:\.[0-9]+)?$")
 

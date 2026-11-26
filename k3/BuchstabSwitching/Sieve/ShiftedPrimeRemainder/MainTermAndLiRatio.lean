@@ -490,8 +490,8 @@ theorem shiftedSet_card_gt_div_log {li2 : ℝ} {N : ℕ}
   have h40 : (40 : ℝ) ≤ Real.log (N : ℝ) := forty_le_log_of_four_mul_pow18 hN
   have hlog_pos : 0 < Real.log (N : ℝ) := by linarith
   have hS : External.SchoenfeldRHBound li2 := hCls.schoenfeld hGRH
-  have hli2_pos : 0 < li2 := (li2_bounds_of_schoenfeld hS).1.trans' (by norm_num)
-  have hpi_lb := External.le_primeCounting_of_schoenfeld hS (by exact_mod_cast hN_ge3 : (3 : ℝ) ≤ (N : ℝ))
+  have hli2_pos : 0 < li2 := hCls.li2_bounds.1.trans' (by norm_num)
+  have hpi_lb := External.le_primeCounting_of_schoenfeld hS (le_trans (by norm_num) hN : (2657 : ℝ) ≤ (N : ℝ))
   have hom_lt := hCls.robin.lt_omegaUpperFn hN_ge3
   have hA_lb : External.offsetLogIntegral (N : ℝ) -
       (Real.sqrt (N : ℝ) * Real.log (N : ℝ) / (8 * Real.pi) + External.omegaUpperFn (N : ℝ)) <
@@ -581,8 +581,8 @@ theorem offsetLogIntegral_div_shiftedSet_card_le {li2 X_lo : ℝ} {N : ℕ}
   have hA_pos : 0 < ((shiftedCoprimePrimes N).card : ℝ) :=
     lt_trans (div_pos hN_pos hlogN_pos) (shiftedSet_card_gt_div_log hGRH hCls hN_real)
   have hS : External.SchoenfeldRHBound li2 := hCls.schoenfeld hGRH
-  have hli2_pos : 0 < li2 := (li2_bounds_of_schoenfeld hS).1.trans' (by norm_num)
-  have hpi_lb := External.le_primeCounting_of_schoenfeld hS (by exact_mod_cast hN_ge3 : (3 : ℝ) ≤ (N : ℝ))
+  have hli2_pos : 0 < li2 := hCls.li2_bounds.1.trans' (by norm_num)
+  have hpi_lb := External.le_primeCounting_of_schoenfeld hS (le_trans (by norm_num) hN_real : (2657 : ℝ) ≤ (N : ℝ))
   have hom_lt := hCls.robin.lt_omegaUpperFn hN_ge3
   have hA_lb : External.offsetLogIntegral (N : ℝ) -
       (Real.sqrt (N : ℝ) * Real.log (N : ℝ) / (8 * Real.pi) + External.omegaUpperFn (N : ℝ)) ≤

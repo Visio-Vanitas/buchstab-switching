@@ -347,14 +347,15 @@ lemma shifted_rem_bound_rayCPt (consts : External.CertifiedConstants)
 /-- Lower-sieve bound for `sievedShifted N (rayZ 16 N)` when `N ≥ 10^600` is even
 (`regime_asymptotic.py:60-91, 136`). -/
 theorem regime3_lower_sieve_lb (consts : External.CertifiedConstants)
+    (c_seq : ℕ → ℝ) (hValid : ValidDecaySeq c_seq)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises consts.li2)
     (hBJS : External.BuchstabSeriesPremise)
     {N : ℕ} (hN_even : Even N) (hN : asymptoticCert.X_LS ≤ N)
     (hHStar : ClosedHStarCond gTotRay (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ Q0_100) (1 + (1 : ℝ) / 100))
-    (hC2_bound : (0 : ℝ) ≤ C2_bjs constDecaySeq (1 / 100 : ℝ)) :
+    (hC2_bound : (0 : ℝ) ≤ C2_bjs c_seq (1 / 100 : ℝ)) :
     rayLbA 16 (5 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-        (C2_bjs constDecaySeq (1 / 100 : ℝ)) (N : ℝ) *
+        (C2_bjs c_seq (1 / 100 : ℝ)) (N : ℝ) *
       (((shiftedCoprimePrimes N).card : ℝ) * External.VN N (rayZ 16 N)) -
       rayErrR1 consts 16 (N : ℝ) * rayScale consts.U_c 16 N ≤
       ((sievedShifted N (rayZ 16 N)).card : ℝ) := by
@@ -545,9 +546,9 @@ theorem regime3_lower_sieve_lb (consts : External.CertifiedConstants)
     nlinarith
   have hs_ge2 : 2 ≤ Real.log D / Real.log (z : ℝ) := hsa_ge2.trans hs_ge
   have hbjs := bjs_linear_sieve_lower (I := shiftedSet N) hdisj (fun _ => (1 : ℝ)) gTotRay
-    (z := (z : ℝ)) (D := D) (ε := (1 / 100 : ℝ)) (c_seq := constDecaySeq)
+    (z := (z : ℝ)) (D := D) (ε := (1 / 100 : ℝ)) (c_seq := c_seq)
     (by exact_mod_cast (by omega : 1 < z)) hz_sq_le_D (by norm_num) (by norm_num)
-    validDecaySeq_const (fun _ _ => by norm_num) hprime_QP' hQ_V hP'_lt hg_P' hCond
+    hValid (fun _ _ => by norm_num) hprime_QP' hQ_V hP'_lt hg_P' hCond
     (hBJS.hasSum_even hs_ge2)
   have hcount_eq : sieveCount (shiftedSet N) (fun _ => (1 : ℝ)) (Q ∪ P') =
       ((sievedShifted N z).card : ℝ) := by
@@ -566,9 +567,9 @@ theorem regime3_lower_sieve_lb (consts : External.CertifiedConstants)
     exact eulerProd_shiftedPrimesBelow_eq_VN N z
   have hcoeff_le :
       rayLbA 16 (5 / 2 : ℝ) (Real.log (Q_prod : ℝ)) (1 / 100 : ℝ)
-          (C2_bjs constDecaySeq (1 / 100 : ℝ)) (N : ℝ) ≤
+          (C2_bjs c_seq (1 / 100 : ℝ)) (N : ℝ) ≤
         buchstabf cBuchstab (Real.log D / Real.log (z : ℝ)) -
-          (1 / 100 : ℝ) * C2_bjs constDecaySeq (1 / 100 : ℝ) * Real.exp 2 *
+          (1 / 100 : ℝ) * C2_bjs c_seq (1 / 100 : ℝ) * Real.exp 2 *
             h_bjs (Real.log D / Real.log (z : ℝ)) := by
     have hf : buchstabf cBuchstab (raySa 16 (5 / 2 : ℝ) (Real.log (Q_prod : ℝ)) (N : ℝ)) ≤
         buchstabf cBuchstab (Real.log D / Real.log (z : ℝ)) :=
@@ -578,7 +579,7 @@ theorem regime3_lower_sieve_lb (consts : External.CertifiedConstants)
     have hh : h_bjs (Real.log D / Real.log (z : ℝ)) ≤
         h_bjs (raySa 16 (5 / 2 : ℝ) (Real.log (Q_prod : ℝ)) (N : ℝ)) :=
       h_bjs_antitone hs_ge
-    have hmul : 0 ≤ (1 / 100 : ℝ) * C2_bjs constDecaySeq (1 / 100 : ℝ) * Real.exp 2 := by
+    have hmul : 0 ≤ (1 / 100 : ℝ) * C2_bjs c_seq (1 / 100 : ℝ) * Real.exp 2 := by
       positivity
     unfold rayLbA
     nlinarith

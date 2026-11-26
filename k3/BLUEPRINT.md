@@ -3,7 +3,9 @@
 This blueprint describes the modular architecture of `BuchstabSwitching` and provides a
 roadmap for proving the remaining assumptions in `BuchstabSwitching/External/` inside Lean 4 /
 Mathlib so that `even_eq_prime_add_omegaMult_le_three` rests only on
-`External.DirichletLNonvanishingRightOfHalf`.
+`External.DirichletLNonvanishingRightOfHalf` (pinned to
+`https://github.com/lsernau/grh-lean@72fead102f663d5c7a407964a13dc0cf9d977207`,
+`grh-compact/src/Statements.lean`, where `src/Main.lean` proves `LFunction_ne_zero_of_half_lt_re`).
 
 ## Proof Dependency Graph
 
@@ -32,7 +34,7 @@ All combinatorial, multiplicative, and rational-certificate modules (`Core/`, `S
   *Math. Comp.* **83** (2014), 2033–2060).
 
 ### Track 2: Explicit GRH Prime-Counting in APs (`External/CharacterSums/DirichletGRH.lean`)
-- **Goal**: Derive `ExplicitPrimeInAPPremise` from `DirichletLNonvanishingRightOfHalf` and
+- **Goal**: Derive `ExplicitPrimeInAPPremise` from `DirichletLNonvanishingRightOfHalf` (`lsernau/grh-lean@72fead1`) and
   `Mathlib.NumberTheory.LSeries.DirichletContinuation`.
 - **Sub-lemmas**:
   1. Explicit von Mangoldt smoothed Perron formula (`ψ(x, χ)`) under zero-free strip
@@ -56,9 +58,10 @@ All combinatorial, multiplicative, and rational-certificate modules (`Core/`, `S
 ### Track 4: Asymptotic Ray Closure (`External/LinearSieve/AsymptoticRayEnclosure.lean`)
 - **Goal**: Prove `AsymptoticRayEnclosurePremise` uniformly for all even `N ≥ 10^600`.
 - **Sub-lemmas**:
-  1. Closed-interval two-variable pre-sieve error `(H*)` on `Q0_100` (`ε_* < 1/100`, certified
-     `100:old` `C₂ ≤ 348.365883` and cross-checked `100:new` `C₂ ≤ 235.091291`, break-even
-     `C₂ ≤ 1854.3`).
+  1. Closed-interval two-variable pre-sieve error `(H*)` on `Q0_100` (`ε_* < 1/100`, Lean kernel-certified
+     `certifiedDecaySeq` `C₂ ≤ 494` / Python cap `495`, plus SHA-256 cross-checks `100:old`
+     `C₂ ≤ 348.365884` and `100:new` `C₂ ≤ 235.091292` in `../shared/data/linear_sieve_inputs/`,
+     break-even `C₂ ≤ 1854.3`).
   2. Explicit Jurkat–Richert / linear-sieve enclosure of Buchstab's lower sieve function `f(s)`
      and error `h(s)` with integer cutoff rounding `z = ⌊N^{1/16}⌋`, `y = ⌈(N/z)^{1/3}⌉`.
   3. Monotone pre-sieve-free Selberg `Λ²` bound `V_N(z) * J_full(z, z^r)`.

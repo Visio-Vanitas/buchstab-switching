@@ -41,6 +41,8 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 
 -- 7. OddSquarefreeBounds
 #print axioms BuchstabSwitching.J_odd_asymptotic_enclosure
+#print axioms BuchstabSwitching.H_tilde_le_cert
+#print axioms BuchstabSwitching.alpha0_le_636_div_1000
 
 -- 8. LinearSieveInduction
 #print axioms BuchstabSwitching.finite_buchstab_lower_bound
@@ -51,6 +53,8 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 #print axioms BuchstabSwitching.bjs_linear_sieve_lower_fHat
 #print axioms BuchstabSwitching.bjs_linear_sieve_upper
 #print axioms BuchstabSwitching.bjs_linear_sieve_lower
+#print axioms BuchstabSwitching.validDecaySeq_certified
+#print axioms BuchstabSwitching.C2_bjs_certified_le
 
 -- 10. ShiftedPrimeRemainder
 #print axioms BuchstabSwitching.shiftedSet_card_gt_div_log
@@ -70,20 +74,24 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 #print axioms BuchstabSwitching.brun_block_card_lower_bound
 
 -- 13. Regime2SlabBridge
+#print axioms BuchstabSwitching.slice_finite_buchstab_upper_of_full
 #print axioms BuchstabSwitching.slice_selberg_sum_upper
 #print axioms BuchstabSwitching.regime2ab_switchingBalance_lb
 #print axioms BuchstabSwitching.regime2c_switchingBalance_lb
 
 -- 14. Regime3RayBridge
+#print axioms BuchstabSwitching.closedHStarCond_Q0_100
 #print axioms BuchstabSwitching.regime3_lower_sieve_lb
 #print axioms BuchstabSwitching.regime3_upper_sieve_sum_ub
 #print axioms BuchstabSwitching.regime3_ray_switchingBalance_lb_of_analytic
-#print axioms BuchstabSwitching.regime3_ray_switchingBalance_lb
 
 -- 15. External classical-lemma interfaces & bridges
 #print axioms BuchstabSwitching.External.UN_ratio_ge_Uc
 #print axioms BuchstabSwitching.External.BuchstabSeriesPremise.buchstabf_le_one_sub_sum
+#print axioms BuchstabSwitching.External.buchstabSeriesPremise_proved
 #print axioms BuchstabSwitching.External.slabSieveEnclosurePremise_of_sieveBridge
+#print axioms BuchstabSwitching.External.Regime2abSlabBridge.of_sieveEngines
+#print axioms BuchstabSwitching.External.Regime2cSlabBridge.of_sieveEngines
 #print axioms BuchstabSwitching.External.asymptoticRayEnclosurePremise_of_sieveBridge
 #print axioms BuchstabSwitching.External.externalPremises_of_classical
 

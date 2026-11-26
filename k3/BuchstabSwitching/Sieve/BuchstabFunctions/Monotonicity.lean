@@ -375,7 +375,8 @@ theorem buchstabF_antitoneOn_and_buchstabf_monotoneOn {c : ℝ} (hc : 0 < c) :
             MonotoneOn (buchstabf c) (Set.Ioc 0 ((n : ℝ) + 3)) := by
           by_contra hbad
           exact hnot ⟨by linarith, hbad⟩
-        convert hres using 2 <;> (push_cast; ring)
+        rw [show ((n + 1 : ℕ) : ℝ) + 2 = (n : ℝ) + 3 by push_cast; ring]
+        exact hres
   constructor
   · intro x hx y hy hxy
     obtain ⟨n, hn⟩ := exists_nat_gt y

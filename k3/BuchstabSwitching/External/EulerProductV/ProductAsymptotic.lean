@@ -1,3 +1,4 @@
+import BuchstabSwitching.External.CharacterSums.DirichletGRH
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Factors
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -16,7 +17,8 @@ Defines the shifted-prime Euler product `VN N z`, the relative-error envelopes `
 ## Notes on Conventions
 * `U_c` denotes `2 * ∏_{p > 2} (1 - 1 / (p - 1)^2)` (`U_CONST` in `constants.py`), and
   `eNegGamma` denotes `exp (-γ)` (`E_NEG_GAMMA` in `constants.py`), so `eNegGamma * UN_ratio U_c N`
-  is `U_N` in BJS Lemma 38 / BS Lemma 11.
+  is `U_N` in BJS Lemma 38 / BS Lemma 11 (using the corrected `2 e^{-γ}` factor, fixing BS v1
+  Lemma 11's `2 e^γ` typo).
 * `Even N` (`2 ∣ N`) is required in the asymptotic premises because `VN` filters `¬ p ∣ N`; for
   odd `N` and `z > 2`, the prime `p = 2` enters the product with factor `1 - 1 / (2 - 1) = 0`,
   forcing `VN N z = 0`.
@@ -68,12 +70,15 @@ def EulerProductVPremise (U_c eNegGamma : ℝ) : Prop :=
       VN N (Nat.ceil x) ≤ (1 + deltaV_bjs N x) * (eNegGamma * UN_ratio U_c N) / Real.log x
 
 /-- GRH Euler-product asymptotic premise for `V_N(⌈x⌉)` (BS Lemma 11 / `regime_asymptotic.py`):
-for all even `N ≥ 3` and all `x ≥ 8`, `V_N(⌈x⌉)` lies within relative error `deltaV_bs N x` of
-`eNegGamma * UN_ratio U_c N / log x`. -/
+under `DirichletLNonvanishingRightOfHalf`, for all even `N ≥ 3` and all `x ≥ 8`, `V_N(⌈x⌉)` lies
+within relative error `deltaV_bs N x` of `eNegGamma * UN_ratio U_c N / log x` (where
+`eNegGamma * UN_ratio U_c N` explicitly uses the corrected factor `2 e^{-γ}`, fixing BS v1
+Lemma 11's `2 e^γ` typo). -/
 def EulerProductVGRHPremise (U_c eNegGamma : ℝ) : Prop :=
-  ∀ (N : ℕ), Even N → 3 ≤ N → ∀ (x : ℝ), 8 ≤ x →
-    (1 - deltaV_bs N x) * (eNegGamma * UN_ratio U_c N) / Real.log x ≤ VN N (Nat.ceil x) ∧
-      VN N (Nat.ceil x) ≤ (1 + deltaV_bs N x) * (eNegGamma * UN_ratio U_c N) / Real.log x
+  DirichletLNonvanishingRightOfHalf →
+    ∀ (N : ℕ), Even N → 3 ≤ N → ∀ (x : ℝ), 8 ≤ x →
+      (1 - deltaV_bs N x) * (eNegGamma * UN_ratio U_c N) / Real.log x ≤ VN N (Nat.ceil x) ∧
+        VN N (Nat.ceil x) ≤ (1 + deltaV_bs N x) * (eNegGamma * UN_ratio U_c N) / Real.log x
 
 /-- For `0 < U_c`, the divisor adjustment never decreases `U_c`, i.e., `U_c ≤ UN_ratio U_c N`. -/
 theorem UN_ratio_ge_Uc {U_c : ℝ} {N : ℕ} (hUc : 0 < U_c) :

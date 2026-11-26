@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fast (~1s, pure Python 3 stdlib) integrity verifier for `buchstab-switching/k3`.
+Fast (~40s, pure Python 3 stdlib) integrity verifier for `buchstab-switching/k3`.
 
 Audits:
   [1/6] AST zero-float and zero-`math` purity across `scripts/sieve_cert/*.py`
@@ -19,7 +19,7 @@ Audits:
 from __future__ import annotations
 
 import ast
-from decimal import Decimal, Inexact, Rounded, getcontext
+from decimal import Decimal, Inexact, ROUND_CEILING, ROUND_FLOOR, Rounded, getcontext, localcontext
 import json
 from pathlib import Path
 import re
@@ -154,16 +154,90 @@ def verify_bounds_log() -> list[str]:
     return [f"[4/6] OUTPUT LOG AGREEMENT: PASS ({log_path.relative_to(ROOT)})"]
 
 
+DATA_LEAN_DENOM = 10_000_000_000
+
+
+def _dec_to_rat_int(d_str: str, rounding: str) -> int:
+    with localcontext() as ctx:
+        ctx.prec = 60
+        ctx.traps[Inexact] = False
+        ctx.traps[Rounded] = False
+        return int((Decimal(d_str) * DATA_LEAN_DENOM).to_integral_value(rounding=rounding))
+
+
+def _parse_lean_record(block: str) -> dict[str, int]:
+    return {
+        k: int(v)
+        for k, v in re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*:=\s*(\d+)\b", block)
+    }
+
+
 def verify_data_lean_match() -> list[str]:
     data_lean = (ROOT / "BuchstabSwitching/Certificates/Data.lean").read_text(encoding="utf-8")
     payload = json.loads((ROOT / "scripts/data/certified_slabs.json").read_text(encoding="utf-8"))
     slabs = payload["slabs"]
-    n_entries = len(re.findall(r"X_lo\s*:=", data_lean))
-    if n_entries != len(slabs):
-        fail(f"Data.lean slab count {n_entries} != JSON count {len(slabs)}")
-    if f"X_LS := {payload['ray']['x_ls']}" not in data_lean:
+    ray = payload["ray"]
+
+    m_slabs = re.search(
+        r"def\s+allSlabs\s*:\s*List\s+SlabCert\s*:=\s*\[(.*?)\]", data_lean, flags=re.DOTALL
+    )
+    if not m_slabs:
+        fail("Could not locate def allSlabs in Data.lean")
+    slab_blocks = re.findall(r"\{([^}]*)\}", m_slabs.group(1))
+    if len(slab_blocks) != len(slabs):
+        fail(f"Data.lean slab count {len(slab_blocks)} != JSON count {len(slabs)}")
+
+    expected_slab_keys = {"X_lo", "X_hi", "z", "y", "main_num", "err_num", "net_num", "den"}
+    for idx, (block, s) in enumerate(zip(slab_blocks, slabs), 1):
+        rec = _parse_lean_record(block)
+        if set(rec.keys()) != expected_slab_keys:
+            fail(f"Data.lean slab {idx} unexpected keys: {sorted(rec.keys())}")
+        if rec["X_lo"] != int(s["x_lo"]) or rec["X_hi"] != int(s["x_hi"]):
+            fail(f"Data.lean slab {idx} X bounds mismatch")
+        if rec["z"] != int(s["z"]) or rec["y"] != int(s["y"]):
+            fail(f"Data.lean slab {idx} (z, y) mismatch")
+        if rec["den"] != DATA_LEAN_DENOM:
+            fail(f"Data.lean slab {idx} den={rec['den']} != {DATA_LEAN_DENOM}")
+        m_n = _dec_to_rat_int(s["main_lo"], ROUND_FLOOR)
+        e_n = _dec_to_rat_int(s["err_hi"], ROUND_CEILING)
+        net_n = m_n - e_n
+        if rec["main_num"] != m_n or rec["err_num"] != e_n or rec["net_num"] != net_n:
+            fail(
+                f"Data.lean slab {idx} rational mismatch: "
+                f"lean=({rec['main_num']}, {rec['err_num']}, {rec['net_num']}) "
+                f"!= json=({m_n}, {e_n}, {net_n})"
+            )
+        if rec["net_num"] <= 0:
+            fail(f"Data.lean slab {idx} non-positive net_num={rec['net_num']}")
+
+    m_ray = re.search(
+        r"def\s+asymptoticCert\s*:\s*RayCert\s*:=\s*\{([^}]*)\}", data_lean, flags=re.DOTALL
+    )
+    if not m_ray:
+        fail("Could not locate def asymptoticCert in Data.lean")
+    r_rec = _parse_lean_record(m_ray.group(1))
+    expected_ray_keys = {"X_LS", "main_num", "err_num", "net_num", "den"}
+    if set(r_rec.keys()) != expected_ray_keys:
+        fail(f"Data.lean asymptoticCert unexpected keys: {sorted(r_rec.keys())}")
+    if r_rec["X_LS"] != int(ray["x_ls"]):
         fail("Data.lean asymptoticCert.X_LS does not match JSON ray x_ls")
-    return [f"[5/6] DATA.LEAN CONSISTENCY: PASS ({n_entries} slabs + ray X_LS exact match)"]
+    if r_rec["den"] != DATA_LEAN_DENOM:
+        fail(f"Data.lean asymptoticCert den={r_rec['den']} != {DATA_LEAN_DENOM}")
+    rm_n = _dec_to_rat_int(ray["main_lo"], ROUND_FLOOR)
+    re_n = _dec_to_rat_int(ray["err_hi"], ROUND_CEILING)
+    rnet_n = rm_n - re_n
+    if r_rec["main_num"] != rm_n or r_rec["err_num"] != re_n or r_rec["net_num"] != rnet_n:
+        fail(
+            f"Data.lean asymptoticCert rational mismatch: "
+            f"lean=({r_rec['main_num']}, {r_rec['err_num']}, {r_rec['net_num']}) "
+            f"!= json=({rm_n}, {re_n}, {rnet_n})"
+        )
+    if r_rec["net_num"] <= 0:
+        fail(f"Data.lean asymptoticCert non-positive net_num={r_rec['net_num']}")
+
+    return [
+        f"[5/6] DATA.LEAN CONSISTENCY: PASS ({len(slab_blocks)} slabs + ray all fields exact match)"
+    ]
 
 
 def verify_lean_hygiene() -> list[str]:

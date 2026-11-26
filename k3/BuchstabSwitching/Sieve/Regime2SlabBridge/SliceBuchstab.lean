@@ -599,6 +599,50 @@ theorem slice_finite_buchstab_sum_upper {li2 X_lo : ℝ} {N z y q0 q1 p_star : �
     linarith
   linarith
 
+/-- Omission monotonicity for `AllLevelsMertensCondFrom`. -/
+theorem allLevelsMertensCondFrom_subset {g : ℕ → ℝ} {P₁ P₂ : Finset ℕ} {u K : ℝ} (hsub : P₁ ⊆ P₂)
+    (hg : ∀ p ∈ P₂, 0 ≤ g p ∧ g p < 1) (h : AllLevelsMertensCondFrom g P₂ u K) : AllLevelsMertensCondFrom g P₁ u K := by
+  intro w z₁ hw huw hwz
+  have h1 : ∀ p ∈ P₁, g p < 1 := fun p hp => (hg p (hsub hp)).2; have h2 : ∀ p ∈ P₂, g p < 1 := fun p hp => (hg p hp).2
+  rw [sieveV_filter_lt_eq_prod_mul h1 hwz]
+  refine mul_le_mul_of_nonneg_right ?_ (sieveV_nonneg fun p hp => (h1 p (Finset.filter_subset _ P₁ hp)).le)
+  have hP2 := h hw huw hwz; rw [sieveV_filter_lt_eq_prod_mul h2 hwz] at hP2
+  have hfilt := Finset.filter_subset_filter (fun p : ℕ => w ≤ (p : ℝ) ∧ (p : ℝ) < z₁) hsub
+  exact (Finset.prod_le_prod_of_subset_of_one_le₀ hfilt (fun p hp => (inv_pos.mpr (by linarith [hg p (Finset.filter_subset _ P₂ (hfilt hp))])).le)
+    (fun p hp _ => (one_le_inv₀ (by linarith [hg p (Finset.filter_subset _ P₂ hp)])).mpr (by linarith [hg p (Finset.filter_subset _ P₂ hp)]))).trans (le_of_mul_le_mul_right hP2 (sieveV_pos fun p hp => h2 p (Finset.filter_subset _ P₂ hp)))
+
+private lemma T_sum_eq_zero_of_subset {g : ℕ → ℝ} {n : ℕ} (hn : 1 ≤ n) {D : ℝ} {P₁ P₂ : Finset ℕ} (hsub : P₁ ⊆ P₂) (hg : ∀ p ∈ P₂, 0 < g p ∧ g p < 1) (hT : T_sum g n D P₂ = 0) : T_sum g n D P₁ = 0 := by
+  rw [T_sum] at hT ⊢
+  have hpos : ∀ S ∈ (P₂.powersetCard n).filter (riTermPred D), 0 < if hS : S.Nonempty then (∏ p ∈ S, g p) * sieveV g (P₂.filter (· < S.min' hS)) else 0 := fun S hS => by
+    have hSc := Finset.mem_powersetCard.mp (Finset.mem_filter.mp hS).1; simp only [Finset.card_pos.mp (hSc.2 ▸ hn), ↓reduceDIte]
+    exact mul_pos (Finset.prod_pos fun p hp => (hg p (hSc.1 hp)).1) (sieveV_pos fun p hp => (hg p (Finset.filter_subset _ P₂ hp)).2)
+  refine Finset.sum_eq_zero fun S hS => False.elim ?_
+  rcases Finset.mem_filter.mp hS with ⟨hSc, hSr⟩
+  have hS_in : S ∈ (P₂.powersetCard n).filter (riTermPred D) := Finset.mem_filter.mpr ⟨Finset.mem_powersetCard.mpr ⟨(Finset.mem_powersetCard.mp hSc).1.trans hsub, (Finset.mem_powersetCard.mp hSc).2⟩, hSr⟩
+  exact (hpos S hS_in).ne' (((Finset.sum_eq_zero_iff_of_nonneg fun S hS => (hpos S hS).le).mp hT) S hS_in)
+
+/-- `N`-independent omission-monotonicity wrapper for `slice_finite_buchstab_upper`. -/
+theorem slice_finite_buchstab_upper_of_full {li2 X_lo : ℝ} {N z y q p_star : ℕ}
+    (hGRH : External.DirichletLNonvanishingRightOfHalf) (hCls : ClassicalPrimePremises li2) (hX_lo : 4 * (10 : ℝ) ^ 18 ≤ X_lo) (hX_N : X_lo ≤ (N : ℝ)) (hN : Even N) (hz2 : 2 ≤ z) (hq : q ∈ midPrimes N z y)
+    {D_q Q_prod X_rem : ℝ} (hDz : (z : ℝ) ≤ D_q) (hQ_prod : (∏ p ∈ (fullOddPrimesBelow z).filter (· < p_star), (p : ℝ)) ≤ Q_prod) (hqQD_sqrt : (q : ℝ) * (Q_prod * D_q) ≤ Real.sqrt X_lo) (hX_rem1 : 1 ≤ X_rem) (hQD_rem : Q_prod * D_q ≤ X_rem)
+    (K_odd : ℕ) (hTerm : ∀ k, K_odd ≤ k → T_sum gTot (2 * k + 1) D_q ((fullOddPrimesBelow z).filter (p_star ≤ ·)) = 0) (K_seq : ℕ → ℝ) (u_seq : ℕ → ℝ)
+    (hK_seq : ∀ k ∈ Finset.range K_odd, 1 ≤ K_seq (2 * k + 1)) (hu_seq : ∀ k ∈ Finset.range K_odd, 1 ≤ u_seq (2 * k + 1) ∧ u_seq (2 * k + 1) ≤ u_bjs (2 * k + 1) D_q (z : ℝ))
+    (hCond : ∀ k ∈ Finset.range K_odd, AllLevelsMertensCondFrom gTot ((fullOddPrimesBelow z).filter (p_star ≤ ·)) (u_seq (2 * k + 1)) (K_seq (2 * k + 1)))
+    (hF_bridge : 1 + ∑ k ∈ Finset.range K_odd, fHat (2 * k + 1) (Real.log D_q / Real.log (z : ℝ)) ≤ buchstabF cBuchstab (Real.log D_q / Real.log (z : ℝ))) :
+    let s_q := Real.log D_q / Real.log (z : ℝ); let E_odd := ∑ k ∈ Finset.range K_odd, E_bjs (K_seq (2 * k + 1)) (2 * k + 1) s_q
+    let rem_b_q := min (4 / Real.pi ^ 2 * (Q_prod * D_q) + Real.sqrt (Q_prod * D_q)) ((1 / 2 : ℝ) * (Q_prod * D_q) + 1); let inv_phi_ub := H_tilde * ((1 / 2 : ℝ) * Real.log X_rem + alpha0 + C_F0 / X_rem)
+    sieveCount ((shiftedSet N).filter (q ∣ ·)) (fun _ => (1 : ℝ)) (shiftedPrimesBelow N z) ≤
+      ((shiftedCoprimePrimes N).card : ℝ) * External.VN N z * (1 / ((q : ℝ) - 1)) * (buchstabF cBuchstab s_q + E_odd) +
+        (rem_b_q + inv_phi_ub + External.VN N z * (buchstabF cBuchstab s_q + E_odd)) * epdNormFn X_lo li2 X_lo * ((shiftedCoprimePrimes N).card : ℝ) := by
+  have hsub_lt := Finset.filter_subset_filter (· < p_star) (shiftedPrimesBelow_subset_full hN (z := z)); have hsub_ge := Finset.filter_subset_filter (p_star ≤ ·) (shiftedPrimesBelow_subset_full hN (z := z))
+  have hg : ∀ p ∈ (fullOddPrimesBelow z).filter (p_star ≤ ·), 0 < gTot p ∧ gTot p < 1 := fun p hp => by
+    have hpf := (fullOddPrimesBelow_mem_iff.mp (Finset.filter_subset _ _ hp)).2; have h2 : (2 : ℝ) < (p : ℝ) := by exact_mod_cast hpf.2
+    exact ⟨by rw [gTot_prime hpf.1]; exact div_pos one_pos (by linarith), (gTot_prime_bounds hpf.1 hpf.2).2⟩
+  exact slice_finite_buchstab_upper hGRH hCls hX_lo hX_N hN hz2 hq hDz ((Finset.prod_le_prod_of_subset_of_one_le₀ (f := fun p : ℕ => (p : ℝ)) hsub_lt (fun _ _ => Nat.cast_nonneg _) fun p hp _ =>
+      by exact_mod_cast (fullOddPrimesBelow_mem_iff.mp (Finset.filter_subset _ _ hp)).2.1.one_lt.le).trans hQ_prod)
+    hqQD_sqrt hX_rem1 hQD_rem K_odd (fun k hk => T_sum_eq_zero_of_subset (by omega) hsub_ge hg (hTerm k hk)) K_seq u_seq hK_seq hu_seq
+    (fun k hk => allLevelsMertensCondFrom_subset hsub_ge (fun p hp => ⟨(hg p hp).1.le, (hg p hp).2⟩) (hCond k hk)) hF_bridge
+
 end SliceUpperOptions
 
 end

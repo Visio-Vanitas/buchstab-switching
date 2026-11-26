@@ -56,6 +56,12 @@ def certify_asymptotic_ray(spec: AsymptoticRaySpec) -> RayCertificate:
     eps_iv = Iv.from_frac(eps_frac)
     assert eps_star.hi <= eps_iv.lo
     c2_iv = Iv.from_frac(c2_frac)
+    if spec.c2_lean_cap is not None:
+        cap_dec = Decimal(spec.c2_lean_cap)
+        assert c2_iv.hi <= cap_dec, f"c2_iv.hi={c2_iv.hi} exceeds Lean cap {cap_dec}"
+        c2_eff = Iv(cap_dec, cap_dec)
+    else:
+        c2_eff = c2_iv
 
     q_prod = 1
     for p in q0_primes:
@@ -88,11 +94,11 @@ def certify_asymptotic_ray(spec: AsymptoticRaySpec) -> RayCertificate:
     s_a = m_iv * (Iv.from_str("0.5") - alpha)
     assert s_a.lo > Decimal(2)
 
-    lb_a = f_lin_lb(s_a) - eps_iv * c2_iv * E2 * h_lin_ub(s_a)
+    lb_a = f_lin_lb(s_a) - eps_iv * c2_eff * E2 * h_lin_ub(s_a)
 
     # V_N(z) / (U_N / ln z) relative deviation using z >= z0 - 1
     sqrt_z_lb = z_int_lb.sqrt()
-    f1 = (Iv(3, 3) * log_z_lb + Iv(5, 5)) / (Iv(8, 8) * PI * sqrt_z_lb)
+    f1 = (Iv(3, 3) * log_z0 + Iv(5, 5)) / (Iv(8, 8) * PI * sqrt_z_lb)
     f2 = Iv(2, 2) / z_int_lb
     f3 = (Iv(8, 8) * log_x) / z_int_lb
     f4 = Iv(1, 1) / (z_int_lb - Iv(1, 1))
@@ -161,7 +167,7 @@ def certify_asymptotic_ray(spec: AsymptoticRaySpec) -> RayCertificate:
     assert net.lo > D_ZERO, f"Regime 3 failed at 10^{spec.exp10}: net={net}"
 
     c2_loss_per_unit = (Iv(1, 1) - delta_v) * E_NEG_GAMMA * eps_iv * E2 * h_lin_ub(s_a)
-    c2_slack = c2_iv + net / c2_loss_per_unit
+    c2_slack = c2_eff + net / c2_loss_per_unit
 
     return RayCertificate(
         spec=spec,
@@ -169,7 +175,7 @@ def certify_asymptotic_ray(spec: AsymptoticRaySpec) -> RayCertificate:
         eps_star_hi=eps_star.hi,
         k_target=spec.k_target,
         rec_mode=spec.rec_mode,
-        c2_used_hi=c2_iv.hi,
+        c2_used_hi=c2_eff.hi,
         c2_breakeven=c2_slack.lo,
         s_a_lo=s_a.lo,
         delta_v_hi=delta_v.hi,

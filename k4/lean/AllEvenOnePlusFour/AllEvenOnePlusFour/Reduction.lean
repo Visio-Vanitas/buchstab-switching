@@ -62,7 +62,7 @@ theorem rough_of_mem_siftedPrimes {N p : ℕ} {z : ℝ} (hp : p ∈ siftedPrimes
   obtain ⟨hpN, hpp, hpN', hsift⟩ := hp
   intro q hq hqa
   by_contra hqz
-  push_neg at hqz
+  push Not at hqz
   by_cases hqN : q ∣ N
   · have hqp : q ∣ p := by
       have h := Nat.dvd_sub hqN hqa
@@ -78,7 +78,7 @@ theorem exists_prime_add_of_weightedSum_pos {N : ℕ} {z y : ℝ}
     ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ Ω m ≤ 4 := by
   obtain ⟨p, hp, hwp⟩ : ∃ p ∈ siftedPrimes N z, 0 < weight z y (N - p) := by
     by_contra h
-    push_neg at h
+    push Not at h
     have hle : weightedSum N z y ≤ 0 := by
       unfold weightedSum
       exact Finset.sum_nonpos h

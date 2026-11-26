@@ -35,7 +35,7 @@ theorem selberg_lambda_sq_upper_sieve (I D : Finset ℕ) (lam a : ℕ → ℚ)
           exact ⟨h1D, one_dvd n⟩
       have hSn : S n = 1 := by
         simp only [S, hfilt, Finset.sum_singleton, hlam1]
-      rw [if_pos hCn, hSn, one_pow, mul_one]
+      simp only [hCn, ↓reduceIte, hSn, one_pow, mul_one, le_refl]
     · simp only [hCn, ↓reduceIte]
       exact mul_nonneg (ha n hn) (sq_nonneg (S n))
   have hle : ∑ n ∈ I.filter unsieved, a n ≤ ∑ n ∈ I, a n * (S n) ^ 2 := by
@@ -54,7 +54,7 @@ theorem selberg_lambda_sq_upper_sieve (I D : Finset ℕ) (lam a : ℕ → ℚ)
       rw [Finset.mul_sum, Finset.mul_sum]
       refine Finset.sum_congr rfl fun d₂ _ => ?_
       simp only [Nat.lcm_dvd_iff]
-      by_cases h₁ : d₁ ∣ n <;> by_cases h₂ : d₂ ∣ n <;> simp [h₁, h₂] <;> ring
+      (by_cases h₁ : d₁ ∣ n <;> by_cases h₂ : d₂ ∣ n <;> simp [h₁, h₂]); ring
     rw [Finset.sum_congr rfl hinner, Finset.sum_comm]
     refine Finset.sum_congr rfl fun d₁ _ => ?_
     rw [Finset.sum_comm]

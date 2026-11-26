@@ -31,10 +31,10 @@ structure ExternalPremises : Prop where
   slab_enclosure : SlabSieveEnclosurePremise
   ray_enclosure : AsymptoticRayEnclosurePremise
 
-/-- Consolidated classical/computational premise bundle across all eight independent
-`External/` folders (`FiniteVerification`, `CharacterSums`, `SchoenfeldRH`, `RobinOmega`,
-`MertensSums`, `EulerProductV`, `BuchstabSeries`, `NumericalConstants`) plus the per-slab
-and asymptotic ray rational-interval bridges. -/
+/-- Consolidated classical/computational premise bundle across the unformalized external
+premise folders (`FiniteVerification`, `CharacterSums`, `SchoenfeldRH`, `RobinOmega`,
+`MertensSums`, `EulerProductV`, `NumericalConstants`) plus the per-slab and asymptotic ray
+rational-interval bridges (`BuchstabSeries` and closed-interval `(H*)` are discharged internally). -/
 structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
   small_even : SmallEvenPremise
   js_ap : JSLemma51Premise consts.li2
@@ -42,12 +42,8 @@ structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
   robin : RobinOmegaBound
   mertens : MertensPrimeSumPremise consts.M0
   euler_v_grh : EulerProductVGRHPremise consts.U_c consts.eNegGamma
-  buchstab_series : BuchstabSeriesPremise
   finite_mertens : FiniteMertensExcursionPremise
   slab_bridges : ∀ c ∈ BuchstabSwitching.allSlabs, SlabCertBridge consts.li2 consts c
-  closed_hstar :
-    BuchstabSwitching.ClosedHStarCond BuchstabSwitching.gTotRay
-      (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ BuchstabSwitching.Q0_100) (1 + (1 : ℝ) / 100)
   h_tilde_le : BuchstabSwitching.H_tilde ≤ consts.H_tilde
   alpha0_le : BuchstabSwitching.alpha0 ≤ consts.alpha0
   ray_cert_data :
@@ -64,7 +60,7 @@ structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
             (strips k).t (strips k).grid) ∧
         0 ≤ BuchstabSwitching.rayLbA 16 (5 / 2 : ℝ)
             (Real.log (∏ q ∈ BuchstabSwitching.Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-            (BuchstabSwitching.C2_bjs BuchstabSwitching.constDecaySeq (1 / 100 : ℝ))
+            (BuchstabSwitching.C2_bjs BuchstabSwitching.certifiedDecaySeq (1 / 100 : ℝ))
             (BuchstabSwitching.asymptoticCert.X_LS : ℝ) -
           (1 / 2 : ℝ) * BuchstabSwitching.raySumAqMain consts 16 L (11 / 2 : ℝ)
             (BuchstabSwitching.asymptoticCert.X_LS : ℝ) strips
@@ -73,7 +69,7 @@ structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
             (BuchstabSwitching.asymptoticCert.err_ub : ℝ) ≤
           BuchstabSwitching.rayMainCoeff consts 16 L (5 / 2 : ℝ) (11 / 2 : ℝ)
               (Real.log (∏ q ∈ BuchstabSwitching.Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-              (BuchstabSwitching.C2_bjs BuchstabSwitching.constDecaySeq (1 / 100 : ℝ))
+              (BuchstabSwitching.C2_bjs BuchstabSwitching.certifiedDecaySeq (1 / 100 : ℝ))
               (BuchstabSwitching.asymptoticCert.X_LS : ℝ) strips
               (BuchstabSwitching.asymptoticCert.X_LS : ℝ) -
             BuchstabSwitching.rayErrorSumInt consts 16
@@ -83,13 +79,14 @@ structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
 Regime 2 slab bridge and Regime 3 ray bridge. -/
 theorem externalPremises_of_classical
     {consts : CertifiedConstants} (hCls : ClassicalBasicLemmas consts) :
-    ExternalPremises where
-  small_even := hCls.small_even
-  slab_enclosure := slabSieveEnclosurePremise_of_sieveBridge
-    ⟨⟨hCls.js_ap, hCls.schoenfeld, hCls.robin⟩, hCls.mertens, hCls.slab_bridges⟩
-  ray_enclosure := asymptoticRayEnclosurePremise_of_sieveBridge
-    ⟨⟨hCls.js_ap, hCls.schoenfeld, hCls.robin⟩, hCls.mertens, hCls.euler_v_grh,
-      hCls.buchstab_series, hCls.closed_hstar, hCls.h_tilde_le, hCls.alpha0_le,
-      hCls.ray_cert_data⟩
+    ExternalPremises :=
+  have hli2 : (1 / 3 : ℝ) < consts.li2 ∧ consts.li2 < 3 :=
+    ⟨by linarith [consts.li2_bounds.1], by linarith [consts.li2_bounds.2]⟩
+  { small_even := hCls.small_even
+    slab_enclosure := slabSieveEnclosurePremise_of_sieveBridge
+      ⟨⟨hCls.js_ap, hCls.schoenfeld, hCls.robin, hli2⟩, hCls.mertens, hCls.slab_bridges⟩
+    ray_enclosure := asymptoticRayEnclosurePremise_of_sieveBridge
+      ⟨⟨hCls.js_ap, hCls.schoenfeld, hCls.robin, hli2⟩, hCls.mertens, hCls.euler_v_grh,
+        hCls.h_tilde_le, hCls.alpha0_le, hCls.ray_cert_data⟩ }
 
 end BuchstabSwitching.External

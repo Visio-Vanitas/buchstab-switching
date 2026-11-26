@@ -60,13 +60,13 @@ theorem card_sieved_sub_good_le (N z y : ℕ)
     · -- No `q^2 ∣ N - p` in `M`, so at least `2` distinct primes `q ∈ M` must divide `N - p`.
       have hge2 : 2 ≤ (M.filter (fun q => q ∣ N - p)).card := by
         by_contra hlt
-        push_neg at hlt
+        push Not at hlt
         have hle1 : (M.filter (fun q => q ∣ N - p)).card ≤ 1 := Nat.lt_succ_iff.mp hlt
         exact hp_not_le (omegaMult_le_three_of_sieve_pinch hz2 hzy hy4 hzy3
           hpN hp_prime hp_ndvd hp_rough hsq hle1)
       omega
     · -- Some `q ∈ M` satisfies `q^2 ∣ N - p`, hence `q ∣ N - p` as well, contributing `≥ 1 + 1 = 2`.
-      push_neg at hsq
+      push Not at hsq
       rcases hsq with ⟨q, hqM, hq2⟩
       have hq1 : q ∣ N - p := dvd_trans (dvd_pow_self q (by norm_num : 2 ≠ 0)) hq2
       have hc1 : 1 ≤ (M.filter (fun r => r ∣ N - p)).card :=

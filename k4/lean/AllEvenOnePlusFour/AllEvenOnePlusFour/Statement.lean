@@ -13,8 +13,8 @@ open scoped ArithmeticFunction.Omega
 
 namespace AllEvenOnePlusFour
 
-/-- GRH for Dirichlet `L`-functions, copied verbatim from the upstream challenge file:
-no `L(s, χ)` vanishes in `Re s > 1/2`. -/
+/-- GRH for Dirichlet `L`-functions, matching `lsernau/grh-lean@72fead1`
+(`grh-compact/src/Statements.lean`) verbatim: no `L(s, χ)` vanishes in `Re s > 1/2`. -/
 def DirichletLNonvanishingRightOfHalf : Prop :=
   ∀ (N : ℕ) [NeZero N] (χ : DirichletCharacter ℂ N) (s : ℂ),
     1 / 2 < s.re → (χ ≠ 1 ∨ s ≠ 1) → DirichletCharacter.LFunction χ s ≠ 0

@@ -123,6 +123,7 @@ theorem switchingBalanceReal_le_switchingBalance (N z y : ℕ) :
 even `N ≥ asymptoticCert.X_LS = 10^600`, evaluated uniformly at `X_LS` via Section 3 monotonicity
 and Sections 1–4 sieve bounds. -/
 theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstants)
+    (c_seq : ℕ → ℝ) (hValid : ValidDecaySeq c_seq)
     (hH_tilde : H_tilde ≤ consts.H_tilde) (halpha0 : alpha0 ≤ consts.alpha0)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises consts.li2)
@@ -130,7 +131,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
     (hV : External.EulerProductVGRHPremise consts.U_c consts.eNegGamma)
     (hBJS : External.BuchstabSeriesPremise)
     (hHStar : ClosedHStarCond gTotRay (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ Q0_100) (1 + (1 : ℝ) / 100))
-    (hC2_nn : (0 : ℝ) ≤ C2_bjs constDecaySeq (1 / 100 : ℝ))
+    (hC2_nn : (0 : ℝ) ≤ C2_bjs c_seq (1 / 100 : ℝ))
     {L : ℕ} (hL : 1 ≤ L)
     (strips : ∀ k : Fin L, RaySelbergStrip
       (rayStripRExp 16 (11 / 2 : ℝ) (asymptoticCert.X_LS : ℝ) (rayStripU 16 L (k.1 + 1))))
@@ -139,7 +140,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
         (rayStripRExp 16 (11 / 2 : ℝ) (asymptoticCert.X_LS : ℝ) (rayStripU 16 L (k.1 + 1)))
         (strips k).t (strips k).grid)
     (hbr_LS : 0 ≤ rayLbA 16 (5 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-        (C2_bjs constDecaySeq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) -
+        (C2_bjs c_seq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) -
       (1 / 2 : ℝ) * raySumAqMain consts 16 L (11 / 2 : ℝ) (asymptoticCert.X_LS : ℝ) strips
         (asymptoticCert.X_LS : ℝ))
     {N : ℕ} (hN_even : Even N) (hN : asymptoticCert.X_LS ≤ N) :
@@ -147,7 +148,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
     let y := rayY 16 N
     2 ≤ z ∧ z ≤ y ∧ N ≤ y ^ 4 ∧ N ≤ z * y ^ 3 ∧ 0 < rayScale consts.U_c 16 N ∧
       (rayMainCoeff consts 16 L (5 / 2 : ℝ) (11 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ)))
-          (1 / 100 : ℝ) (C2_bjs constDecaySeq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) strips
+          (1 / 100 : ℝ) (C2_bjs c_seq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) strips
           (asymptoticCert.X_LS : ℝ) -
         rayErrorSumInt consts 16 (asymptoticCert.X_LS : ℝ)) * rayScale consts.U_c 16 N ≤
         (switchingBalance N z y : ℝ) := by
@@ -166,8 +167,8 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
   set z : ℕ := rayZ 16 N
   set y : ℕ := rayY 16 N
   set logQ : ℝ := Real.log (∏ q ∈ Q0_100, (q : ℝ))
-  set C2 : ℝ := C2_bjs constDecaySeq (1 / 100 : ℝ)
-  have hlo := regime3_lower_sieve_lb consts hGRH hCls hBJS hN_even hN hHStar hC2_nn
+  set C2 : ℝ := C2_bjs c_seq (1 / 100 : ℝ)
+  have hlo := regime3_lower_sieve_lb consts c_seq hValid hGRH hCls hBJS hN_even hN hHStar hC2_nn
   have hup := regime3_upper_sieve_sum_ub consts hH_tilde halpha0 hGRH hCls hM hV hL strips hvj_pos hN_even hN
   have hsq := regime3_square_sum_ub consts hGRH hCls hN
   have hbal_eq : (switchingBalance N z y : ℝ) =
@@ -235,7 +236,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
       have hz_ge_lb : rayZIntLb 16 (N : ℝ) ≤ (z : ℝ) := by
         unfold rayZIntLb; rw [rayZ0_eq_rpow hN_pos]; unfold z rayZ; exact (Nat.sub_one_lt_floor _).le
       linarith [rayZIntLb_gt_1e12 hlogN_ge.le]
-    have hV_N := (hV N hN_even hN_ge3 (z : ℝ) hz_ge_8).1
+    have hV_N := (hV hGRH N hN_even hN_ge3 (z : ℝ) hz_ge_8).1
     have hceil_z : Nat.ceil (z : ℝ) = z := Nat.ceil_natCast z
     rw [hceil_z] at hV_N
     have hdv_le := deltaV_bs_le_rayDeltaV (M := 16) (K := N) (N := N) (by norm_num) (by norm_num)
@@ -339,6 +340,7 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
 with the rational certificate `asymptoticCert` (`k3/BuchstabSwitching/Certificates/Data.lean`) via an
 explicit rational-interval enclosure premise on `(main_coeff - rayErrorSumInt)` at `X_LS = 10^600`. -/
 theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.CertifiedConstants)
+    (c_seq : ℕ → ℝ) (hValid : ValidDecaySeq c_seq)
     (hH_tilde : H_tilde ≤ consts.H_tilde) (halpha0 : alpha0 ≤ consts.alpha0)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises consts.li2)
@@ -346,7 +348,7 @@ theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.Certified
     (hV : External.EulerProductVGRHPremise consts.U_c consts.eNegGamma)
     (hBJS : External.BuchstabSeriesPremise)
     (hHStar : ClosedHStarCond gTotRay (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ Q0_100) (1 + (1 : ℝ) / 100))
-    (hC2_nn : (0 : ℝ) ≤ C2_bjs constDecaySeq (1 / 100 : ℝ))
+    (hC2_nn : (0 : ℝ) ≤ C2_bjs c_seq (1 / 100 : ℝ))
     {L : ℕ} (hL : 1 ≤ L)
     (strips : ∀ k : Fin L, RaySelbergStrip
       (rayStripRExp 16 (11 / 2 : ℝ) (asymptoticCert.X_LS : ℝ) (rayStripU 16 L (k.1 + 1))))
@@ -355,12 +357,12 @@ theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.Certified
         (rayStripRExp 16 (11 / 2 : ℝ) (asymptoticCert.X_LS : ℝ) (rayStripU 16 L (k.1 + 1)))
         (strips k).t (strips k).grid)
     (hbr_LS : 0 ≤ rayLbA 16 (5 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-        (C2_bjs constDecaySeq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) -
+        (C2_bjs c_seq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) -
       (1 / 2 : ℝ) * raySumAqMain consts 16 L (11 / 2 : ℝ) (asymptoticCert.X_LS : ℝ) strips
         (asymptoticCert.X_LS : ℝ))
     (hCertInt : (asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ) ≤
       rayMainCoeff consts 16 L (5 / 2 : ℝ) (11 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ)))
-          (1 / 100 : ℝ) (C2_bjs constDecaySeq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) strips
+          (1 / 100 : ℝ) (C2_bjs c_seq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) strips
           (asymptoticCert.X_LS : ℝ) -
         rayErrorSumInt consts 16 (asymptoticCert.X_LS : ℝ))
     {N : ℕ} (hN_even : Even N) (hN : asymptoticCert.X_LS ≤ N) :
@@ -368,7 +370,7 @@ theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.Certified
       2 ≤ z ∧ z ≤ y ∧ N ≤ y ^ 4 ∧ N ≤ z * y ^ 3 ∧ 0 < scale ∧
         (asymptoticCert.main_lb - asymptoticCert.err_ub) * scale ≤ switchingBalance N z y := by
   obtain ⟨hz2, hzy, hy4, hzy3, hsc_pos, hlb⟩ :=
-    regime3_switchingBalance_analytic_lb consts hH_tilde halpha0 hGRH hCls hM hV hBJS hHStar
+    regime3_switchingBalance_analytic_lb consts c_seq hValid hH_tilde halpha0 hGRH hCls hM hV hBJS hHStar
       hC2_nn hL strips hvj_pos hbr_LS hN_even hN
   obtain ⟨scale, hsc0, hsc_lt⟩ := exists_rat_btwn hsc_pos
   have hnet_nn : (0 : ℝ) ≤ (asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ) := by
@@ -380,44 +382,12 @@ theorem regime3_ray_switchingBalance_lb_of_analytic (consts : External.Certified
         ≤ ((asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ)) * rayScale consts.U_c 16 N :=
           mul_le_mul_of_nonneg_left hsc_lt.le hnet_nn
       _ ≤ (rayMainCoeff consts 16 L (5 / 2 : ℝ) (11 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ)))
-              (1 / 100 : ℝ) (C2_bjs constDecaySeq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) strips
+              (1 / 100 : ℝ) (C2_bjs c_seq (1 / 100 : ℝ)) (asymptoticCert.X_LS : ℝ) strips
               (asymptoticCert.X_LS : ℝ) -
             rayErrorSumInt consts 16 (asymptoticCert.X_LS : ℝ)) * rayScale consts.U_c 16 N :=
           mul_le_mul_of_nonneg_right hCertInt hsc_pos.le
       _ ≤ (switchingBalance N (rayZ 16 N) (rayY 16 N) : ℝ) := hlb
   refine ⟨rayZ 16 N, rayY 16 N, scale, hz2, hzy, hy4, hzy3, by exact_mod_cast hsc0, ?_⟩
-  exact_mod_cast hreal_le
-
-/-- Master Regime 3 asymptotic ray theorem via `External.RayNumericCertPremise asymptoticCert`
-(`k3/BuchstabSwitching/External/NumericalConstants/ExplicitConstants.lean`). -/
-theorem regime3_ray_switchingBalance_lb (consts : External.CertifiedConstants)
-    (_hGRH : External.DirichletLNonvanishingRightOfHalf)
-    (_hCls : ClassicalPrimePremises consts.li2)
-    {M0 : ℝ} (_hM : External.MertensPrimeSumPremise M0)
-    (_hV : External.EulerProductVGRHPremise consts.U_c consts.eNegGamma)
-    (_hBJS : External.BuchstabSeriesPremise)
-    (_hHStar : ClosedHStarCond gTotRay (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ Q0_100) (1 + (1 : ℝ) / 100))
-    (hCert : External.RayNumericCertPremise asymptoticCert)
-    {N : ℕ} (hN_even : Even N) (hN : asymptoticCert.X_LS ≤ N) :
-    ∃ (z y : ℕ) (scale : ℚ),
-      2 ≤ z ∧ z ≤ y ∧ N ≤ y ^ 4 ∧ N ≤ z * y ^ 3 ∧ 0 < scale ∧
-        (asymptoticCert.main_lb - asymptoticCert.err_ub) * scale ≤ switchingBalance N z y := by
-  obtain ⟨z, y, rscale, main_coeff, hz2, hzy, hy4, hzy3, hrsc_pos, _, hmain_lb, herr_ub, hbal⟩ :=
-    hCert consts N hN_even hN
-  obtain ⟨scale, hsc0, hsc_lt⟩ := exists_rat_btwn hrsc_pos
-  have hnet_nn : (0 : ℝ) ≤ (asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ) := by
-    norm_num [RayCert.main_lb, RayCert.err_ub, asymptoticCert]
-  have hreal_le : ((asymptoticCert.main_lb - asymptoticCert.err_ub : ℚ) : ℝ) * (scale : ℝ) ≤
-      (switchingBalance N z y : ℝ) := by
-    push_cast
-    calc ((asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ)) * (scale : ℝ)
-        ≤ ((asymptoticCert.main_lb : ℝ) - (asymptoticCert.err_ub : ℝ)) * rscale :=
-          mul_le_mul_of_nonneg_left hsc_lt.le hnet_nn
-      _ ≤ (main_coeff - External.rayErrorSum consts (asymptoticCert.X_LS : ℝ)) * rscale :=
-          mul_le_mul_of_nonneg_right (by linarith) hrsc_pos.le
-      _ ≤ External.switchingBalanceReal N z y := hbal
-      _ ≤ (switchingBalance N z y : ℝ) := switchingBalanceReal_le_switchingBalance N z y
-  refine ⟨z, y, scale, hz2, hzy, hy4, hzy3, by exact_mod_cast hsc0, ?_⟩
   exact_mod_cast hreal_le
 
 end MasterTheorems

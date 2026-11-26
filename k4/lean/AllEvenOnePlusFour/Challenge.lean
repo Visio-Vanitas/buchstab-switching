@@ -3,16 +3,18 @@ import Mathlib
 /-!
 # Challenge: every even `N ≥ 4` is a prime plus a `P₄`, under GRH
 
-This file depends on Mathlib only. It follows the convention of the upstream
-`riemann-hypothesis` formalisation (commit `91b273530883b723ef4422436e0dc3557749325a`,
-file `src/Challenge.lean`): it states definitions and the theorem to be compared, and the
-theorem is closed by `sorry`. The `sorry` is the statement under discussion, **not** a claimed
-proof. Nothing else in this project imports this file except `AxiomsCheck.lean`, which checks
-that the library's copies of the definitions agree with these ones definitionally.
+This file depends on Mathlib only. It matches the Mathlib-only GRH statements of
+`https://github.com/lsernau/grh-lean` (commit `72fead102f663d5c7a407964a13dc0cf9d977207`,
+files `grh-compact/src/Statements.lean` and `grh/src/Statements.lean`, where `src/Main.lean`
+proves `LFunction_ne_zero_of_half_lt_re : DirichletLNonvanishingRightOfHalf`; compare the
+challenge-file convention in `grh-compact/Challenge.lean`): it states definitions and the theorem
+to be compared, and the theorem is closed by `sorry`. The `sorry` is the statement under
+discussion, **not** a claimed proof. Nothing else in this project imports this file except
+`AxiomsCheck.lean`, which checks that the library's copies of the definitions agree with these
+ones definitionally.
 
-The four GRH-type propositions below are copied verbatim from the upstream file (bodies
-unchanged; only docstrings are added). The upstream `sorry`-theorems asserting them are **not**
-copied.
+The four GRH-type propositions below match `grh-compact/src/Statements.lean` verbatim (bodies
+unchanged; only docstrings are added). The upstream proofs (`src/Main.lean`) live in `grh-lean`.
 
 `Ω` is `ArithmeticFunction.cardFactors`, the number of prime factors counted with
 multiplicity, so `Ω 1 = 0` and `Ω 12 = 3`.

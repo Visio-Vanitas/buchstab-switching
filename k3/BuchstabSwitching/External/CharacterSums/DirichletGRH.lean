@@ -4,14 +4,18 @@ import Mathlib.NumberTheory.LSeries.DirichletContinuation
 # Dirichlet `L`-Function Non-Vanishing & Explicit AP Prime Counting Interface
 
 States the half-plane non-vanishing hypothesis for Dirichlet `L`-functions in terms
-of Mathlib's `DirichletCharacter.LFunction`, along with an interface for explicit
-prime-counting bounds in arithmetic progressions (Grenié–Molteni, *Ramanujan J.* **49**
-(2019), 535–548; Johnston–Starichkova, `arXiv:2208.01229v3`, Lemma 5.1).
+of Mathlib's `DirichletCharacter.LFunction`, matching the Mathlib-only definition in
+`https://github.com/lsernau/grh-lean` (commit `72fead102f663d5c7a407964a13dc0cf9d977207`,
+`grh-compact/src/Statements.lean` and `grh/src/Statements.lean`, proved in `src/Main.lean` as
+`LFunction_ne_zero_of_half_lt_re`), along with an interface for explicit prime-counting bounds
+in arithmetic progressions (Grenié–Molteni, *Ramanujan J.* **49** (2019), 535–548;
+Johnston–Starichkova, `arXiv:2208.01229v3`, Lemma 5.1).
 -/
 
 namespace BuchstabSwitching.External
 
-/-- Non-vanishing of `L(s, χ)` strictly to the right of `Re(s) = 1/2`. -/
+/-- Non-vanishing of `L(s, χ)` strictly to the right of `Re(s) = 1/2`, matching
+`DirichletLNonvanishingRightOfHalf` in `lsernau/grh-lean@72fead1` (`grh-compact/src/Statements.lean`). -/
 def DirichletLNonvanishingRightOfHalf : Prop :=
   ∀ (N : ℕ) [NeZero N] (χ : DirichletCharacter ℂ N) (s : ℂ),
     1 / 2 < s.re → (χ ≠ 1 ∨ s ≠ 1) → DirichletCharacter.LFunction χ s ≠ 0

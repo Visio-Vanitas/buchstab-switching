@@ -1,68 +1,53 @@
 # buchstab-switching
 
-Explicit Chen-type results for **every** even integer, conditional on GRH for Dirichlet L-functions: representations `N = p + P_K` with no "sufficiently large" threshold, obtained from explicit weighted linear sieves and certified numerics. The name refers to the two devices the programme is organised around, Buchstab iteration and Chen's switching (role reversal).
+Explicit conditional Chen-type representations $N = p + m$ for **every** even integer $N \ge 4$
+under the Generalized Riemann Hypothesis (GRH) for Dirichlet $L$-functions, with no "sufficiently
+large" threshold. The repository is split symmetrically into two verified packages plus shared
+analytic sieve infrastructure:
 
-## Target statement
+- [`k4/`](k4/README.md): **`1 + 4` ($\Omega(\eta) \le 4$ for all even $N \ge 4$)** — Brun block sieve on $[4 \cdot 10^{18}, 10^{500})$ + closed-interval `(H*)` linear sieve on $[10^{500}, \infty)$, stdlib-only Python interval certificates, and Lean 4 reduction (`k4/lean/AllEvenOnePlusFour/`).
+- [`k3/`](k3/README.md): **`1 + 3` ($\Omega(m) \le 3$ for all even $N \ge 4$)** — One-step Buchstab–Richert weighted sieve switching across `127` finite slabs on $[4 \cdot 10^{18}, 10^{600})$ (`2a`/`2b`/`2c`, Bonferroni + Brun block + adaptive Selberg $\Lambda^2$) + closed-interval `(H*)` linear sieve + Selberg $\Lambda^2$ on $[10^{600}, \infty)$, outward-rounded Python certifier (`PREC = 90`), and Lean 4 formalization (`k3/BuchstabSwitching/`) discharging `BuchstabSeries`, finite closed-interval `(H*)`, Lean kernel `C₂ ≤ 494`, and Regime 2/3 sieve engines.
+- [`shared/`](shared/README.md): **Shared linear-sieve and block-sieve foundations** — notes `S1`–`S6`, Brun block sieve proof, linear-sieve `(H*)`/`C₁, C₂` Python certifiers, and SHA-256-verified provenance inputs.
 
-> **(GRH)** Every even `N >= 4` is `p + η` with `p` prime and `Ω(η) <= 4`.
+## Pinned GRH Statement & Toolchain
 
-Prior explicit all-`N` results: D. R. Johnston (2026) reports `Ω(η) <= 16` under GRH (thesis summary, Bull. Aust. Math. Soc. 113 (2026), 372–374, Theorem 2), improving `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
+Both Lean 4 formalizations (`k4/lean/AllEvenOnePlusFour/` and `k3/`) use:
 
-GRH enters only through an explicit bound for `π(x; q, a)` (Johnston–Starichkova Lemma 5.1, from Grenié–Molteni), i.e. level of distribution `1/2` with explicit constants for each modulus. The premise is pinned to the Lean formalisation at `leanprover-community/riemann-hypothesis@91b273530883b723ef4422436e0dc3557749325a` (`src/Challenge.lean`, Mathlib-only statements).
+- **Toolchain**: `leanprover/lean4:v4.37.0-rc1` with Mathlib `31ce06eaadf4a200c0e1407c5f10953cf606b8f8` (`propext`, `Classical.choice`, `Quot.sound` only; zero custom `axiom` declarations, zero `native_decide`).
+- **GRH Statement Source**: `DirichletLNonvanishingRightOfHalf` matches verbatim the Mathlib-only statement in [`lsernau/grh-lean`](https://github.com/lsernau/grh-lean) at commit `72fead102f663d5c7a407964a13dc0cf9d977207` (`grh-compact/src/Statements.lean` and `grh/src/Statements.lean`, where `src/Main.lean` proves `LFunction_ne_zero_of_half_lt_re : DirichletLNonvanishingRightOfHalf`).
 
-## Method
+GRH enters both certificates only through the explicit AP prime-counting bound of Grenié–Molteni / Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1). Both packages use the closed-interval `(H*)` correction replacing Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Theorem 6).
 
-Sifted set `A = {N − p : p ≤ N, p ∤ N}`, density `g(p) = 1/(p−1)` on `p ∤ N`, linear sieve. Kuhn–Richert type weights on `z ≤ q < y` with `z·y^4 ≥ N`, `y^5 > N` (per-slab integers below `10^500`):
+## Summary of Certified Results
 
-`w(a) = 1 − ½·#{z ≤ q < y : q | a} − ½·#{z ≤ q < y : q² | a}`,
-
-and `w(a) > 0`, `(a, P(z)) = 1` force `Ω(a) <= 4`. No switching term is needed at `K = 4`.
-
-Three ranges:
-
-| Range | Argument | Margin |
-|---|---|---|
-| `4 <= N <= 4·10^18` | numerical verification of Goldbach (Oliveira e Silva–Herzog–Pardi) | n/a |
-| `4·10^18 <= N < 10^500` | 58 contiguous slabs, each certified with a Brun block sieve (blocks of primes with caps on the number of prime factors; parity rule for lower/upper bounds), monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `> 1.6796·10^-3` |
-| `N >= 10^500` | explicit Jurkat–Richert linear sieve with an arbitrary pre-sieve set, proved here under the hypothesis on all closed prime intervals with `ε = 1/80` (`C_1 = 391.82`, `C_2 = 390.69`); pre-sieve by the odd primes `<= 82` and `103, 107, 191, 223` | net `> 0.07522` (`> 0.03909` with the classical recursion constants) |
-
-All inequalities are checked by a stdlib-only Python certificate: integers and directed-rounding decimals, no floats. Every certified number has been reproduced by an independent replay from the recorded parameters.
-
-## Status (read this before citing)
-
-- **The argument covers every even `N >= 4`.** Each part (the weighted inequality, the block sieve, the corrected linear sieve and its constants, the certificate code for both computed ranges) was read by several independent readers, each part at least twice, with no error found.
-- **Correction to the literature.** Theorem 6 of Bordignon–Johnston–Starichkova (arXiv:2207.09452v6) states its product hypothesis only at the theorem's own `z`; its Jurkat–Richert induction uses it on all closed prime intervals, and under the fixed-`z` condition alone the key lemma fails (explicit profile at `n = 3`, `s = 1.5`). Its Table 1 is not reproduced by its own recursion. We prove the theorem under the all-intervals hypothesis with an arbitrary pre-sieve and recompute the constants.
-- Quoted without a first-hand check of the source: the Goldbach verification to `4·10^18`; Nathanson, *Additive Number Theory: The Classical Bases*, Thm 9.4 (identification of the sieve functions `F`, `f`); Johnston–Starichkova Lemmas 3.1, 5.1, (3.1)–(3.3) and the monotonicity of `F`, `f`; Schoenfeld; Robin.
-- `K = 3` for all even `N >= 4` is work in progress and is **not** claimed.
-
-## Contents
-
-| Path | What |
-|---|---|
-| `notes/proof-map.md` | **start here**: the theorem, the three ranges with final parameters, what is quoted |
-| `notes/frame-weighted-inequality.md` | sources quoted verbatim, the weighted inequality, the worst case over the primes dividing `N` (§0–§2) |
-| `notes/linear-sieve/` | the explicit linear sieve with pre-sieve under the closed-interval hypothesis (S1–S4), and why weaker hypotheses do not suffice (S5–S6) |
-| `notes/block-sieve/` | the Brun block sieve used for `4·10^18 <= N < 10^500` |
-| `certificate/` | stdlib-only Python: `all_even_1p4/` (interval layer, cited bounds, remainders, tests), `all_even_1p4_ext/` (block-sieve slabs, linear-sieve tail, replay), `linear_sieve/` (certification of the pre-sieve hypothesis and of the constants `C_1`, `C_2`) |
-| `data/` | certified ladder and tail (`certificate/`), pre-sieve and constant certificates (`linear_sieve_inputs/`, `linear_sieve_constants/`), replay logs |
-| `lean/AllEvenOnePlusFour/` | Lake project (Lean `v4.37.0-rc1`, Mathlib `31ce06ea`): `Challenge.lean` (Mathlib-only statement), kernel-checked weight lemma (`w(a) > 0 ⟹ Ω(a) ≤ 4`), and the reduction of the theorem to explicit analytic hypotheses (stated with the earlier split point `10^170`). `#print axioms`: `propext`, `Classical.choice`, `Quot.sound`. The analytic number theory is not formalised. |
-
-Labels such as `X26`, `X31`, `X32` in code comments and raw logs refer to the frame note, the linear-sieve notes and the block-sieve note respectively.
+| Package | Target ($\forall$ even $N \ge 4$) | Finite Range | Tail Range | Lean 4 Project |
+| :--- | :--- | :--- | :--- | :--- |
+| [`k4/`](k4/README.md) | $\Omega(\eta) \le 4$ | `[4·10^18, 10^500)`: `58` Brun block slabs (`min net > 1.6796e-3`) | `[10^500, ∞)`: linear sieve `ε = 1/80` (`net > 0.07522`) | [`k4/lean/AllEvenOnePlusFour/`](k4/lean/AllEvenOnePlusFour/README.md) (`Challenge.lean` reduction + `comparator`) |
+| [`k3/`](k3/README.md) | $\Omega(m) \le 3$ | `[4·10^18, 10^600)`: `127` slabs (`min net >= 0.001833`, `min sieve_net >= 0.009891`) | `[10^600, ∞)`: closed `(H*)` `Q0_100` + Lean `C₂ ≤ 494` (`cap 495`, `net >= 0.046862`, `tol = 609.2x`; `100:old` `0.051917`, `100:new` `0.055822`) | [`k3/`](k3/README.md) (one-step switching, Brun/Bonferroni/Selberg/BJS engines, `by decide` certs + `comparator`) |
 
 ## Reproduce
 
-```
-cd certificate
+### `k4/` (`1 + 4`)
+```bash
+cd k4/certificate
 python3 -m pytest -q all_even_1p4/tests
 python3 -I all_even_1p4_ext/replay.py ../data/certificate/ladder_4e18_500_all.json ../data/certificate/tail/tail_at_500.json
+
+cd ../lean/AllEvenOnePlusFour
+lake exe cache get
+lake build Challenge AllEvenOnePlusFour
+lake env lean AxiomsCheck.lean
+bash comparator/run_comparator.sh
 ```
 
-The replay re-certifies all 58 slabs and the tail from the recorded parameters (a few minutes) and ends with `ALL PASS`.
-
-## What we ask of readers
-
-1. Does `lean/AllEvenOnePlusFour/Challenge.lean` say what the target statement says (note `η = 1` is allowed, `Ω(1) = 0`)?
-2. The explicit linear sieve with pre-sieve under the closed-interval hypothesis, and its constants.
-3. Any missing remainder term in either computed range.
-
-Derivations and scripts were produced largely by AI agents under human direction and refereed by independent readers; treat every claim here as unrefereed in the journal sense.
+### `k3/` (`1 + 3`)
+```bash
+cd k3
+lake exe cache get
+lake build
+lake env lean BuchstabSwitching/Sieve/AxiomsAudit.lean
+lake env lean AxiomsCheckK3.lean
+python3 scripts/quick_verify.py
+python3 scripts/certify_omega_le_3.py   # regenerates certified_bounds.txt, certified_slabs.json, Data.lean
+bash comparator/run_comparator.sh
+```

@@ -6,6 +6,7 @@ import BuchstabSwitching.External.NumericalConstants.ExplicitConstants
 import BuchstabSwitching.External.MertensSums.ReciprocalPrimeSums
 import BuchstabSwitching.External.EulerProductV.ProductAsymptotic
 import BuchstabSwitching.External.BuchstabSeries.DelayDiffEqIdentity
+import BuchstabSwitching.External.BuchstabSeries.AdjointEvaluation
 
 /-!
 # Linear-Sieve Asymptotic Ray Enclosure Interface (`N ≥ X_LS`)
@@ -35,17 +36,14 @@ def AsymptoticRayEnclosurePremise : Prop :=
 
 /-- Bundled external analytic and finite ray-grid certificate premises for Regime 3
 (`N ≥ asymptoticCert.X_LS = 10^600`), connecting `ClassicalPrimePremises`,
-`MertensPrimeSumPremise`, `EulerProductVGRHPremise`, `BuchstabSeriesPremise`,
-closed-interval `(H*)` over `Q0_100`, and the verified rational enclosure at `X_LS`
-via `Regime3RayBridge.regime3_ray_switchingBalance_lb_of_analytic`. -/
+`MertensPrimeSumPremise`, `EulerProductVGRHPremise`, and the verified rational enclosure at
+`X_LS` via `Regime3RayBridge.regime3_ray_switchingBalance_lb_of_analytic`, while discharging
+`BuchstabSeriesPremise` (`buchstabSeriesPremise_proved`) and closed-interval `(H*)` over
+`Q0_100` (`closedHStarCond_Q0_100`) internally. -/
 structure RayAnalyticPremises (consts : CertifiedConstants) : Prop where
   classical : BuchstabSwitching.ClassicalPrimePremises consts.li2
   mertens : MertensPrimeSumPremise consts.M0
   euler_v_grh : EulerProductVGRHPremise consts.U_c consts.eNegGamma
-  buchstab_series : BuchstabSeriesPremise
-  closed_hstar :
-    BuchstabSwitching.ClosedHStarCond BuchstabSwitching.gTotRay
-      (fun p => p.Prime ∧ 3 ≤ p ∧ p ∉ BuchstabSwitching.Q0_100) (1 + (1 : ℝ) / 100)
   h_tilde_le : BuchstabSwitching.H_tilde ≤ consts.H_tilde
   alpha0_le : BuchstabSwitching.alpha0 ≤ consts.alpha0
   ray_cert_data :
@@ -62,7 +60,7 @@ structure RayAnalyticPremises (consts : CertifiedConstants) : Prop where
             (strips k).t (strips k).grid) ∧
         0 ≤ BuchstabSwitching.rayLbA 16 (5 / 2 : ℝ)
             (Real.log (∏ q ∈ BuchstabSwitching.Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-            (BuchstabSwitching.C2_bjs BuchstabSwitching.constDecaySeq (1 / 100 : ℝ))
+            (BuchstabSwitching.C2_bjs BuchstabSwitching.certifiedDecaySeq (1 / 100 : ℝ))
             (BuchstabSwitching.asymptoticCert.X_LS : ℝ) -
           (1 / 2 : ℝ) * BuchstabSwitching.raySumAqMain consts 16 L (11 / 2 : ℝ)
             (BuchstabSwitching.asymptoticCert.X_LS : ℝ) strips
@@ -71,27 +69,26 @@ structure RayAnalyticPremises (consts : CertifiedConstants) : Prop where
             (BuchstabSwitching.asymptoticCert.err_ub : ℝ) ≤
           BuchstabSwitching.rayMainCoeff consts 16 L (5 / 2 : ℝ) (11 / 2 : ℝ)
               (Real.log (∏ q ∈ BuchstabSwitching.Q0_100, (q : ℝ))) (1 / 100 : ℝ)
-              (BuchstabSwitching.C2_bjs BuchstabSwitching.constDecaySeq (1 / 100 : ℝ))
+              (BuchstabSwitching.C2_bjs BuchstabSwitching.certifiedDecaySeq (1 / 100 : ℝ))
               (BuchstabSwitching.asymptoticCert.X_LS : ℝ) strips
               (BuchstabSwitching.asymptoticCert.X_LS : ℝ) -
             BuchstabSwitching.rayErrorSumInt consts 16
               (BuchstabSwitching.asymptoticCert.X_LS : ℝ)
 
 /-- Derives `AsymptoticRayEnclosurePremise` from `RayAnalyticPremises consts` via the
-formalized Regime 3 sieve bridge `Regime3RayBridge.regime3_ray_switchingBalance_lb_of_analytic`. -/
+formalized Regime 3 sieve bridge `Regime3RayBridge.regime3_ray_switchingBalance_lb_of_analytic`,
+discharging `BuchstabSeriesPremise` and `ClosedHStarCond` over `Q0_100` internally. -/
 theorem asymptoticRayEnclosurePremise_of_sieveBridge
     {consts : CertifiedConstants} (hPrem : RayAnalyticPremises consts) :
     AsymptoticRayEnclosurePremise := by
   intro hGRH N hN_even hN
   rcases hPrem.ray_cert_data with ⟨L, hL, strips, hvj_pos, hbr_LS, hCertInt⟩
-  have hC2_nn : (0 : ℝ) ≤ BuchstabSwitching.C2_bjs BuchstabSwitching.constDecaySeq (1 / 100 : ℝ) := by
-    unfold BuchstabSwitching.C2_bjs
-    refine tsum_nonneg fun k => ?_
-    exact BuchstabSwitching.tauBJS_nonneg (by norm_num)
-      (fun j hj => (BuchstabSwitching.validDecaySeq_const.1 j hj).1.le) _
+  have hHStar := BuchstabSwitching.closedHStarCond_Q0_100 hPrem.mertens
   exact BuchstabSwitching.regime3_ray_switchingBalance_lb_of_analytic consts
+    BuchstabSwitching.certifiedDecaySeq BuchstabSwitching.validDecaySeq_certified
     hPrem.h_tilde_le hPrem.alpha0_le hGRH hPrem.classical hPrem.mertens
-    hPrem.euler_v_grh hPrem.buchstab_series hPrem.closed_hstar hC2_nn
+    hPrem.euler_v_grh buchstabSeriesPremise_proved hHStar
+    BuchstabSwitching.C2_bjs_certified_nonneg
     hL strips hvj_pos hbr_LS hCertInt hN_even hN
 
 end BuchstabSwitching.External

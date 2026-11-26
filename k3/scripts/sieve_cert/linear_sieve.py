@@ -52,8 +52,8 @@ def load_certified_linear_sieve_row(
 ) -> tuple[tuple[int, ...], Fraction, Fraction, Fraction]:
     """
     Return `(Q0_primes, eps_frac, C1_frac, C2_frac)` for `(k_target, rec_mode)`.
-    When sibling `../data/linear_sieve_inputs/` files exist, also verifies their
-    SHA-256 digests and exact rational equality.
+    Verifies presence, SHA-256 digests, and exact rational equality against
+    `shared/data/linear_sieve_inputs/` at repository root.
     """
     row_key = f"{k_target}:{rec_mode}"
     if row_key not in CERTIFIED_LINEAR_SIEVE_ROWS:
@@ -61,16 +61,17 @@ def load_certified_linear_sieve_row(
     c1_frac, c2_frac = CERTIFIED_LINEAR_SIEVE_ROWS[row_key]
 
     repo_root = Path(__file__).resolve().parents[3]
-    inputs_dir = repo_root / "data" / "linear_sieve_inputs"
+    inputs_dir = repo_root / "shared" / "data" / "linear_sieve_inputs"
     cn_path = inputs_dir / "cn_rows_all.json"
     hstar_path = inputs_dir / "logs" / "hstar.log"
-    if cn_path.is_file() and hstar_path.is_file():
-        assert hashlib.sha256(hstar_path.read_bytes()).hexdigest() == HSTAR_SHA256
-        cn_bytes = cn_path.read_bytes()
-        assert hashlib.sha256(cn_bytes).hexdigest() == CN_SHA256
-        row = json.loads(cn_bytes.decode("utf-8"))[f"{k_target}:{rec_mode}"]
-        assert Fraction(int(row["C1_num"]), int(row["C1_den"])) == c1_frac
-        assert Fraction(int(row["C2_num"]), int(row["C2_den"])) == c2_frac
+    assert cn_path.is_file(), f"Missing linear-sieve provenance file: {cn_path}"
+    assert hstar_path.is_file(), f"Missing linear-sieve provenance file: {hstar_path}"
+    assert hashlib.sha256(hstar_path.read_bytes()).hexdigest() == HSTAR_SHA256
+    cn_bytes = cn_path.read_bytes()
+    assert hashlib.sha256(cn_bytes).hexdigest() == CN_SHA256
+    row = json.loads(cn_bytes.decode("utf-8"))[f"{k_target}:{rec_mode}"]
+    assert Fraction(int(row["C1_num"]), int(row["C1_den"])) == c1_frac
+    assert Fraction(int(row["C2_num"]), int(row["C2_den"])) == c2_frac
 
     return Q0_100, Fraction(1, k_target), c1_frac, c2_frac
 

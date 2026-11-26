@@ -42,6 +42,7 @@ class AsymptoticRaySpec:
     b_a_str: str = "2.5"
     b_q_str: str = "5.5"
     l_strips: int = 120
+    c2_lean_cap: int | None = None
 
 
 SLABS_2A: list[Slab2ASpec] = [
@@ -136,4 +137,6 @@ SLABS_2C: list[Slab2CSpec] = [
     for (e0, e1, m_div) in _C_EDGES
 ]
 
-ASYMPTOTIC_SPEC = AsymptoticRaySpec(exp10=600, m_div=16, k_target=100, rec_mode="old")
+ASYMPTOTIC_SPEC = AsymptoticRaySpec(
+    exp10=600, m_div=16, k_target=100, rec_mode="old", c2_lean_cap=495
+)

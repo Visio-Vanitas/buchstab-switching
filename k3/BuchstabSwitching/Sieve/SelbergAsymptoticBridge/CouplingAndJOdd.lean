@@ -427,10 +427,11 @@ theorem VN_two_ceil_ge_of_EulerProductVPremise {U_c eNegGamma : ℝ}
 
 /-- From `External.EulerProductVGRHPremise`, extract the `V_full(⌈x⌉)` lower bound via `N = 4`. -/
 theorem VN_two_ceil_ge_of_EulerProductVGRHPremise {U_c eNegGamma : ℝ}
+    (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hV : External.EulerProductVGRHPremise U_c eNegGamma) {x : ℝ} (hx : 8 ≤ x) :
     (1 - External.deltaV_bs 4 x) * (eNegGamma * U_c) / Real.log x ≤
       External.VN 2 (Nat.ceil x) := by
-  have h4 := (hV 4 (by decide) (by norm_num) x hx).1
+  have h4 := (hV hGRH 4 (by decide) (by norm_num) x hx).1
   rwa [VN_four_eq_VN_two, UN_ratio_four] at h4
 
 end JOddAndEulerHelpers

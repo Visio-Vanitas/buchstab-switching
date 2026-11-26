@@ -45,7 +45,7 @@ theorem pow_cardFactors_le {n : ℕ} {y : ℝ} (hn : n ≠ 0) (hy : 0 ≤ y)
 theorem cardFactors_lt_of_lt_pow {n k : ℕ} {y : ℝ} (hn : n ≠ 0) (hy : 1 ≤ y)
     (h : ∀ p, p.Prime → p ∣ n → y ≤ p) (hlt : (n : ℝ) < y ^ k) : Ω n < k := by
   by_contra hk
-  push_neg at hk
+  push Not at hk
   have h1 : y ^ k ≤ y ^ Ω n := pow_le_pow_right₀ hy hk
   have h2 : y ^ Ω n ≤ n := pow_cardFactors_le hn (zero_le_one.trans hy) h
   linarith
@@ -106,7 +106,7 @@ theorem cardFactors_le_four_of_weight_pos {N a : ℕ} {z y : ℝ} (ha : a ≠ 0)
     have hge : ∀ p, p.Prime → p ∣ a → y ≤ p := by
       intro p hp hpa
       by_contra hpy
-      push_neg at hpy
+      push Not at hpy
       have hmem : p ∈ switchPrimes z y a :=
         mem_switchPrimes.mpr ⟨⟨hp, hpa, ha⟩, hrough p hp hpa, hpy⟩
       simp [hempty] at hmem
@@ -133,7 +133,7 @@ theorem cardFactors_le_four_of_weight_pos {N a : ℕ} {z y : ℝ} (ha : a ≠ 0)
     have hge : ∀ p, p.Prime → p ∣ b → y ≤ p := by
       intro p hp hpb
       by_contra hpy
-      push_neg at hpy
+      push Not at hpy
       have hpa : p ∣ q * b := dvd_mul_of_dvd_right hpb q
       have hmem : p ∈ switchPrimes z y (q * b) :=
         mem_switchPrimes.mpr ⟨⟨hp, hpa, ha⟩, hrough p hp hpa, hpy⟩
@@ -150,7 +150,7 @@ theorem cardFactors_le_four_of_weight_pos {N a : ℕ} {z y : ℝ} (ha : a ≠ 0)
           _ ≤ z * y ^ 4 := hzy
           _ ≤ q * y ^ 4 := mul_le_mul_of_nonneg_right hzq hy4
       by_contra hcon
-      push_neg at hcon
+      push Not at hcon
       have := mul_le_mul_of_nonneg_left hcon hq0.le
       linarith
     have h4 : Ω b < 4 := cardFactors_lt_of_lt_pow (k := 4) hb hy1 hge hb4

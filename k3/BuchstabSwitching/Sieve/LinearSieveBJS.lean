@@ -4,6 +4,9 @@ import BuchstabSwitching.Sieve.LinearSieveBJS.FHatDecay
 import BuchstabSwitching.Sieve.LinearSieveBJS.Lyapunov
 import BuchstabSwitching.Sieve.LinearSieveBJS.TailConstants
 import BuchstabSwitching.Sieve.LinearSieveBJS.Theorem6
+import BuchstabSwitching.Sieve.LinearSieveBJS.CertifiedC2Data
+import BuchstabSwitching.Sieve.LinearSieveBJS.CertifiedC2Grid
+import BuchstabSwitching.Sieve.LinearSieveBJS.CertifiedC2
 
 /-!
 # Explicit BJS v6 Linear Sieve Constants, Lyapunov Bounds, and Theorem 6
@@ -17,7 +20,9 @@ building on the all-levels two-variable induction in `LinearSieveInduction`:
      and `s ≥ 3` (`γ_3 = 4e/3`), plus `(3 / s) * h_bjs 2 ≤ 3 * h_bjs s` on `[1, 3]`.
    - Tail-integral bounds `∫ t in s..M, h_bjs (t - 1) ≤ κ_{s₀} * s * h_bjs s` for
      `s₀ ∈ {2, 2.2, 2.4, 2.6, 2.8, 3}` and `H(3) ≤ 0.9214 * s * h_bjs s` on `[1, 3]`.
-2. **Universal Exponential Decay of `fHat` (BJS v6 Lemma 8 / Nathanson Lemma 9.7)**:
+2. **Universal & Parity-Split Exponential Decay of `fHat` (BJS v6 Lemma 8 / Nathanson Lemma 9.7)**:
+   - `ValidDecaySeq`: parity-split decay validity requiring `(if Even n then (2 : ℝ) else 1) ≤ s`,
+     together with kernel-certified `certifiedDecaySeq` (`C2_bjs certifiedDecaySeq (1 / 100) ≤ 494`).
    - `fHat_le_bjs_universal`: `fHat n s ≤ 2 * e^2 * (9607 / 10000) ^ (n - 1) * h_bjs s` for all
      `n ≥ 1`, `s ≥ 1`, and `ValidDecaySeq constDecaySeq`.
 3. **Lyapunov Recurrences `τ_n`, `τ'_n` and Tail Bounds `C₁(ε), C₂(ε)` (BJS v6 Lemmas 11, 12, 14)**:

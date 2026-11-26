@@ -14,7 +14,8 @@ section FHatDecay
 /-- Valid decay sequence for `fHat n s ≤ 2 * e^2 * c_n^{n-1} * h_bjs s`. -/
 def ValidDecaySeq (c_seq : ℕ → ℝ) : Prop :=
   (∀ n, 1 ≤ n → 0 < c_seq n ∧ c_seq n ≤ 9607 / 10000) ∧
-    (∀ n s, 1 ≤ n → 1 ≤ s → fHat n s ≤ 2 * Real.exp 2 * (c_seq n) ^ (n - 1) * h_bjs s)
+    (∀ n s, 1 ≤ n → (if Even n then (2 : ℝ) else 1) ≤ s →
+      fHat n s ≤ 2 * Real.exp 2 * (c_seq n) ^ (n - 1) * h_bjs s)
 
 theorem fHat_two_eq_of_Icc {s : ℝ} (hs2 : 2 ≤ s) (hs4 : s ≤ 4) :
     fHat 2 s = (3 * Real.log (3 / (s - 1)) - (4 - s)) / s := by
@@ -387,7 +388,8 @@ def constDecaySeq : ℕ → ℝ := fun _ => (9607 / 10000 : ℝ)
 theorem validDecaySeq_const : ValidDecaySeq constDecaySeq := by
   refine ⟨fun n _ => ⟨by unfold constDecaySeq; norm_num, by unfold constDecaySeq; norm_num⟩, ?_⟩
   intro n s hn hs
-  exact fHat_le_bjs_universal n s hn hs
+  have hs1 : 1 ≤ s := by split_ifs at hs <;> linarith
+  exact fHat_le_bjs_universal n s hn hs1
 
 end FHatDecay
 

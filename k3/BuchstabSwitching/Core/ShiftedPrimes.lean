@@ -58,10 +58,10 @@ theorem omegaMult_le_three_of_sieve_pinch {N z y p : ℕ}
     have hall : ∀ r : ℕ, r.Prime → r ∣ m → y ≤ r := by
       intro r hr hrm
       by_contra hlt
-      push_neg at hlt
+      push Not at hlt
       have hrz : z ≤ r := by
         by_contra hltz
-        push_neg at hltz
+        push Not at hltz
         exact hrough r hr hltz hrm
       have hrN : ¬ r ∣ N := not_dvd_of_dvd_sub hpN hp_prime hp_ndvd hr hrm
       have hr_mem : r ∈ S := by
@@ -97,10 +97,10 @@ theorem omegaMult_le_three_of_sieve_pinch {N z y p : ℕ}
       intro r hr hrm'
       have hrm : r ∣ m := hm_eq ▸ dvd_mul_of_dvd_right hrm' q
       by_contra hlt
-      push_neg at hlt
+      push Not at hlt
       have hrz : z ≤ r := by
         by_contra hltz
-        push_neg at hltz
+        push Not at hltz
         exact hrough r hr hltz hrm
       have hrN : ¬ r ∣ N := not_dvd_of_dvd_sub hpN hp_prime hp_ndvd hr hrm
       have hrS : r ∈ S := by

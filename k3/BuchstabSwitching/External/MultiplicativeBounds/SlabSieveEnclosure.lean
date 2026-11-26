@@ -90,12 +90,11 @@ theorem mem_allSlabs_ge_cutoff {c : BuchstabSwitching.SlabCert}
 /-! ## 2. Brun Block Sieve Bridge (`BrunBlockSieve` → `shiftedSet N`) -/
 
 private lemma epdNormFn_nonneg_local {li2 X_lo : ℝ}
-    (hGRH : DirichletLNonvanishingRightOfHalf)
+    (_hGRH : DirichletLNonvanishingRightOfHalf)
     (hCls : BuchstabSwitching.ClassicalPrimePremises li2)
     (hX_lo : 4 * (10 : ℝ) ^ 18 ≤ X_lo) :
     0 ≤ BuchstabSwitching.epdNormFn X_lo li2 X_lo := by
-  have hS_rh : SchoenfeldRHBound li2 := hCls.schoenfeld hGRH
-  have hli2_nn : 0 ≤ li2 := (BuchstabSwitching.li2_bounds_of_schoenfeld hS_rh).1.le.trans' (by norm_num)
+  have hli2_nn : 0 ≤ li2 := hCls.li2_bounds.1.le.trans' (by norm_num)
   have hcpi_nn : 0 ≤ c_pi X_lo li2 := c_pi_nonneg (by linarith) hli2_nn
   have hX_pos : 0 < X_lo := by linarith
   have hpi : 0 < Real.pi := Real.pi_pos

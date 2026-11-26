@@ -250,8 +250,8 @@ def SlabNumericCertPremise (c : SlabCert) : Prop :=
         (main_norm - err_norm) * scale ≤ switchingBalanceReal N c.z c.y
 
 /-- Analytic `5`-term asymptotic ray error bound evaluated at `X_LS` by `certify_asymptotic_ray`
-(`k3/scripts/sieve_cert/regime_asymptotic.py:107-129`) for `m_div = 16`, `u0 = 251`,
-`b_a = 5/2`, `b_q = 11/2`, and `β = (1 - 1/16) / 3 + 10^-9`. -/
+(`k3/scripts/sieve_cert/regime_asymptotic.py:136-165`) for `m_div = 16`, `Q0_100`,
+`b_a = 5/2`, `b_q = 11/2`, and `β = (1 - 1/16) / 3 + 10^-9`, matching `rayErrorSumInt`. -/
 noncomputable def rayErrorSum (consts : CertifiedConstants) (X_LS : ℝ) : ℝ :=
   let m : ℝ := 16
   let b_a : ℝ := 5 / 2
@@ -259,13 +259,15 @@ noncomputable def rayErrorSum (consts : CertifiedConstants) (X_LS : ℝ) : ℝ :
   let beta : ℝ := (1 - 1 / m) / 3 + (1e-9 : ℝ)
   let log_x : ℝ := Real.log X_LS
   let z0 : ℝ := Real.exp (log_x / m)
+  let z_int_lb : ℝ := z0 - 1
   let sqrt_x : ℝ := Real.exp ((1 / 2 : ℝ) * log_x)
   let c_pt : ℝ :=
     cPi consts X_LS + 1 / (16 * Real.pi) + (1.3841 : ℝ) / (sqrt_x * Real.log log_x)
   let odd_sf : ℝ := 4 / Real.pi ^ 2 + 1 / Real.exp ((0.1 : ℝ) * log_x)
   let c4g : ℝ := odd_sf * c_pt
   let mert_coeff : ℝ := (6.836e-6 : ℝ) + (2.964e-6 : ℝ)
-  let sum_q_inv : ℝ := Real.log (beta * m) + mert_coeff / ((1 / m) * log_x)
+  let sum_q_inv : ℝ :=
+    Real.log (beta * m) + mert_coeff / ((1 / m) * log_x) + 1 / (z_int_lb - 1)
   let err_r1 : ℝ := c4g / (m * consts.U_c * Real.rpow log_x (b_a - 2))
   let err_aq1 : ℝ :=
     ((0.0625 : ℝ) * c_pt * sum_q_inv / (m * consts.U_c)) *
@@ -274,7 +276,7 @@ noncomputable def rayErrorSum (consts : CertifiedConstants) (X_LS : ℝ) : ℝ :
   let g_phi_n05 : ℝ := consts.H_tilde * ((0.25 : ℝ) * log_x + consts.alpha0 + consts.C_f0)
   let err_aq2 : ℝ :=
     (0.5 : ℝ) * c4g * y_over_n * log_x ^ 3 * (1 + g_phi_n05 ^ 3) / (m * consts.U_c)
-  let err_q2 : ℝ := log_x ^ 2 / (2 * m * consts.U_c * (z0 - 1))
+  let err_q2 : ℝ := log_x ^ 2 / (2 * m * consts.U_c * (z_int_lb - 1))
   let err_one : ℝ := log_x ^ 2 / (m * consts.U_c * X_LS)
   err_r1 + err_aq1 + err_aq2 + err_q2 + err_one
 
@@ -282,7 +284,8 @@ noncomputable def rayErrorSum (consts : CertifiedConstants) (X_LS : ℝ) : ℝ :
 Normalized analytic ray certificate premise linking a `RayCert` `r` (specifically
 `asymptoticCert` with `r.X_LS = 10^600`, `r.main_lb`, `r.err_ub`) to the analytic ray formula
 evaluated at `X_LS = 10^600` by `certify_asymptotic_ray` (`regime_asymptotic.py`) with
-`m_div = 16`, `u0 = 251`, and BJS Table 1 constants `(k = 99, C_2 = 345)`.
+`m_div = 16`, pre-sieve `Q0_100`, Lean-certified `C_2 ≤ 494`, and normalization `rayScale`
+(the active bridge `AsymptoticRayEnclosure` uses `rayErrorSumInt` and `rayScale` directly).
 -/
 def RayNumericCertPremise (r : RayCert) : Prop :=
   ∀ consts : CertifiedConstants,

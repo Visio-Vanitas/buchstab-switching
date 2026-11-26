@@ -6,8 +6,10 @@ representations across all even integers $N \ge 4$:
 
 > **Main Conditional Theorem (`BuchstabSwitching.even_eq_prime_add_omegaMult_le_three`)**
 > Assuming `DirichletLNonvanishingRightOfHalf` (generalized half-plane non-vanishing for
-> Dirichlet $L$-functions) together with the external analytic bridges isolated in
-> `BuchstabSwitching/External/`, every even integer $N \ge 4$ satisfies
+> Dirichlet $L$-functions, matching `https://github.com/lsernau/grh-lean` at commit
+> `72fead102f663d5c7a407964a13dc0cf9d977207`, `grh-compact/src/Statements.lean`) together
+> with the external analytic bridges isolated in `BuchstabSwitching/External/`, every even
+> integer $N \ge 4$ satisfies
 > $$N = p + m \qquad (p \text{ prime},\; \Omega(m) \le 3),$$
 > where $\Omega(m)$ counts the prime divisors of $m$ with multiplicity.
 
@@ -26,7 +28,7 @@ Brun block lower sieving (`brun_block_sieve.py`), parameter meanings, and robust
 | **2a** | `[4 * 10^18, 2 * 10^23)` (21 slabs) | `|A_N|` | `net >= 0.00402`, `sieve_net >= 0.0176` |
 | **2b** | `[2 * 10^23, 10^84)` (40 slabs) | `|A_N|` | `net >= 0.00183`, `sieve_net >= 0.0251` |
 | **2c** | `[10^84, 10^600)` (66 slabs) | `|A_N| * V_N(z)` | `net = sieve_net >= 0.00989`, `tol >= 1.9x` |
-| **3** | `[10^600, ∞)` (uniform ray) | `16 * U_N * N / ln^2 N` | `net >= 0.051917`, `C_2 <= 1854.3` (`348.365883` used), `tol = 674.8x` |
+| **3** | `[10^600, ∞)` (uniform ray) | `16 * U_N * N / ln^2 N` | `net >= 0.046862`, `tot_err <= 0.000078`, `C_2 <= 1854.3` (Lean `C_2 ≤ 494`, cap `495`; cross-checks `100:old` `0.051917` / `100:new` `0.055822`), `tol = 609.2x` |
 
 ---
 
@@ -38,11 +40,21 @@ Brun block lower sieving (`brun_block_sieve.py`), parameter meanings, and robust
     multiplicativity, and rough-integer bounds (`m < y ^ k` implies `omegaMult m < k`).
   - `ShiftedPrimes.lean`: Coprimality of shifted divisors and `omegaMult_le_three_of_sieve_pinch`.
 - **`BuchstabSwitching/Sieve/`**:
-  - `OneStepSwitching.lean`: Deterministic one-step switching inequality over `ℚ`
-    (`switchingBalance_le_card_good`) and existence extraction.
-  - `BonferroniHybrid.lean`: Pointwise and summed hybrid `Q₁ × P₂` odd/even Bonferroni sieve
-    identities over `ℤ`.
-  - `SelbergLambdaSq.lean`: Selberg `Λ²` quadratic `Nat.lcm` upper-bound sieve over `ℚ`.
+  - `OneStepSwitching.lean`, `BonferroniHybrid.lean`, `SelbergLambdaSq.lean`, `AbstractSieve.lean`:
+    Deterministic one-step switching inequality (`switchingBalance_le_card_good`), hybrid
+    `Q₁ × P₂` Bonferroni identities, and Selberg `Λ²` quadratic upper-bound sieve.
+  - `BonferroniEstimates.lean`, `BrunBlockSieve.lean` (+ `BrunBlockSieve/`),
+    `OddSquarefreeBounds.lean` (+ `OddSquarefreeBounds/`), `ShiftedPrimeRemainder.lean` (+ `ShiftedPrimeRemainder/`),
+    `RosserIwaniecComb.lean` (+ `RosserIwaniecComb/`): Combinatorial Brun/Bonferroni bounds and
+    GRH remainder estimates.
+  - `BuchstabFunctions.lean` (+ `BuchstabFunctions/`), `LinearSieveInduction.lean` (+ `LinearSieveInduction/`),
+    `LinearSieveBJS.lean` (+ `LinearSieveBJS/`), `MertensTwoVar.lean`: Two-variable closed `(H*)`
+    Mertens bounds and explicit BJS linear sieve.
+  - `SelbergDiagonalization.lean` (+ `SelbergDiagonalization/`),
+    `SelbergAsymptoticBridge.lean` (+ `SelbergAsymptoticBridge/`),
+    `Regime2SlabBridge.lean` (+ `Regime2SlabBridge/`),
+    `Regime3RayBridge.lean` (+ `Regime3RayBridge/`), `AxiomsAudit.lean`: Regime 2 & Regime 3
+    formal bridges and kernel axiom audit.
 - **`BuchstabSwitching/Certificates/`**:
   - `Types.lean`, `Data.lean`, `Soundness.lean`: Kernel-decidable (`by decide`, zero
     `native_decide`) check of all `127` contiguous slabs over `[4 * 10^18, 10^600)` plus
@@ -53,15 +65,25 @@ Brun block lower sieving (`brun_block_sieve.py`), parameter meanings, and robust
     `0 < m` and Mathlib `Ω := ArithmeticFunction.cardFactors`).
 
 ### Isolated External Bridges (`BuchstabSwitching/External/`)
-Unformalized inputs are grouped into independent topic subfolders rather than `axiom`
-declarations so contributors can discharge them individually:
+Unformalized inputs are grouped into independent topic subfolders (`8` classical lemma folders,
+`2` sieve-enclosure bridges, and `Bridge.lean` providing `ClassicalBasicLemmas` and
+`externalPremises_of_classical`, see [BuchstabSwitching/External/README.md](BuchstabSwitching/External/README.md))
+so contributors can discharge them individually without `axiom` declarations:
 - `External/FiniteVerification/SmallEven.lean`: `SmallEvenPremise` (`4 ≤ N < 4 * 10^18`).
 - `External/CharacterSums/DirichletGRH.lean`: `DirichletLNonvanishingRightOfHalf` and
   explicit AP prime-counting bounds.
+- `External/SchoenfeldRH/PrimeCountingRH.lean`, `External/RobinOmega/PrimeFactorCount.lean`,
+  `External/MertensSums/ReciprocalPrimeSums.lean`, `External/EulerProductV/ProductAsymptotic.lean`,
+  `External/BuchstabSeries/DelayDiffEqIdentity.lean`, `External/NumericalConstants/ExplicitConstants.lean`:
+  Classical analytic prime-number bounds and explicit numerical certificate constants.
 - `External/MultiplicativeBounds/SlabSieveEnclosure.lean`: Finite-slab bridge over
-  `c ∈ allSlabs`.
+  `c ∈ allSlabs` (`slabSieveEnclosurePremise_of_sieveBridge`).
 - `External/LinearSieve/AsymptoticRayEnclosure.lean`: Asymptotic linear-sieve closure
-  via closed `(H*)` pre-sieve `Q0_100` (`100:old` / `100:new`) + Selberg `Λ²` for `N ≥ X_LS`.
+  via closed `(H*)` pre-sieve `Q0_100` (`certifiedDecaySeq` with `C_2 ≤ 494`, Python cap `495`;
+  `100:old` / `100:new` SHA-256 provenance cross-checks in `../shared/data/linear_sieve_inputs/`) +
+  Selberg `Λ²` for `N ≥ X_LS`.
+- `External/Bridge.lean`: Top-level `ExternalPremises`, `ClassicalBasicLemmas`, and
+  `externalPremises_of_classical`.
 
 ---
 
@@ -75,7 +97,7 @@ lake exe cache get
 lake build BuchstabSwitching
 lake env lean AxiomsCheckK3.lean
 
-# 2. Fast (~1s) AST zero-float, active Decimal-trap, slab & Lean hygiene verification
+# 2. Fast (~40s) AST zero-float, active Decimal-trap, slab, Data.lean & Lean hygiene verification
 python3 scripts/quick_verify.py
 
 # 3. Full outward-rounded Decimal/Fraction/int certification (PREC = 90)

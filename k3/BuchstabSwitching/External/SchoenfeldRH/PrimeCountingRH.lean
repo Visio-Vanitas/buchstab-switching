@@ -27,8 +27,8 @@ and Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1):
 ## Literature References
 
 * **Schoenfeld (1976, Corollary 1)**: Assuming RH, `|π(x) - li(x)| ≤ √x log x / (8π)`
-  for `x ≥ 2657`. Bordignon–Starichkova (`arXiv:2211.08844v1`, Lemma 1) states this bound
-  for all `x ≥ 3` (covering `3 ≤ x < 2657` by direct check).
+  for all `x ≥ 2657` (correcting the `x ≥ 3` typo in Bordignon–Starichkova
+  `arXiv:2211.08844v1`, Lemma 1; the bound fails at `x = 3, 4`).
 * **Rosser–Schoenfeld (1962, Corollary 1, eq. (3.6))**: Unconditionally,
   `π(x) < 1.25506 * x / log x` for `x > 1` (used for `x ≥ 17` in `primes_and_mertens.py:pi_ub_iv`).
 -/
@@ -118,12 +118,11 @@ theorem offsetLogIntegral_nonneg {x : ℝ} (hx : 2 ≤ x) : 0 ≤ offsetLogInteg
   simpa using offsetLogIntegral_mono (le_refl 2) hx
 
 /--
-Schoenfeld's RH prime-counting error bound (Schoenfeld 1976, Corollary 1, extended to
-`x ≥ 3` as in Bordignon–Starichkova `arXiv:2211.08844v1`, Lemma 1):
-`|π(x) - li(x)| ≤ √x log x / (8π)` for all `x ≥ 3`, where `li(x) = Li(x) + li2`.
+Schoenfeld's RH prime-counting error bound (Schoenfeld 1976, Corollary 1):
+`|π(x) - li(x)| ≤ √x log x / (8π)` for all `x ≥ 2657`, where `li(x) = Li(x) + li2`.
 -/
 def SchoenfeldRHBound (li2 : ℝ) : Prop :=
-  ∀ x : ℝ, 3 ≤ x →
+  ∀ x : ℝ, 2657 ≤ x →
     |(primeCounting x : ℝ) - logIntegral li2 x| ≤ Real.sqrt x * Real.log x / (8 * Real.pi)
 
 /-- Alias for `SchoenfeldRHBound`. -/
@@ -142,19 +141,19 @@ abbrev SchoenfeldFromGRHPremise (li2 : ℝ) : Prop :=
   SchoenfeldPrimePremise li2
 
 theorem primeCounting_le_of_schoenfeld {li2 x : ℝ}
-    (hS : SchoenfeldRHBound li2) (hx : 3 ≤ x) :
+    (hS : SchoenfeldRHBound li2) (hx : 2657 ≤ x) :
     (primeCounting x : ℝ) ≤ logIntegral li2 x + Real.sqrt x * Real.log x / (8 * Real.pi) := by
   have h := (abs_sub_le_iff.mp (hS x hx)).1
   linarith
 
 theorem le_primeCounting_of_schoenfeld {li2 x : ℝ}
-    (hS : SchoenfeldRHBound li2) (hx : 3 ≤ x) :
+    (hS : SchoenfeldRHBound li2) (hx : 2657 ≤ x) :
     logIntegral li2 x - Real.sqrt x * Real.log x / (8 * Real.pi) ≤ (primeCounting x : ℝ) := by
   have h := (abs_sub_le_iff.mp (hS x hx)).2
   linarith
 
 theorem abs_primeCounting_sub_offsetLogIntegral_le {li2 x : ℝ}
-    (hS : SchoenfeldRHBound li2) (hx : 3 ≤ x) :
+    (hS : SchoenfeldRHBound li2) (hx : 2657 ≤ x) :
     |(primeCounting x : ℝ) - offsetLogIntegral x| ≤
       Real.sqrt x * Real.log x / (8 * Real.pi) + |li2| := by
   have hsplit : (primeCounting x : ℝ) - offsetLogIntegral x =

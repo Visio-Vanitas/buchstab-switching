@@ -1,5 +1,6 @@
 name = "AllEvenOnePlusFour"
 defaultTargets = ["Challenge", "AllEvenOnePlusFour", "AxiomsCheck"]
+allowNonModules = true
 
 [leanOptions]
 autoImplicit = false
@@ -12,11 +13,14 @@ rev = "31ce06eaadf4a200c0e1407c5f10953cf606b8f8"
 # The challenge statement (Mathlib only; contains the one intended `sorry`).
 [[lean_lib]]
 name = "Challenge"
+allowNonModules = true
 
 # The kernel-checked reduction (no `sorry`).
 [[lean_lib]]
 name = "AllEvenOnePlusFour"
+allowNonModules = true
 
 # `#print axioms` for every main theorem.
 [[lean_lib]]
 name = "AxiomsCheck"
+allowNonModules = true

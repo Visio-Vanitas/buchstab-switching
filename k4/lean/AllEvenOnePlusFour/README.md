@@ -5,14 +5,14 @@ A Lean 4 / Mathlib formalisation skeleton for the statement
 > Under GRH for Dirichlet L-functions, every even N ≥ 4 is p + η with p prime and
 > Ω(η) ≤ 4, where Ω counts prime factors with multiplicity.
 
-Mathematical source: `notes/proof-map.md` in this repository. The combinatorial
+Mathematical source: `k4/notes/proof-map.md` in this repository. The combinatorial
 core and the reduction to the analytic inputs are kernel-checked. Every analytic or
 computational input is an explicit `Prop` hypothesis, one per regime; none is an `axiom`.
 Regime 2 covers `4·10^18 ≤ N < 10^500` (block sieve), Regime 3 covers `N ≥ 10^500` (linear sieve).
 
-## Status: compiled (2026-11-25)
+## Status: compiled (2026-11-26)
 
-`lake build` completes (18313 jobs, 0 errors) with `leanprover/lean4:v4.37.0-rc1` and Mathlib
+`lake build` completes (0 errors) with `leanprover/lean4:v4.37.0-rc1` and Mathlib
 `31ce06ea`. `lake env lean AxiomsCheck.lean` exits with status 0. Every library theorem
 depends only on `propext`, `Classical.choice` and `Quot.sound`. `sorryAx` appears only for
 `all_even_one_plus_four` in `Challenge.lean`. The analytic inputs remain explicit hypotheses
@@ -25,10 +25,11 @@ depends only on `propext`, `Classical.choice` and `Quot.sound`. `sorryAx` appear
 | Lean | `leanprover/lean4:v4.37.0-rc1` (`lean-toolchain`) |
 | Mathlib | `31ce06eaadf4a200c0e1407c5f10953cf606b8f8` (`lakefile.toml`, pinned in `lake-manifest.json`) |
 
-These are the versions of the upstream `riemann-hypothesis` formalisation at commit
-`91b273530883b723ef4422436e0dc3557749325a`, so `Challenge.lean` is checked against the same
-Mathlib as the upstream GRH statements. `lake-manifest.json` came from a `lake update` that
-resolved all dependencies. No build was run.
+The four GRH-type `Prop` definitions in `Challenge.lean` match `https://github.com/lsernau/grh-lean`
+(commit `72fead102f663d5c7a407964a13dc0cf9d977207`, files `grh-compact/src/Statements.lean` and
+`grh/src/Statements.lean`, proved in `src/Main.lean` as `LFunction_ne_zero_of_half_lt_re`)
+verbatim in Mathlib terms; this package keeps its `v4.37.0-rc1` / Mathlib `31ce06ea` build
+(aligned with `k3/`). `lake-manifest.json` came from a `lake update` that resolved all dependencies.
 
 ## Build
 
@@ -46,7 +47,7 @@ lake env lean AxiomsCheck.lean
 
 | File | Content | Status |
 |---|---|---|
-| `Challenge.lean` | Mathlib only. It holds the four upstream GRH `Prop`s (copied verbatim), `AllEvenPrimePlusAlmostPrime K` and the challenge `theorem all_even_one_plus_four (hGRH : DirichletLNonvanishingRightOfHalf) : AllEvenPrimePlusAlmostPrime 4 := by sorry`. | **Statement only.** Its `sorry` follows the challenge-file convention and is not a proof. |
+| `Challenge.lean` | Mathlib only. It holds the four GRH `Prop`s matching `lsernau/grh-lean@72fead1` (`grh-compact/src/Statements.lean`), `AllEvenPrimePlusAlmostPrime K` and the challenge `theorem all_even_one_plus_four (hGRH : DirichletLNonvanishingRightOfHalf) : AllEvenPrimePlusAlmostPrime 4 := by sorry`. | **Statement only.** Its `sorry` follows the challenge-file convention and is not a proof. |
 | `AllEvenOnePlusFour/Statement.lean` | Namespaced copies of `DirichletLNonvanishingRightOfHalf` and `AllEvenPrimePlusAlmostPrime`, so the library never imports the `sorry`. | definitions |
 | `AllEvenOnePlusFour/Sanity.lean` | Checks that the statement is not vacuous: monotone in K; equivalent to the `primeFactorsList.length` form and to Mathlib's `Nat.IsAtMostAlmostPrime`; `4 = 3 + 1` (m = 1 is allowed); `K = 0` is false (N = 10); Goldbach for 4 ≤ N ≤ 40 with explicit witnesses. | proved (no sorry) |
 | `AllEvenOnePlusFour/Weights.lean` | Note §1: if a ≥ 1, every prime factor of a is ≥ z, N ≤ z·y⁴, N < y⁵, a < N and w(a) > 0, then Ω(a) ≤ 4. | proved (no sorry) |
@@ -75,8 +76,8 @@ lake env lean AxiomsCheck.lean
 | Field | Regime | Statement | Source |
 |---|---|---|---|
 | `regime1 : GoldbachUpTo (4·10¹⁸)` | 1, 4 ≤ N ≤ 4·10¹⁸ | Goldbach for even N in that range | Oliveira e Silva–Herzog–Pardi, a computation (quoted via [BJS] §1 and [JS] §1; the primary paper was not read) |
-| `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10⁵⁰⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | 58 slabs certified with the Brun block sieve (`certificate/all_even_1p4_ext/regime2_brun.py`, data in `data/certificate/`), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
-| `regime3 : WeightedSievePositiveOn (Set.Ici (10⁵⁰⁰))` | 3 | The same statement for N ≥ 10⁵⁰⁰ | The explicit linear sieve with pre-sieve under the hypothesis on all closed prime intervals (`notes/linear-sieve/`), `ε = 1/80`, certified by `certificate/all_even_1p4_ext/tail_x31.py` (`data/certificate/tail/`), with [JS] Lemma 5.1 |
+| `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10⁵⁰⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | 58 slabs certified with the Brun block sieve (`k4/certificate/all_even_1p4_ext/regime2_brun.py`, data in `k4/data/certificate/`), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
+| `regime3 : WeightedSievePositiveOn (Set.Ici (10⁵⁰⁰))` | 3 | The same statement for N ≥ 10⁵⁰⁰ | The explicit linear sieve with pre-sieve under the hypothesis on all closed prime intervals (`shared/notes/linear-sieve/`), `ε = 1/80`, certified by `k4/certificate/all_even_1p4_ext/tail_x31.py` (`k4/data/certificate/tail/`), with [JS] Lemma 5.1 |
 
 In `ConditionalInputs`, `regime2` and `regime3` take the form
 `DirichletLNonvanishingRightOfHalf → …`, so the role of GRH is visible in the statement.
@@ -110,12 +111,7 @@ of prime factors counted with multiplicity. Some subtleties:
 
 ## Build log
 
-The full output is in `build_log.txt`. Summary: `Build completed successfully (18313 jobs).`
-All warnings are of four kinds:
-- the "imports `Mathlib` … module system" notice on every file;
-- `push_neg` deprecated (prefer `push Not`), in `Weights.lean` ×4 and `Reduction.lean` ×2;
-- `if_neg` deprecated, in `Bonferroni.lean` ×2;
-- `declaration uses sorry` at `Challenge.lean:58`, which is the challenge statement.
+The full output is in `build_log.txt`. Summary: `Build completed successfully`, with **zero warnings** on all library modules (`AllEvenOnePlusFour/*`, `AxiomsCheck.lean`); the sole warning across the entire package is the expected `declaration uses sorry` at `Challenge.lean:58`, which is the challenge statement.
 
 ## `#print axioms` output
 

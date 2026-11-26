@@ -2,7 +2,7 @@
 
 This note documents the mathematical derivation, normalization conventions, finite-terminating Buchstab error bounds, two-variable Mertens closure, and parameter robustness of the `k3/` subproject, verifying:
 
-> **Theorem (`BuchstabSwitching.even_eq_prime_add_omegaMult_le_three`).** *Assuming `DirichletLNonvanishingRightOfHalf` (GRH for Dirichlet $L$-functions, instantiated against Mathlib's `DirichletCharacter.LFunction`) together with the four isolated analytic/computational bridges in `BuchstabSwitching/External/`, every even integer $N \ge 4$ satisfies $N = p + m$ with $p$ prime and $\Omega(m) \le 3$.*
+> **Theorem (`BuchstabSwitching.even_eq_prime_add_omegaMult_le_three`).** *Assuming `DirichletLNonvanishingRightOfHalf` (GRH for Dirichlet $L$-functions, instantiated against Mathlib's `DirichletCharacter.LFunction` matching `https://github.com/lsernau/grh-lean@72fead102f663d5c7a407964a13dc0cf9d977207`, `grh-compact/src/Statements.lean`) together with the isolated analytic/computational bridges in `BuchstabSwitching/External/`, every even integer $N \ge 4$ satisfies $N = p + m$ with $p$ prime and $\Omega(m) \le 3$.*
 
 ---
 
@@ -39,7 +39,7 @@ The four contiguous regimes span all even integers $[4, +\infty)$:
 | **Regime 2a** | $[4 \cdot 10^{18}, 2 \cdot 10^{23})$ (21 slabs) | `scale = \|A_N\|`; exact `P_sub` IE + exact prime sums on 64 geometric slices of $[z, y)$ | `net >= 0.00402`, `sieve_net >= 0.0176`, `tol >= 1.1x` |
 | **Regime 2b** | $[2 \cdot 10^{23}, 10^{84})$ (40 slabs) | `scale = \|A_N\|`; `Q_1(a) x OddBonf(m_odd)` + hybrid `{P_sub, multi-cutoff EvenBonf}` on 56 slices | `net >= 0.00183`, `sieve_net >= 0.0251`, `tol >= 1.7x` |
 | **Regime 2c** | $[10^{84}, 10^{600})$ (66 slabs) | `scale = \|A_N\| * V_N(z)`; `max(OddBonf, BrunBlock)` on $S(\mathcal{A}_N)$ + `min(EvenBonf, Adaptive Selberg)` on 48 slices | `net = sieve_net >= 0.00989`, `tol >= 1.9x` |
-| **Regime 3** | $[10^{600}, +\infty)$ (ray) | `scale = 16 * U_N * N / ln^2 N`; closed `(H*)` linear sieve (`Q0_100`, `k=100`, `100:old` `C_2 <= 348.365883`) + Selberg `J_full` (`M=16`) | `net >= 0.051917`, `C_2 <= 1854.3`, `tol = 674.8x` |
+| **Regime 3** | $[10^{600}, +\infty)$ (ray) | `scale = 16 * U_N * N / ln^2 N`; closed `(H*)` linear sieve (`Q0_100`, `k=100`, Lean `certifiedDecaySeq` `C_2 <= 494`, Python cap `495`) + Selberg `J_full` (`M=16`) | `net >= 0.046862`, `tot_err <= 0.000078`, `C_2 <= 1854.3`, `tol = 609.2x` (`100:old` `0.051917`, `100:new` `0.055822`) |
 
 In sub-regimes `2a`/`2b`, `sieve_net := net / V_full(z) >= net / V_N(z)` expresses the exact fraction of the pure rough-density main term $|\mathcal{A}_N| V_{\mathrm{full}}(z)$ surviving as positive surplus (corresponding directly to `net` in `2c`).
 
@@ -53,11 +53,11 @@ In sub-regimes `2a`/`2b`, `sieve_net := net / V_full(z) >= net / V_N(z)` express
 
 ## 3. Closed-Interval Two-Variable Pre-Sieve `(H*)` & Self-Contained Ray Reduction
 
-In Regime 3 (`[10^{600}, +\infty)`), we apply an explicit linear sieve lower bound under a **closed-interval** two-variable Mertens hypothesis `(H*)` over the residual prime set $\mathcal{S}_0 := \{p \ge 3\text{ prime}\} \setminus Q_0$, where $Q_0 := Q_{0, 100}$ is an explicit finite set of $111$ odd primes in $[3, 1999]$ ($\ln \prod_{p \in Q_0} p \le 117.6157$):
+In Regime 3 (`[10^{600}, +\infty)`), we apply an explicit linear sieve lower bound under a **closed-interval** two-variable Mertens hypothesis `(H*)` over the residual prime set $\mathcal{S}_0 := \{p \ge 3\text{ prime}\} \setminus Q_0$, where $Q_0 := Q_{0, 100}$ is an explicit finite set of $31$ odd primes in $[3, 227]$ ($\ln \prod_{p \in Q_0} p \le 117.6157$):
 $$\prod_{\substack{a \le p \le b \\ p \in \mathcal{S}_0}} \frac{p - 1}{p - 2} \le (1 + \varepsilon_*) \frac{\ln b}{\ln a} \qquad (\forall\, a \le b \text{ in } \mathcal{S}_0).$$
 
 1. **Causal Closed-Interval Verification (`certify_closed_hstar_q0`)**: Over $\mathcal{S}_0 \cap [3, 250{,}000]$, a single forward pass tracks the running minimum of the Mertens offset before each upper prime $b \ge a$ (handling singleton intervals $a = b$ explicitly), and joins at $250{,}000 > e^{12.4}$ with Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 3.2). This certifies $\varepsilon_* \le 0.0099009901 < \frac{1}{100}$.
-2. **Certified Linear-Sieve Constants (`100:old` & `100:new`)**: Rather than interpolating a printed decimal table, `linear_sieve.py` pins exact rational certificates `100:old` ($C_2 \le 348.365883$, yielding `net >= 0.051917`, GRH tol `674.8x`) and cross-checks `100:new` ($C_2 \le 235.091291$, yielding `net >= 0.055822`, GRH tol `725.5x`), with break-even $C_2 \le 1854.3$.
+2. **Certified Linear-Sieve Constants (Lean `certifiedDecaySeq`, `100:old` & `100:new`)**: Lean kernel-certifies parity-split `ValidDecaySeq certifiedDecaySeq` (`Even n -> 2 <= s`, `Odd n -> 1 <= s`) with `C2_bjs certifiedDecaySeq (1/100) <= 494`. Matching Python cap `c2_lean_cap = 495` yields `main_coeff >= 0.046939`, `tot_err <= 0.000078`, `net >= 0.046862`, GRH tol `609.2x`; `linear_sieve.py` also pins exact rational certificates `100:old` ($C_2 \le 348.365884$, `net >= 0.051917`, GRH tol `674.8x`) and `100:new` ($C_2 \le 235.091292$, `net >= 0.055822`, GRH tol `725.5x`) from `shared/data/linear_sieve_inputs/` (SHA-256 verified), all well below break-even $C_2 \le 1854.3$.
 3. **Integer Cutoffs & Shifted-Prime Factor Monotonicity**: For $z = \lfloor N^{1/16} \rfloor \ge N^{1/16} - 1$ and $y = \lceil (N/z)^{1/3} \rceil \le N^{\beta}$ ($\beta > \frac{1}{4}$, $\frac{1}{16} + 3\beta \ge 1$), integer rounding shifts $\ln z$ by at most $\eta_{\mathrm{int}} = 1 / ((z_0 - 1)\ln z_0)$, which `regime_asymptotic.py` carries into both $\delta_V$, the lower bound $s_A \ge M(\frac{1}{2} - \alpha)$, and Selberg's `vj_monotone_lb_iv`. Omitting divisors $p \mid N$ strictly increases $V_N(z) / V_{\mathrm{full}}(z)$ and $J_N(z, \xi_q) / J_{\mathrm{full}}(z, \xi_q)$ (`sqrt_down`/`sqrt_up` outward rounding in `Iv.sqrt`).
 
 ---
@@ -78,4 +78,4 @@ For slabs in `[10^{84}, 10^{600})` where single-order odd Bonferroni hits the $O
 - **Lean 4 Kernel & Comparator Replay**: Rational lower/upper bounds in `Data.lean` (`DENOM = 10^10`) are checked in Lean `v4.37.0-rc1` exclusively by kernel reduction (`by decide`, zero `sorry`, zero custom `axiom` declarations, `#print axioms` = `[propext, Classical.choice, Quot.sound]`), and independently exported and verified under `comparator` (`leanchecker-paranoid` and `nanoda_bin`).
 - **Perturbation Margins**:
   - Finite slabs `[4*10^18, 10^600)` (127 slabs): $\min \mathrm{net} = 0.001833$, $\min \mathrm{sieve\_net} = 0.009891$, $\min \mathrm{tol} = 1.10\times$ (at `2a-01..05`; $\ge 1.7\times$ across all slabs $\ge 10^{22}$).
-  - Asymptotic ray `[10^600, ∞)`: $\mathrm{net} \ge 0.051917 > 0$ (`100:old`, `C_2 <= 348.365883`; `100:new` cross-check `net >= 0.055822`), tolerance $674.8\times$ on total GRH+diagonal remainder, and break-even $C_2 \le 1854.3$.
+  - Asymptotic ray `[10^600, ∞)`: $\mathrm{net} \ge 0.046862 > 0$ (`certifiedDecaySeq` Lean $C_2 \le 494$, Python cap `495`, `main_coeff >= 0.046939`, `tot_err <= 0.000078`; `100:old` `net >= 0.051917` & `100:new` `net >= 0.055822` cross-checks), tolerance $609.2\times$ on total GRH+diagonal remainder, and break-even $C_2 \le 1854.3$.

@@ -155,7 +155,7 @@ theorem regime3_upper_sieve_sum_ub (consts : External.CertifiedConstants)
     have hzM_gt : 8 ≤ z_fn M := by
       have : Real.exp 10 < z_fn M := lt_of_lt_of_le hz_gt_exp10 (hz_mono le_rfl hM_ge)
       linarith [exp_ten_ge_20001]
-    have hVN := VN_two_ceil_ge_of_EulerProductVGRHPremise hV hzM_gt
+    have hVN := VN_two_ceil_ge_of_EulerProductVGRHPremise hGRH hV hzM_gt
     have h4_le_M : 4 ≤ M := (by norm_num : 4 ≤ 2 ^ 16).trans (hXLS_2pow16.trans hM_ge)
     have hdv_le := deltaV_bs_le_rayDeltaV (M := 16) (K := 4) (N := M)
       (by norm_num) (by norm_num) (by norm_num) h4_le_M hlogM

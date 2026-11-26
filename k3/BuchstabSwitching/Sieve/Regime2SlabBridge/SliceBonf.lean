@@ -15,12 +15,11 @@ noncomputable section
 section SliceUpperOptions
 
 lemma epdNormFn_nonneg_of_premises {li2 X_lo : ℝ} {N : ℕ}
-    (hGRH : External.DirichletLNonvanishingRightOfHalf)
+    (_hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : ClassicalPrimePremises li2)
     (hX_lo : 4 * (10 : ℝ) ^ 18 ≤ X_lo) (_hX_N : X_lo ≤ (N : ℝ)) :
     0 ≤ epdNormFn X_lo li2 X_lo := by
-  have hS_rh : External.SchoenfeldRHBound li2 := hCls.schoenfeld hGRH
-  have hli2_nn : 0 ≤ li2 := (li2_bounds_of_schoenfeld hS_rh).1.le.trans' (by norm_num)
+  have hli2_nn : 0 ≤ li2 := hCls.li2_bounds.1.le.trans' (by norm_num)
   have hcpi_nn : 0 ≤ External.c_pi X_lo li2 := External.c_pi_nonneg (by linarith) hli2_nn
   have hX_pos : 0 < X_lo := by linarith
   have hpi : 0 < Real.pi := Real.pi_pos
