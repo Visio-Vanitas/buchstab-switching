@@ -11,8 +11,8 @@ representations across all even integers $N \ge 4$:
 > $$N = p + m \qquad (p \text{ prime},\; \Omega(m) \le 3),$$
 > where $\Omega(m)$ counts the prime divisors of $m$ with multiplicity.
 
-For full mathematical derivations, two-variable Mertens closure (`eps_sup_two_var`),
-finite-terminating Buchstab identities, parameter meanings, and robustness margins, see
+For full mathematical derivations, closed-interval `(H*)` certification (`certify_closed_hstar_q0`),
+Brun block lower sieving (`brun_block_sieve.py`), parameter meanings, and robustness margins, see
 [NOTES_K3_DERIVATION.md](NOTES_K3_DERIVATION.md) and
 [BLUEPRINT.md](BLUEPRINT.md).
 
@@ -25,8 +25,8 @@ finite-terminating Buchstab identities, parameter meanings, and robustness margi
 | **1** | `[4, 4 * 10^18)` | Exact binary prime verification (`K = 1 <= 3`) | `exact` |
 | **2a** | `[4 * 10^18, 2 * 10^23)` (21 slabs) | `|A_N|` | `net >= 0.00402`, `sieve_net >= 0.0176` |
 | **2b** | `[2 * 10^23, 10^84)` (40 slabs) | `|A_N|` | `net >= 0.00183`, `sieve_net >= 0.0251` |
-| **2c** | `[10^84, 10^600)` (66 slabs) | `|A_N| * V_N(z)` | `net = sieve_net >= 0.00774`, `tol >= 1.7x` |
-| **3** | `[10^600, ∞)` (uniform ray) | `U_N * N / (16 * ln^2 N)` | `net >= 0.010936`, `C_2 <= 417.1` (`345` used), `tol = 142.9x` |
+| **2c** | `[10^84, 10^600)` (66 slabs) | `|A_N| * V_N(z)` | `net = sieve_net >= 0.00989`, `tol >= 1.9x` |
+| **3** | `[10^600, ∞)` (uniform ray) | `16 * U_N * N / ln^2 N` | `net >= 0.051917`, `C_2 <= 1854.3` (`348.365883` used), `tol = 674.8x` |
 
 ---
 
@@ -60,8 +60,8 @@ declarations so contributors can discharge them individually:
   explicit AP prime-counting bounds.
 - `External/MultiplicativeBounds/SlabSieveEnclosure.lean`: Finite-slab bridge over
   `c ∈ allSlabs`.
-- `External/LinearSieve/AsymptoticRayEnclosure.lean`: Asymptotic BJS + two-variable `ε_sup`
-  + Selberg `Λ²` ray closure for `N ≥ X_LS`.
+- `External/LinearSieve/AsymptoticRayEnclosure.lean`: Asymptotic linear-sieve closure
+  via closed `(H*)` pre-sieve `Q0_100` (`100:old` / `100:new`) + Selberg `Λ²` for `N ≥ X_LS`.
 
 ---
 
@@ -70,15 +70,19 @@ declarations so contributors can discharge them individually:
 ```bash
 cd k3
 
-# 1. Verify Lean 4 library & kernel certificates
+# 1. Verify Lean 4 library, kernel certificates, and axiom whitelist
 lake exe cache get
-lake build
+lake build BuchstabSwitching
+lake env lean AxiomsCheckK3.lean
 
 # 2. Fast (~1s) AST zero-float, active Decimal-trap, slab & Lean hygiene verification
 python3 scripts/quick_verify.py
 
 # 3. Full outward-rounded Decimal/Fraction/int certification (PREC = 90)
 python3 scripts/certify_omega_le_3.py
+
+# 4. Comparator independent kernel export check (leanchecker-paranoid & nanoda_bin)
+bash comparator/run_comparator.sh
 ```
 
 ---

@@ -6,10 +6,10 @@ and Selberg convolution constants in outward-rounded `Iv`.
 from __future__ import annotations
 
 import bisect
-from decimal import Decimal, ROUND_FLOOR
+from decimal import Decimal
 from fractions import Fraction
 
-from .interval import Iv, directed_context, exp_iv, ln_iv
+from .interval import Iv, exp_iv, floor_root_int, ln_iv
 
 P_BIG_LIMIT = 18_000_000
 P_CUT = 1_000_000
@@ -20,8 +20,7 @@ def sieve_primes(limit: int) -> list[int]:
     """Pure integer Eratosthenes sieve up to `limit`."""
     flags = bytearray([1]) * (limit + 1)
     flags[0] = flags[1] = 0
-    with directed_context(ROUND_FLOOR):
-        r = int(Decimal(limit).sqrt())
+    r = floor_root_int(limit, 2)
     for i in range(2, r + 1):
         if flags[i]:
             flags[i * i :: i] = bytearray(len(flags[i * i :: i]))

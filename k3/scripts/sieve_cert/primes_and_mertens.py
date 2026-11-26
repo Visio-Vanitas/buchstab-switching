@@ -209,7 +209,7 @@ def eps_sup_two_var(pstar: int) -> Iv:
             max_diff = diff
     min_lo_all = min(
         min_lo_so_far,
-        (-(Iv.from_str("2.964e-6") / ln_iv(Iv(pstar, pstar)))).hi,
+        (-(Iv.from_str("2.964e-6") / ln_iv(Iv(pstar, pstar)) + Iv.from_frac(Fraction(1, 25_000)))).hi,
     )
     tail_diff = sub_ceil(_MERTENS_TAIL_UP_101, min_lo_all)
     if tail_diff > max_diff:
@@ -220,6 +220,68 @@ def eps_sup_two_var(pstar: int) -> Iv:
     x = Iv.from_frac(Fraction(1, pstar))
     c_p = (-ln_iv(Iv(1, 1) - x) - x) / (x * x)
     return tp_tail * exp_iv(Iv(max_diff, max_diff) + c_p * s2_tail) - Iv(1, 1)
+
+
+def certify_closed_hstar_q0(q0_primes: tuple[int, ...], k_target: int) -> Iv:
+    """
+    Certify closed-interval two-variable hypothesis `(H*)` on `S_0 = {odd p} \\ Q_0`:
+      sup_{a <= b in S_0} ( prod_{a <= p <= b, p in S_0} (p - 1)/(p - 2) * ln(a)/ln(b) - 1 ) < 1/k_target.
+    Runs an exact causal scan over `PRIMES_PRE` (`<= P_PREFIX_MAX = 250_000`) and joins
+    rigorously with Johnston-Starichkova Lemma 3.2 beyond `P_PREFIX_MAX`.
+    """
+    q0_set = set(q0_primes)
+    assert q0_primes and all(p >= 3 and p < P_PREFIX_MAX for p in q0_primes)
+    s0_small = [p for p in PRIMES_PRE if p >= 3 and p not in q0_set]
+    assert s0_small, "S_0 intersection with PRIMES_PRE is empty"
+
+    # Singleton closed intervals [p, p]
+    p_min_s0 = s0_small[0]
+    assert (p_min_s0 - 2) > k_target, f"Singleton at p={p_min_s0} fails 1/(p-2) < 1/{k_target}"
+    max_ratio_hi = Iv.from_frac(Fraction(p_min_s0 - 1, p_min_s0 - 2)).hi
+
+    prod_s0 = Iv(1, 1)
+    max_inv_before_hi = Decimal(0)
+    for p in s0_small:
+        ln_p = ln_iv(Iv(p, p))
+        inv_before_hi = (ln_p / prod_s0).hi
+        if inv_before_hi > max_inv_before_hi:
+            max_inv_before_hi = inv_before_hi
+        prod_s0 = prod_s0 * Iv.from_frac(Fraction(p - 1, p - 2))
+        ratio_hi = (Iv(max_inv_before_hi, max_inv_before_hi) * (prod_s0 / ln_p)).hi
+        if ratio_hi > max_ratio_hi:
+            max_ratio_hi = ratio_hi
+
+    # Join across b > B = P_PREFIX_MAX (since max(q0) < B, S_0 agrees with odd primes above B)
+    b_iv = Iv(P_PREFIX_MAX, P_PREFIX_MAX)
+    ln_b = ln_iv(b_iv)
+    ll_b = ln_iv(ln_b)
+    sum_b_exact = INV_P_PREFIX[len(PRIMES_PRE)]
+    # Sum_{p > B} (ln((p-1)/(p-2)) - 1/p) <= Sum_{p > B} (1/(p(p-1)) + 1/(2(p-1)(p-2))) < 3/(2*(B-1))
+    euler_tail = Iv(3, 3) / Iv(2 * (P_PREFIX_MAX - 1), 2 * (P_PREFIX_MAX - 1))
+    eta_plus_b = max(
+        (Iv(2, 2) / (b_iv.sqrt() * ln_b)).hi,
+        (Iv.from_str("6.836e-6") / LN_1E12).hi,
+    )
+    tail_cross_exp = (
+        ll_b + M0_CONST - sum_b_exact + Iv(eta_plus_b, eta_plus_b) + Iv(1, 1) / b_iv + euler_tail
+    )
+    cross_ratio_hi = (
+        Iv(max_inv_before_hi, max_inv_before_hi) * (prod_s0 / ln_b) * exp_iv(tail_cross_exp)
+    ).hi
+    if cross_ratio_hi > max_ratio_hi:
+        max_ratio_hi = cross_ratio_hi
+
+    # Case B < a <= b: closed-interval excursion bound above B
+    eta_minus_b = Iv.from_str("2.964e-6") / ln_b
+    pure_tail_ratio = exp_iv(Iv(eta_plus_b, eta_plus_b) + eta_minus_b + Iv(1, 1) / b_iv + euler_tail)
+    if pure_tail_ratio.hi > max_ratio_hi:
+        max_ratio_hi = pure_tail_ratio.hi
+
+    eps_star = Iv(max_ratio_hi, max_ratio_hi) - Iv(1, 1)
+    assert (eps_star * Iv(k_target, k_target)).hi < Decimal(1), (
+        f"Closed (H*) failed target 1/{k_target}: eps_star={eps_star}"
+    )
+    return eps_star
 
 
 def eps_large_u_two_var(ln_u: Iv) -> Iv:

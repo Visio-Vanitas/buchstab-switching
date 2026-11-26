@@ -16,6 +16,7 @@ from .bonferroni_engine import (
     elem_sym_iv,
     eval_odd_bonferroni_s_a,
 )
+from .brun_block_sieve import eval_best_brun_lower
 from .constants import (
     ALPHA0,
     C_F0,
@@ -34,17 +35,9 @@ from .interval import (
     clamp_pos_iv,
     exp_iv,
     floor_root_int,
-    fmt_dec,
     ln_iv,
     min_iv,
     pow_real_iv,
-)
-from .linear_sieve import (
-    compute_n_term,
-    f_lin_lb,
-    F_sieve_iv,
-    finite_buchstab_even_err_hi,
-    finite_buchstab_odd_err_hi,
 )
 from .primes_and_mertens import (
     INV_PM1_SQ_ALL,
@@ -181,7 +174,8 @@ def _build_analytic_even_bonf_opts(
             break
         ex_p = sum((Iv.from_frac(Fraction(1, p)) for p in PRIMES if p <= pa), Iv(0, 0))
         s1 = clamp_pos_iv(sum_inv_p_ub(z_iv, log_z) - ex_p) + (INV_PP1_ALL - PREFIX_PP1[aq])
-        c_log2 = Iv(1, 1) / (Iv(2, 2) * (Iv(1, 1) - Iv(1, 1) / Iv(max(pa, 3), max(pa, 3))))
+        p_min = ODD_PRIMES[aq]
+        c_log2 = Iv.from_frac(Fraction(p_min - 1, 2 * (p_min - 2)))
         g_lb = exp_iv(-(s1 + c_log2 * (INV_PM1_SQ_ALL - PREFIX_PM1_SQ[aq])))
         inv_phi2 = exp_iv(s1)
         for mev in (2, 4, 6, 8):
@@ -387,8 +381,8 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
     """
     Hybrid transition/middle-bridge certifier over `[10^84, 10^600)` normalized by
     `|A_N| * V_N(z)`:
-      - Lower `S(A_N)`: `max(OddBonferroni, Finite-Terminating Buchstab f(s_A) - E_even)`
-      - Upper `S(A_{N,q})`: per-slice `min(EvenBonf multi-z_sub, Clamped-dq Buchstab F+E_odd,
+      - Lower `S(A_N)`: pure `Q_1(a) x OddBonferroni(m_odd)`
+      - Upper `S(A_{N,q})`: per-slice `min(EvenBonf multi-z_sub/analytic,
         Adaptive-K_sel pre-sieve-free Selberg J_full)`.
     """
     z = ceil_root_int(spec.x_hi, spec.m_div)
@@ -397,7 +391,7 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
 
     x_lo_iv, x_hi_iv = Iv(spec.x_lo, spec.x_lo), Iv(spec.x_hi, spec.x_hi)
     log_x_lo, log_x_hi = ln_iv(x_lo_iv), ln_iv(x_hi_iv)
-    z_iv, y_iv, log_z = Iv(z, z), Iv(y, y), ln_iv(Iv(z, z))
+    z_iv, log_z = Iv(z, z), ln_iv(Iv(z, z))
     epd = epd_norm_iv(x_lo_iv, log_x_lo)
     sqrt_x_lo = floor_root_int(spec.x_lo, 2)
     sqrt_x_lo_iv = exp_iv(Iv.from_str("0.5") * log_x_lo)
@@ -405,37 +399,28 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
     eta_z = (Iv.from_str("6.836e-6") / log_z) if z > 10**12 else (Iv(2, 2) / (z_iv.sqrt() * log_z))
     v_full_lb = (U_CONST * E_NEG_GAMMA / log_z) * exp_iv(-eta_z - Iv(1, 1) / Iv(z - 2, z - 2))
 
-    # Best normalized lower bound for S(A_N) / (|A_N| * V_N(z))
-    h1 = sqrt_x_lo_iv / (Iv(spec.k1_div, spec.k1_div) * (log_x_lo ** 2))
-    qp1 = 1
-    for p in ODD_PRIMES:
-        if p < spec.p1_star:
-            qp1 *= p
-    d1 = min_iv(h1 / Iv(qp1, qp1), pow_real_iv(z_iv, Iv.from_str("5.20")))
+    # Best normalized lower bound for S(A_N) / (|A_N| * V_N(z)): max(OddBonferroni, BrunBlock)
     best_sa: tuple[Iv, Iv, str] | None = None
-    if d1.lo > (z_iv ** 2).hi:
-        ln_d1 = ln_iv(d1)
-        s_a_iv = ln_d1 / log_z
-        nt1 = compute_n_term(spec.p1_star, int(d1.hi) + 1)
-        if nt1 <= 105:
-            ee = finite_buchstab_even_err_hi(
-                spec.p1_star, Iv(ln_d1.lo, ln_d1.lo), Iv(log_z.hi, log_z.hi), nt1, s_a_iv.lo
-            )
-            m_bjs = f_lin_lb(Iv(s_a_iv.lo, s_a_iv.lo)) - ee
-            r_bjs = (((Iv(4, 4) / (PI * PI)) * h1 + h1.sqrt()) * epd) / v_full_lb
-            best_sa = (m_bjs, r_bjs, f"BJS({spec.p1_star},nt={nt1},s={fmt_dec(s_a_iv.lo, 2)})")
-
-    for mo in (7, 9):
-        for a in (2, 4, 6, 8, 10):
-            qp = 1
-            for p in ODD_PRIMES[:a]:
-                qp *= p
-            if qp * (z ** mo) <= sqrt_x_lo:
-                ev = eval_odd_bonferroni_s_a(z, a, mo, sqrt_x_lo)
-                r_norm = (ev.n_moduli * epd) / v_full_lb
-                if best_sa is None or (ev.ratio_odd - r_norm).lo > (best_sa[0] - best_sa[1]).lo:
-                    best_sa = (ev.ratio_odd, r_norm, f"Bonf(a={a},m={mo})")
-    assert best_sa is not None
+    for mo in (7, 9, 11):
+        z_mo = z**mo
+        if z_mo > sqrt_x_lo:
+            break
+        qp = 1
+        for a in range(0, 35):
+            if a > 0:
+                qp *= ODD_PRIMES[a - 1]
+            if qp * z_mo > sqrt_x_lo:
+                break
+            ev = eval_odd_bonferroni_s_a(z, a, mo, sqrt_x_lo)
+            r_norm = (ev.n_moduli * epd) / v_full_lb
+            if best_sa is None or (ev.ratio_odd - r_norm).lo > (best_sa[0] - best_sa[1]).lo:
+                best_sa = (ev.ratio_odd, r_norm, f"Bonf(a={a},m={mo})")
+    brun_res = eval_best_brun_lower(z, sqrt_x_lo, epd, v_full_lb)
+    if brun_res is not None:
+        caps_tag = ",".join(str(c) for c in brun_res.caps)
+        if best_sa is None or (brun_res.ratio_low - brun_res.r_norm).lo > (best_sa[0] - best_sa[1]).lo:
+            best_sa = (brun_res.ratio_low, brun_res.r_norm, f"Brun(a={brun_res.a},caps=({caps_tag}))")
+    assert best_sa is not None, f"No admissible lower sieve on 2c [{spec.x_lo}, {spec.x_hi})"
     sa_norm, rem_a_norm, sa_tag = best_sa
 
     # Upper-sieve S(A_{N,q}) / (|A_N| * V_N(z)) across 48 geometric slices of [z, y)
@@ -443,23 +428,16 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
     li_r = li_ratio_ub(x_lo_iv, log_x_lo)
     z_cap = pow_real_iv(z_iv, Iv.from_str("2.97"))
 
-    h_2 = sqrt_x_lo_iv / (Iv(spec.k2_div, spec.k2_div) * (log_x_lo ** 2))
-    qp2 = 1
-    for p in ODD_PRIMES:
-        if p < spec.p2_star:
-            qp2 *= p
-    d2_base = h_2 / Iv(qp2, qp2)
-    dq_cap = pow_real_iv(z_iv, Iv.from_str("4.90"))
-
     sub_cutoffs = [c for c in (29, 89, 251, 600, 1500) if c < z]
     ev_opts = _build_exact_even_bonf_opts(sub_cutoffs, sqrt_x_lo, scale_ref_lb=v_full_lb)
     ev_opts.extend(_build_analytic_even_bonf_opts(z, sqrt_x_lo, mult_by_v=None))
 
-    l4 = log_x_lo ** 4
+    l4 = log_x_lo**4
     mq_cands = [sqrt_x_lo_iv / (Iv.from_str(ks) * l4) for ks in ("0.002", "0.008", "0.03", "0.15", "0.8")]
+    jf_cache: dict[tuple[Decimal, Decimal], Iv] = {}
 
     sum_aq, err_aq = Iv(0, 0), Iv(0, 0)
-    cnt_bonf = cnt_bjs = cnt_sel = 0
+    cnt_bonf = cnt_sel = 0
     for idx in range(len(bpts) - 1):
         q0, q1 = bpts[idx], bpts[idx + 1]
         q0_iv, q1_iv = Iv(q0, q0), Iv(q1, q1)
@@ -480,26 +458,15 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
             if (ms + es).hi < bt_n.hi:
                 bt_n, bm_n, be_n, tag = ms + es, ms, es, "bonf"
 
-        dq = min_iv(d2_base / q1_iv, dq_cap)
-        if dq.lo >= z_iv.hi:
-            ln_dq = ln_iv(dq)
-            sq_iv = ln_dq / log_z
-            if sq_iv.lo >= 1 and sq_iv.hi <= Decimal("4.95"):
-                nt2 = compute_n_term(spec.p2_star, int(dq.hi) + 1)
-                if nt2 <= 105:
-                    eo = finite_buchstab_odd_err_hi(spec.p2_star, Iv(ln_dq.lo, ln_dq.lo), nt2, sq_iv.lo)
-                    mb = li_r * sq * (F_sieve_iv(Iv(sq_iv.lo, sq_iv.lo)) + eo)
-                    rem_b_sf = (Iv(4, 4) / (PI * PI)) * sq * h_2 + num_q_sl * (h_2 / q0_iv).sqrt()
-                    rem_b_odd = Iv.from_str("0.5") * sq * h_2 + num_q_sl
-                    rem_b = (min_iv(rem_b_sf, rem_b_odd) * epd) / v_full_lb
-                    if (mb + rem_b).hi < bt_n.hi:
-                        bt_n, bm_n, be_n, tag = mb + rem_b, mb, rem_b, "bjs"
-
         for h_q in mq_cands:
             xi_q = min_iv(z_cap, (h_q / q1_iv).sqrt())
             if xi_q.lo < 1:
                 continue
-            jf = j_full_lb_z3(z_iv, xi_q, k1=12, k2=4)
+            jf_key = (xi_q.lo, xi_q.hi)
+            jf = jf_cache.get(jf_key)
+            if jf is None:
+                jf = j_full_lb_z3(z_iv, xi_q, k1=12, k2=4)
+                jf_cache[jf_key] = jf
             if jf.lo <= 0:
                 continue
             ms = li_r * sq / (v_full_lb * jf)
@@ -514,8 +481,6 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
 
         if tag == "bonf":
             cnt_bonf += 1
-        elif tag == "bjs":
-            cnt_bjs += 1
         else:
             cnt_sel += 1
         sum_aq = sum_aq + bm_n
@@ -528,7 +493,7 @@ def certify_slab_2c(spec: Slab2CSpec) -> SlabCertificate:
     tot_err = rem_a_norm + Iv.from_str("0.5") * err_aq + err_q2 + err_one
     net = main_norm - tot_err
     assert net.lo > 0, f"2c [{spec.x_lo}, {spec.x_hi}) failed: main={main_norm}, err={tot_err}, net={net}"
-    note = f"{sa_tag} (F:{cnt_bonf} B:{cnt_bjs} S:{cnt_sel})"
+    note = f"{sa_tag} (F:{cnt_bonf} S:{cnt_sel})"
     return SlabCertificate(
         regime="2c",
         x_lo=spec.x_lo,

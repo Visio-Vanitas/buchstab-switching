@@ -6,7 +6,7 @@ Contains zero IEEE-754 floating-point constants, conversions, or `math` imports.
 
 from __future__ import annotations
 
-from decimal import Decimal, Inexact, Rounded, getcontext, localcontext, ROUND_CEILING, ROUND_FLOOR
+from decimal import Context, Decimal, Inexact, Rounded, getcontext, localcontext, ROUND_CEILING, ROUND_FLOOR
 from fractions import Fraction
 
 PREC = 90
@@ -63,9 +63,32 @@ def _div(a: Decimal, b: Decimal, r) -> Decimal:
         return a / b
 
 
-def _sqrt_dec(a: Decimal, r) -> Decimal:
-    with directed_context(r):
-        return a.sqrt()
+def _square_exact(r: Decimal) -> Decimal:
+    """Compute `r * r` without rounding; raises `Inexact`/`Rounded` on precision loss."""
+    with localcontext(Context(prec=2 * PREC + 6, traps=[Inexact, Rounded])):
+        return r * r
+
+
+def sqrt_down(a: Decimal) -> Decimal:
+    """Return a `PREC`-digit Decimal `r >= 0` with `r * r <= a`."""
+    if a < D_ZERO:
+        raise ValueError(f"sqrt of negative number {a}")
+    with directed_context(ROUND_FLOOR):
+        r = a.sqrt()
+        while _square_exact(r) > a:
+            r = r.next_minus()
+    return r
+
+
+def sqrt_up(a: Decimal) -> Decimal:
+    """Return a `PREC`-digit Decimal `r >= 0` with `r * r >= a`."""
+    if a < D_ZERO:
+        raise ValueError(f"sqrt of negative number {a}")
+    with directed_context(ROUND_CEILING):
+        r = a.sqrt()
+        while _square_exact(r) < a:
+            r = r.next_plus()
+    return r
 
 
 def _ln_dec(x: Decimal, r) -> Decimal:
@@ -139,18 +162,12 @@ class Iv:
         return Iv(_sub(self.lo, o.hi, ROUND_FLOOR), _sub(self.hi, o.lo, ROUND_CEILING))
 
     def __neg__(self) -> "Iv":
-        with directed_context(ROUND_FLOOR):
-            lo = -self.hi
-        with directed_context(ROUND_CEILING):
-            hi = -self.lo
-        return Iv(lo, hi)
+        return Iv(self.hi.copy_negate(), self.lo.copy_negate())
 
     @staticmethod
     def sym(d: Decimal) -> "Iv":
         """Symmetric outward-rounded interval `[-d, +d]` for non-negative `Decimal` `d`."""
-        with directed_context(ROUND_FLOOR):
-            lo = -d
-        return Iv(lo, d)
+        return Iv(d.copy_negate(), d)
 
     def __mul__(self, o: "Iv") -> "Iv":
         prods = []
@@ -189,7 +206,7 @@ class Iv:
     def sqrt(self) -> "Iv":
         if self.lo < D_ZERO:
             raise ValueError(f"sqrt of negative interval {self}")
-        return Iv(_sqrt_dec(self.lo, ROUND_FLOOR), _sqrt_dec(self.hi, ROUND_CEILING))
+        return Iv(sqrt_down(self.lo), sqrt_up(self.hi))
 
     def ln(self) -> "Iv":
         if self.lo <= D_ZERO:

@@ -5,3 +5,5 @@ __pycache__/
 *.olean
 *.ilean
 *.trace
+comparator/ChallengeK3Types.lean
+comparator/ChallengeK3Data.lean

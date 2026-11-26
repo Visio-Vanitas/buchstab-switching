@@ -1,43 +1,78 @@
 """
-Linear sieve functions `f(s)`, `F(s)`, Lyapunov weight `h(s)`, BJS Table 1,
-and finite-terminating outward-rounded Buchstab error operator `E_n(s)`.
+Linear sieve functions `f(s)`, `F(s)`, Lyapunov weight `h(s)`, and certified
+pre-sieve `Q0_100` / rational `(C1, C2)` bounds from `cn_rows_all.json`.
 """
 
 from __future__ import annotations
 
-from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
+from decimal import Decimal, ROUND_FLOOR
 from fractions import Fraction
+import hashlib
+import json
+from pathlib import Path
 
 from .constants import E2, E_GAMMA, ODD_PRIMES
-from .interval import D_FOUR, D_ONE, D_THREE, D_TWO, D_ZERO, Iv, directed_context, exp_iv, ln_iv, min_iv
-from .primes_and_mertens import eps_large_u_two_var, eps_sup_two_var
+from .interval import D_FOUR, D_THREE, D_TWO, Iv, directed_context, exp_iv, ln_iv
 
-# Explicit BJS linear sieve Table 1 pairs (k, C1, C2) for eps <= 1/k
-# (Bordignon, Johnston, Starichkova, arXiv:2207.09452v2, Table 1 / Theorem 6).
-BJS_TABLE: list[tuple[int, int, int]] = [
-    (63, 738, 740), (65, 681, 683), (67, 636, 638), (69, 597, 599),
-    (71, 565, 566), (73, 536, 537), (75, 512, 513), (77, 490, 491),
-    (79, 470, 471), (81, 452, 453), (83, 437, 437), (85, 422, 422),
-    (87, 408, 409), (89, 396, 396), (91, 384, 385), (93, 373, 374),
-    (95, 363, 364), (97, 353, 354), (99, 345, 345), (101, 336, 337),
-    (103, 328, 329), (105, 321, 322), (107, 314, 315), (109, 307, 308),
-    (115, 289, 290), (121, 273, 275), (131, 251, 253), (141, 233, 235),
-    (151, 218, 220), (161, 205, 207), (171, 194, 196), (181, 184, 186),
-    (191, 175, 178), (200, 163, 164), (220, 154, 156), (250, 145, 147),
-    (300, 135, 137), (400, 122, 124), (500, 115, 117), (1000, 103, 105),
-]
+HSTAR_SHA256 = "9db0e31b2ff56e623eb512ab7f058bc5e247a4ba0fbe6e9cfce04e0839ce4eb4"
+CN_SHA256 = "b931b6798c2c9f35cba30ead4c54c668d544b79c9a1989aa705352d55d09b906"
+
+# Certified closed-interval (H*) pre-sieve Q_0 for target eps* < 1/100
+Q0_100: tuple[int, ...] = tuple(
+    [p for p in ODD_PRIMES if p <= 102] + [107, 109, 137, 149, 191, 227]
+)
+
+# Exact rational C_1, C_2 bounds at eps = 1/100 from certified c_n tables
+CERTIFIED_LINEAR_SIEVE_ROWS: dict[str, tuple[Fraction, Fraction]] = {
+    "100:old": (
+        Fraction(
+            3457139049358105116966496278616105757354589,
+            10000000000000000000000000000000000000000,
+        ),
+        Fraction(
+            870914708555023798088925674508698778550311,
+            2500000000000000000000000000000000000000,
+        ),
+    ),
+    "100:new": (
+        Fraction(
+            1178153096032567943071672720479654754602799,
+            5000000000000000000000000000000000000000,
+        ),
+        Fraction(
+            1175456455562758182319093093263708021252459,
+            5000000000000000000000000000000000000000,
+        ),
+    ),
+}
 
 
-def lookup_bjs(eps: Iv) -> tuple[int, int, int]:
-    """Return `(k, C1, C2)` for `eps.hi * k <= 1`."""
-    best = None
-    with directed_context(ROUND_CEILING, 100):
-        for k, c1, c2 in BJS_TABLE:
-            if eps.hi * Decimal(k) <= D_ONE:
-                best = (k, c1, c2)
-    if best is None:
-        raise AssertionError(f"eps={eps} exceeds 1/63 for BJS Table 1")
-    return best
+def load_certified_linear_sieve_row(
+    k_target: int = 100, rec_mode: str = "old"
+) -> tuple[tuple[int, ...], Fraction, Fraction, Fraction]:
+    """
+    Return `(Q0_primes, eps_frac, C1_frac, C2_frac)` for `(k_target, rec_mode)`.
+    When sibling `../data/linear_sieve_inputs/` files exist, also verifies their
+    SHA-256 digests and exact rational equality.
+    """
+    row_key = f"{k_target}:{rec_mode}"
+    if row_key not in CERTIFIED_LINEAR_SIEVE_ROWS:
+        raise ValueError(f"Unsupported certified linear sieve row: {row_key}")
+    c1_frac, c2_frac = CERTIFIED_LINEAR_SIEVE_ROWS[row_key]
+
+    repo_root = Path(__file__).resolve().parents[3]
+    inputs_dir = repo_root / "data" / "linear_sieve_inputs"
+    cn_path = inputs_dir / "cn_rows_all.json"
+    hstar_path = inputs_dir / "logs" / "hstar.log"
+    if cn_path.is_file() and hstar_path.is_file():
+        assert hashlib.sha256(hstar_path.read_bytes()).hexdigest() == HSTAR_SHA256
+        cn_bytes = cn_path.read_bytes()
+        assert hashlib.sha256(cn_bytes).hexdigest() == CN_SHA256
+        row = json.loads(cn_bytes.decode("utf-8"))[f"{k_target}:{rec_mode}"]
+        assert Fraction(int(row["C1_num"]), int(row["C1_den"])) == c1_frac
+        assert Fraction(int(row["C2_num"]), int(row["C2_den"])) == c2_frac
+
+    return Q0_100, Fraction(1, k_target), c1_frac, c2_frac
 
 
 def _trap_step_error(coeff_str: str, h: Iv) -> Iv:
@@ -131,222 +166,3 @@ def h_lin_ub(s: Iv) -> Iv:
     if s_pt <= D_THREE:
         return exp_iv(Iv(-s_pt, -s_pt))
     return (Iv(3, 3) / Iv(s_pt, s_pt)) * exp_iv(Iv(-s_pt, -s_pt))
-
-
-# ---------------------------------------------------------------------------
-# Finite-Terminating Buchstab Error Operator E_n(s)
-# ---------------------------------------------------------------------------
-
-_DS_STR = "0.005"
-_DS_D = Decimal(_DS_STR)
-_SHIFT = 200
-_S_MAX_INT = 115
-_N_PTS = (_S_MAX_INT - 1) * _SHIFT  # 22800
-_N_GRID_MAX = 110
-
-_F_HAT_CACHE: list[list[Decimal] | None] | None = None
-_INV_S_HI: list[Decimal] = []
-_E_SEQ_CACHE: dict[tuple[Decimal, int], list[list[Decimal]]] = {}
-
-
-def _d_add_ceil(a: Decimal, b: Decimal) -> Decimal:
-    with directed_context(ROUND_CEILING):
-        return a + b
-
-
-def _d_mul_ceil(a: Decimal, b: Decimal) -> Decimal:
-    with directed_context(ROUND_CEILING):
-        return a * b
-
-
-def _d_div_ceil(a: Decimal, b: Decimal) -> Decimal:
-    with directed_context(ROUND_CEILING):
-        return a / b
-
-
-def _ensure_f_hat() -> tuple[list[list[Decimal] | None], list[Decimal]]:
-    global _F_HAT_CACHE, _INV_S_HI
-    if _F_HAT_CACHE is not None:
-        return _F_HAT_CACHE, _INV_S_HI
-    s_d = [D_ONE + Decimal(i) * _DS_D for i in range(_N_PTS + 1)]
-    inv_s_hi = [_d_div_ceil(D_ONE, s) for s in s_d]
-    f_hat: list[list[Decimal] | None] = [None]
-    f1 = [D_ZERO] * (_N_PTS + 1)
-    for i in range(2 * _SHIFT + 1):
-        f1[i] = _d_div_ceil(D_THREE - s_d[i], s_d[i])
-    f_hat.append(f1)
-    for n in range(2, _N_GRID_MAX + 1):
-        f_prev = f_hat[-1]
-        assert f_prev is not None
-        tail = [D_ZERO] * (_N_PTS + 1)
-        acc = D_ZERO
-        for i in range(_N_PTS - 1, -1, -1):
-            j = i - _SHIFT if i >= _SHIFT else 0
-            acc = _d_add_ceil(acc, _d_mul_ceil(_DS_D, f_prev[j]))
-            tail[i] = acc
-        f_new = [D_ZERO] * (_N_PTS + 1)
-        if n % 2 == 0:
-            for i in range(_SHIFT, _N_PTS + 1):
-                f_new[i] = _d_mul_ceil(tail[i], inv_s_hi[i])
-        else:
-            t_3 = tail[2 * _SHIFT]
-            for i in range(_N_PTS + 1):
-                tv = t_3 if i < 2 * _SHIFT else tail[i]
-                f_new[i] = _d_mul_ceil(tv, inv_s_hi[i])
-        f_hat.append(f_new)
-    _F_HAT_CACHE = f_hat
-    _INV_S_HI = inv_s_hi
-    return f_hat, inv_s_hi
-
-
-def _run_e_const_hi(eps_hi: Decimal, n_max: int) -> list[list[Decimal]]:
-    """Outward-rounded upper envelopes `E_1 .. E_{n_max}` for constant `eps <= eps_hi`."""
-    key = (eps_hi, n_max)
-    if key in _E_SEQ_CACHE:
-        return _E_SEQ_CACHE[key]
-    f_hat, inv_s_hi = _ensure_f_hat()
-    s_lim = min(_N_PTS, (n_max + 2) * _SHIFT)
-    k_hi = _d_add_ceil(D_ONE, eps_hi)
-    k2_hi = _d_mul_ceil(k_hi, k_hi)
-    e2_hi = _d_add_ceil(_d_mul_ceil(D_TWO, eps_hi), _d_mul_ceil(eps_hi, eps_hi))
-    three_k_eps = _d_mul_ceil(D_THREE, _d_mul_ceil(k_hi, eps_hi))
-
-    e_cur = [D_ZERO] * (s_lim + 1)
-    for i in range(min(s_lim + 1, 2 * _SHIFT + 1)):
-        e_cur[i] = _d_mul_ceil(_d_mul_ceil(D_THREE, eps_hi), inv_s_hi[i])
-    res: list[list[Decimal]] = [[], e_cur]
-    for n in range(2, n_max + 1):
-        f_prev = f_hat[n - 1]
-        assert f_prev is not None
-        tail_e = [D_ZERO] * (s_lim + 1)
-        tail_f = [D_ZERO] * (s_lim + 1)
-        acc_e = D_ZERO
-        acc_f = D_ZERO
-        for i in range(s_lim - 1, -1, -1):
-            j = i - _SHIFT if i >= _SHIFT else 0
-            acc_e = _d_add_ceil(acc_e, _d_mul_ceil(_DS_D, e_cur[j]))
-            acc_f = _d_add_ceil(acc_f, _d_mul_ceil(_DS_D, f_prev[j]))
-            tail_e[i] = acc_e
-            tail_f[i] = acc_f
-        e_new = [D_ZERO] * (s_lim + 1)
-        if n % 2 == 0:
-            for i in range(_SHIFT, s_lim + 1):
-                j = i - _SHIFT
-                t1 = _d_mul_ceil(eps_hi, _d_add_ceil(f_prev[j], e_cur[j]))
-                t2 = _d_mul_ceil(_d_mul_ceil(k_hi, inv_s_hi[i]), tail_e[i])
-                t3 = _d_mul_ceil(_d_mul_ceil(eps_hi, inv_s_hi[i]), tail_f[i])
-                e_new[i] = _d_add_ceil(t1, _d_add_ceil(t2, t3))
-        else:
-            for i in range(2 * _SHIFT, s_lim + 1):
-                j = i - _SHIFT
-                t1 = _d_mul_ceil(eps_hi, _d_add_ceil(f_prev[j], e_cur[j]))
-                t2 = _d_mul_ceil(_d_mul_ceil(k_hi, inv_s_hi[i]), tail_e[i])
-                t3 = _d_mul_ceil(_d_mul_ceil(eps_hi, inv_s_hi[i]), tail_f[i])
-                e_new[i] = _d_add_ceil(t1, _d_add_ceil(t2, t3))
-            f2e2 = _d_add_ceil(f_prev[_SHIFT], e_cur[_SHIFT])
-            te3, tf3 = tail_e[2 * _SHIFT], tail_f[2 * _SHIFT]
-            for i in range(min(s_lim + 1, 2 * _SHIFT)):
-                t1 = _d_mul_ceil(three_k_eps, _d_mul_ceil(f2e2, inv_s_hi[i]))
-                t2 = _d_mul_ceil(k2_hi, _d_mul_ceil(te3, inv_s_hi[i]))
-                t3 = _d_mul_ceil(e2_hi, _d_mul_ceil(tf3, inv_s_hi[i]))
-                e_new[i] = _d_add_ceil(t1, _d_add_ceil(t2, t3))
-        res.append(e_new)
-        e_cur = e_new
-    _E_SEQ_CACHE[key] = res
-    return res
-
-
-def compute_n_term(p_star: int, d1_hi_int: int) -> int:
-    """
-    Exact combinatorial Rosser-Iwaniec termination index `n_term`:
-    smallest `n >= 3` such that `q_3^3 * prod_{j=4}^n q_j > d1_hi_int` where
-    `q_1 < q_2 < q_3 < ...` are the primes `>= p_star`. Thus `T_n(D_1, z) = 0` for `n >= n_term`.
-    """
-    qs = [p for p in ODD_PRIMES if p >= p_star]
-    prod = (qs[2] ** 3)
-    for n in range(3, len(qs) + 1):
-        if n >= 4:
-            prod *= qs[n - 1]
-        if prod > d1_hi_int:
-            return n
-    raise AssertionError(f"Prime list exhausted before reaching d1_hi={d1_hi_int}")
-
-
-def finite_buchstab_even_err_hi(
-    p_star: int, ln_d1_lo: Iv, ln_z_hi: Iv, n_term: int, s_lo: Decimal
-) -> Iv:
-    """
-    Exact outward-rounded upper bound on `sum_{2 <= 2k < n_term} E_{2k}(s_A)` with
-    `n <= 8` using local prime lower bounds `u_{2k} = (D/z)^{3^{-k}}` and `10 <= 2k < n_term`
-    using uniform two-variable `eps_sup_two_var(p_star)`. No infinite Lyapunov tail needed.
-    """
-    assert n_term <= _N_GRID_MAX, f"n_term={n_term} exceeds grid cap {_N_GRID_MAX}"
-    eps_glob = eps_sup_two_var(p_star)
-    with directed_context(ROUND_CEILING, 20):
-        eps_glob_key = eps_glob.hi.quantize(Decimal("1e-5"))
-
-    with directed_context(ROUND_FLOOR, 30):
-        idx_s = int((s_lo - D_ONE) / _DS_D)
-    idx_s = max(0, idx_s)
-
-    total = D_ZERO
-    n_max_even = n_term - 1 if (n_term - 1) % 2 == 0 else n_term - 2
-    if n_max_even >= 10:
-        eg = _run_e_const_hi(eps_glob_key, n_max_even)
-        for n in range(10, n_max_even + 1, 2):
-            if idx_s < len(eg[n]):
-                total = _d_add_ceil(total, eg[n][idx_s])
-
-    for k in (1, 2, 3, 4):
-        n = 2 * k
-        if n >= n_term:
-            break
-        ln_u = (ln_d1_lo - ln_z_hi) / Iv(3 ** k, 3 ** k)
-        en = min_iv(eps_glob, eps_large_u_two_var(ln_u))
-        with directed_context(ROUND_CEILING, 20):
-            en_key = en.hi.quantize(Decimal("1e-4"))
-        e_seq = _run_e_const_hi(en_key, n)
-        if idx_s < len(e_seq[n]):
-            total = _d_add_ceil(total, e_seq[n][idx_s])
-
-    return Iv(total, total)
-
-
-def finite_buchstab_odd_err_hi(
-    p_star: int, ln_dq_lo: Iv, n_term: int, s_lo: Decimal
-) -> Iv:
-    """
-    Exact outward-rounded upper bound on `sum_{1 <= 2k+1 < n_term} E_{2k+1}(s_q)` with
-    `n <= 7` using local prime lower bounds `u_{2k+1} = D_q^{3^{-(k+1)}}` and
-    `9 <= 2k+1 < n_term` using uniform two-variable `eps_sup_two_var(p_star)`.
-    """
-    assert n_term <= _N_GRID_MAX, f"n_term={n_term} exceeds grid cap {_N_GRID_MAX}"
-    eps_glob = eps_sup_two_var(p_star)
-    with directed_context(ROUND_CEILING, 20):
-        eps_glob_key = eps_glob.hi.quantize(Decimal("1e-5"))
-
-    with directed_context(ROUND_FLOOR, 30):
-        idx_s = int((s_lo - D_ONE) / _DS_D)
-    idx_s = max(0, idx_s)
-
-    total = D_ZERO
-    n_max_odd = n_term - 1 if (n_term - 1) % 2 == 1 else n_term - 2
-    if n_max_odd >= 9:
-        eg = _run_e_const_hi(eps_glob_key, n_max_odd)
-        for n in range(9, n_max_odd + 1, 2):
-            if idx_s < len(eg[n]):
-                total = _d_add_ceil(total, eg[n][idx_s])
-
-    for k in (0, 1, 2, 3):
-        n = 2 * k + 1
-        if n >= n_term:
-            break
-        ln_u = ln_dq_lo / Iv(3 ** (k + 1), 3 ** (k + 1))
-        en = min_iv(eps_glob, eps_large_u_two_var(ln_u))
-        with directed_context(ROUND_CEILING, 20):
-            en_key = en.hi.quantize(Decimal("1e-4"))
-        e_seq = _run_e_const_hi(en_key, n)
-        if idx_s < len(e_seq[n]):
-            total = _d_add_ceil(total, e_seq[n][idx_s])
-
-    return Iv(total, total)

@@ -81,7 +81,8 @@ def eval_odd_bonferroni_s_a(z: int, a: int, m_odd: int, sqrt_x_lo: int) -> OddBo
     tail_pp1 = INV_PP1_ALL - PREFIX_PP1[a]
     tail_pm1_sq = INV_PM1_SQ_ALL - PREFIX_PM1_SQ[a]
     s1 = clamp_pos_iv(sum_inv_p_ub(z_iv, log_z) - exact_sum_p_pa) + tail_pp1
-    c_log2 = Iv(1, 1) / (Iv(2, 2) * (Iv(1, 1) - Iv(1, 1) / Iv(max(p_a, 3), max(p_a, 3))))
+    p_min = ODD_PRIMES[a]
+    c_log2 = Iv.from_frac(Fraction(p_min - 1, 2 * (p_min - 2)))
     g_full_lb = exp_iv(-(s1 + c_log2 * tail_pm1_sq))
     fact = 1
     for j in range(1, m_odd + 2):

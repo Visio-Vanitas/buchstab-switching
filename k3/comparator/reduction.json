@@ -1,0 +1,23 @@
+{
+  "challenge_module": "ChallengeK3Reduction",
+  "solution_module": "BuchstabSwitching",
+  "theorem_names": [
+    "BuchstabSwitching.even_eq_prime_add_omegaMult_le_three",
+    "BuchstabSwitching.all_even_one_plus_three_of_premises"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "external_kernels": {
+    "Lean paranoid": [
+      "leanchecker-paranoid",
+      "--silent",
+      "--from-export"
+    ],
+    "nanoda": [
+      "nanoda_bin"
+    ]
+  }
+}

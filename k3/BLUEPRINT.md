@@ -49,14 +49,16 @@ All combinatorial, multiplicative, and rational-certificate modules (`Core/`, `S
   1. Explicit Mertens sums `∑_{p < x} 1/p` (`Rosser–Schoenfeld 1962`, `Johnston–Starichkova arXiv:2208.01229v3`).
   2. Odd squarefree counting `∑_{d ≤ X, 2 ∤ d} μ²(d) ≤ (4/π²) X + √X` and Selberg collision
      bound `∑_{L ≤ X, 2 ∤ L} μ²(L) 3^{ω(L)} ≤ (1/16) X (ln X + 6)²`.
-  3. Exact finite-terminating Buchstab recursion (`n < n_term` where `q_3^3 ∏_{j=4}^{n_term} q_j > D`),
-     prime-omission monotonicity across sub-cutoffs `z_sub ≤ z`, and two-prime inclusion-exclusion
-     `J_full(z, ξ)`.
+  3. Brun combinatorial block lower sieve parity rule (`χ⁻ ≤ 1`), block remainder `E⁻`,
+     modbound `∏ z_i^{m_i - m_{i-1}}`, prime-omission monotonicity across sub-cutoffs `z_sub ≤ z`,
+     and two-prime inclusion-exclusion `J_full(z, ξ)`.
 
 ### Track 4: Asymptotic Ray Closure (`External/LinearSieve/AsymptoticRayEnclosure.lean`)
 - **Goal**: Prove `AsymptoticRayEnclosurePremise` uniformly for all even `N ≥ 10^600`.
 - **Sub-lemmas**:
-  1. Order-respecting two-variable pre-sieve error `ε_sup(251) ≤ 0.0100583` (`k = 99`, `C₂ = 345`,
-     break-even `C₂ ≤ 417.1`) and BJS linear-sieve inequality (`arXiv:2207.09452`, Theorem 6).
-  2. Quadrature enclosure of Buchstab's lower sieve function `f(s)` on `4 ≤ s ≤ 6`.
+  1. Closed-interval two-variable pre-sieve error `(H*)` on `Q0_100` (`ε_* < 1/100`, certified
+     `100:old` `C₂ ≤ 348.365883` and cross-checked `100:new` `C₂ ≤ 235.091291`, break-even
+     `C₂ ≤ 1854.3`).
+  2. Explicit Jurkat–Richert / linear-sieve enclosure of Buchstab's lower sieve function `f(s)`
+     and error `h(s)` with integer cutoff rounding `z = ⌊N^{1/16}⌋`, `y = ⌈(N/z)^{1/3}⌉`.
   3. Monotone pre-sieve-free Selberg `Λ²` bound `V_N(z) * J_full(z, z^r)`.

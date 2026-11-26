@@ -54,12 +54,24 @@ def verify_ast_and_traps() -> list[str]:
             fail(f"{path.relative_to(ROOT)}: forbidden float/math constructs: {leaks}")
         out.append(f"  PASS {path.relative_to(ROOT)}: ZERO_FLOAT_LEAKS=[]")
 
-    import sieve_cert.interval  # noqa: F401
+    from sieve_cert.interval import Iv, _square_exact  # noqa: E401
+    from sieve_cert.linear_sieve import Q0_100  # noqa: E401
+    from sieve_cert.primes_and_mertens import certify_closed_hstar_q0  # noqa: E401
 
     ctx = getcontext()
     if not (ctx.traps.get(Inexact) and ctx.traps.get(Rounded)):
         fail("Decimal Inexact/Rounded traps must be enabled globally by sieve_cert.interval")
-    out.append("  PASS Decimal global Inexact & Rounded traps armed")
+    for n in range(2, 500):
+        s = Iv(n, n).sqrt()
+        if not (_square_exact(s.lo) <= Decimal(n) <= _square_exact(s.hi)):
+            fail(f"Iv({n}).sqrt() failed exact outward square check: {s}")
+    eps_star = certify_closed_hstar_q0(Q0_100, 100)
+    if not (eps_star.hi < Decimal("0.01")):
+        fail(f"certify_closed_hstar_q0(Q0_100, 100) >= 0.01: {eps_star}")
+    out.append(
+        f"  PASS Decimal Inexact/Rounded traps armed, Iv.sqrt outward check on [2, 500), "
+        f"closed (H*) eps*={eps_star.hi:.8f} < 0.01"
+    )
     return out
 
 
@@ -122,11 +134,15 @@ def verify_json_certificates() -> list[str]:
     if r_net <= 0:
         fail(f"Non-positive ray net_lo: {r_net}")
 
+    c2_used = Decimal(str(ray["c2_used"]))
+    c2_be = Decimal(str(ray["c2_breakeven"]))
+    if c2_used <= 0 or c2_be <= c2_used:
+        fail(f"Invalid ray C2 margins: used={c2_used}, breakeven={c2_be}")
     return [
         "[3/6] CONTIGUOUS SLABS, RAY GEOMETRY & ROBUSTNESS",
         f"  PASS {len(slabs)} contiguous slabs spanning [4*10^18, 10^{len(str(x_ls)) - 1}) "
         f"(min net_lo={min_net:.6f}, min sieve_net={min_sieve:.6f}, min rem_tol={min_tol:.2f}x)",
-        f"  PASS asymptotic ray [10^{len(str(x_ls)) - 1}, ∞) (net_lo={r_net:.6f}, C2_max={ray['c2_breakeven']})",
+        f"  PASS asymptotic ray [10^{len(str(x_ls)) - 1}, ∞) (net_lo={r_net:.6f}, C2_used={c2_used}, C2_max={c2_be})",
     ]
 
 

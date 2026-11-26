@@ -120,12 +120,14 @@ def j_full_lb_z3(z_iv: Iv, xi_iv: Iv, k1: int = 24, k2: int = 8) -> Iv:
     return res
 
 
-def vj_monotone_lb_iv(log_x: Iv, m_iv: Iv, r_exp: Iv, delta_v: Iv) -> Iv:
+def vj_monotone_lb_iv(
+    log_x: Iv, m_iv: Iv, r_exp: Iv, delta_v: Iv, log_z_override: Iv | None = None
+) -> Iv:
     """
     Monotone non-decreasing lower bound on `V_N(z) * J_full(z, z^r_exp)` valid for all
-    `N >= X_LS` when `z = N^(1/M)`, `0 < r_exp < 3`, and `z^r_exp >= 5000`.
+    `N >= X_LS` when `z = floor(N^(1/M))`, `0 < r_exp < 3`, and `z^r_exp >= 5000`.
     """
-    log_z = log_x / m_iv
+    log_z = (log_x / m_iv) if log_z_override is None else log_z_override
     xi_iv = exp_iv(r_exp * log_z)
     assert xi_iv.lo >= N_J_PRE
 
