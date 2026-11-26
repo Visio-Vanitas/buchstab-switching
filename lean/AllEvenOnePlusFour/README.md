@@ -63,7 +63,7 @@ lake env lean AxiomsCheck.lean
 - `AllEvenOnePlusFour.exists_prime_add_of_weightedSum_pos`. If the weighted sum is positive
   for some admissible (z, y), then N = p + m with Ω m ≤ 4.
 - `AllEvenOnePlusFour.prime_add_of_lt_tailStart`. Regimes 1 and 2 give every even
-  4 ≤ N < 10¹⁷⁰. This theorem does not use the disputed Regime 3.
+  4 ≤ N < 10⁵⁰⁰. This theorem does not use Regime 3.
 - `AllEvenOnePlusFour.all_even_one_plus_four_of_inputs : AnalyticInputs → AllEvenPrimePlusAlmostPrime 4`.
 - `AllEvenOnePlusFour.all_even_one_plus_four_of_conditionalInputs : ConditionalInputs → DirichletLNonvanishingRightOfHalf → AllEvenPrimePlusAlmostPrime 4`.
   In `AxiomsCheck.lean` the same theorem is restated with the challenge file's own definitions
@@ -75,8 +75,8 @@ lake env lean AxiomsCheck.lean
 | Field | Regime | Statement | Source |
 |---|---|---|---|
 | `regime1 : GoldbachUpTo (4·10¹⁸)` | 1, 4 ≤ N ≤ 4·10¹⁸ | Goldbach for even N in that range | Oliveira e Silva–Herzog–Pardi, a computation (quoted via [BJS] §1 and [JS] §1; the primary paper was not read) |
-| `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10⁵⁰⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | The certificate script `certify_all_even_1p4.py` (30 Bonferroni slabs), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
-| `regime3 : WeightedSievePositiveOn (Set.Ici (10⁵⁰⁰))` | 3 | The same statement for N ≥ 10¹⁷⁰ | [BJS] Theorem 6 (arXiv:2207.09452v6, explicit linear sieve, Table 1 row 100), with [BJS] Lemma 38, [BS] Lemmas 4 and 5, and [JS] Lemma 5.1. **Not established**: the proof of [BJS] Theorem 6 uses its hypothesis at all lower levels, where the note's parameters violate it. |
+| `regime2 : WeightedSievePositiveOn (Set.Ico (4·10¹⁸) (10⁵⁰⁰))` | 2 | For every even N in the range there are z, y with N ≤ z·y⁴, N < y⁵ and Σ_{a sifted} w(a) > 0 | 58 slabs certified with the Brun block sieve (`certificate/all_even_1p4_ext/regime2_brun.py`, data in `data/certificate/`), with [JS] Lemma 5.1 (GRH), Schoenfeld under RH as quoted in [BS] Lemma 1, [JS] Lemmas 3.1 and 3.2, and [BJS] Lemma 16 |
+| `regime3 : WeightedSievePositiveOn (Set.Ici (10⁵⁰⁰))` | 3 | The same statement for N ≥ 10⁵⁰⁰ | The explicit linear sieve with pre-sieve under the hypothesis on all closed prime intervals (`notes/linear-sieve/`), `ε = 1/80`, certified by `certificate/all_even_1p4_ext/tail_x31.py` (`data/certificate/tail/`), with [JS] Lemma 5.1 |
 
 In `ConditionalInputs`, `regime2` and `regime3` take the form
 `DirichletLNonvanishingRightOfHalf → …`, so the role of GRH is visible in the statement.
