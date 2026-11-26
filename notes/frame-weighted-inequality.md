@@ -1,4 +1,6 @@
-# Every even N ≥ 4 is p + η with Ω(η) ≤ 4, under GRH
+# Every even N ≥ 4 is p + η with Ω(η) ≤ 4, under GRH: frame and weighted inequality
+
+> **Read `proof-map.md` first.** §0–§2 below (sources, the weighted inequality, the worst case over the primes dividing `N`) are used unchanged. §3–§4 and §7 describe an earlier split at `10^170` with the Bonferroni sieve and [BJS] Theorem 6 as printed; they are superseded by the block sieve (`block-sieve/`) and the corrected linear sieve (`linear-sieve/`).
 
 **Status.** Regimes 1 and 2 below (all even `4 ≤ N < 10^170`) have been refereed twice with no substantive objection. Regime 3 (`N ≥ 10^170`) applies [BJS] Theorem 6 with its hypothesis checked at the sieving level only (§4.2); the proof of that theorem uses the hypothesis at all lower levels, where the present parameters violate it, so §4 is **not** a proof as it stands and is being redone (see the repository README). Theorem 1 is therefore established here only for `N < 10^170`.
 

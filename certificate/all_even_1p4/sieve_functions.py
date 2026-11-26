@@ -46,7 +46,7 @@ def f_lower(s: Iv) -> Iv:
     """Lower end bounds f(s') for every s' >= s.lo.
 
     f = 0 on (0, 2]; f(s) = 2e^gamma log(s-1)/s on [2, 4]; for s > 4, f(s) >= f(4).
-    (Using f(4) for s > 4 is a conservative choice.)
+    (Using f(4) for s > 4 is the original's conservative choice and is kept.)
     """
     s0 = s.lo
     if s0 <= 2:

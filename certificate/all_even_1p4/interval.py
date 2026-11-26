@@ -16,11 +16,11 @@ an exception.  The directed helpers switch the traps off only inside their own
 ``localcontext``.  Integer arithmetic (Python ``int``) is exact and is used
 for every integer condition.
 
-Square roots
+Square roots (fix of review R18, X26r_v2 finding 1)
 --------------------------------------------------
 ``Decimal.sqrt`` rounds half-even whatever the context rounding is (General
-Decimal Arithmetic specification; CPython follows it).  Calling it
-inside a ROUND_FLOOR / ROUND_CEILING context can therefore
+Decimal Arithmetic specification; CPython follows it).  The original script
+called it inside a ROUND_FLOOR / ROUND_CEILING context and therefore could
 return a lower endpoint above sqrt(a) or an upper endpoint below it, by at
 most half a unit in the last place.  Here ``sqrt_down`` / ``sqrt_up`` take the
 half-even result as a candidate and then step it with ``next_minus`` /

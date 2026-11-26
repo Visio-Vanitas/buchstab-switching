@@ -1,7 +1,7 @@
 """Every result imported from the literature, with provenance and range checks.
 
 Each cited result is a ``Citation`` record (source, version, exact number and
-TeX label, statement as quoted in the note, section 0, hypotheses) together
+TeX label, statement as quoted in note X26 section 0, hypotheses) together
 with one accessor function.  The accessor validates the hypotheses of the
 result *at call time* and only then returns the numerical constants the
 certificate uses.  Validation raises ``HypothesisError`` (not ``assert``, so it
@@ -10,7 +10,7 @@ its stated range.
 
 The certificate checks arithmetic GIVEN these statements.  It does not prove
 them.  Known doubts about the statements themselves are recorded in the
-package README ("Issues found") and in the repository README.
+package README ("Issues found") and in review R18.
 """
 
 from __future__ import annotations
@@ -38,10 +38,10 @@ class Citation:
     key           short id used in check names and the README
     source        authors and arXiv id with version (or journal)
     reference     theorem/lemma number in that version, and its TeX label if known
-    statement     the statement as used (quoted in the note, section 0)
+    statement     the statement as used (quoted in note X26, section 0)
     hypotheses    the range conditions that the accessor validates
     assumption    "GRH", "RH" or "unconditional"
-    note_section  where the note quotes it
+    note_section  where note X26 quotes it
     """
 
     key: str
@@ -73,7 +73,7 @@ GOLDBACH_VERIFICATION = Citation(
     statement="Every even N with 4 <= N <= 4e18 is a sum of two primes.",
     hypotheses="4 <= N <= 4e18, N even",
     assumption="unconditional (computation)",
-    note_section="note section 0.6",
+    note_section="X26 section 0.6",
 )
 
 # ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ JS_LEMMA_5_1 = Citation(
     ),
     hypotheses="X2 >= 4e18 (validated here); x >= X2 and 3 <= q <= sqrt(x), (q, a) = 1 (validated by the caller as named checks)",
     assumption="GRH",
-    note_section="note section 0.2",
+    note_section="X26 section 0.2",
 )
 JS_LEMMA_5_1_X2_MIN = 4 * 10**18
 
@@ -125,12 +125,12 @@ SCHOENFELD = Citation(
     reference="Lemma 1",
     statement="If RH holds, |pi(x) - li(x)| <= sqrt(x) log x/(8 pi).",
     hypotheses=(
-        "x >= 2657.  [BS] prints 'for 3 <= x', which is false at x = 3; the range "
+        "x >= 2657.  [BS] prints 'for 3 <= x', which is false at x = 3 (review R18); the range "
         "x >= 2657 is the one usually attributed to Schoenfeld and is the one validated here. "
         "Every use in the certificate has x >= 30000."
     ),
     assumption="RH",
-    note_section="note section 0.3",
+    note_section="X26 section 0.3",
 )
 SCHOENFELD_X_MIN = 2657
 
@@ -148,7 +148,7 @@ ROBIN = Citation(
     statement="omega(N) < 1.3841 log N/log log N for N >= 3.",
     hypotheses="N >= 3",
     assumption="unconditional",
-    note_section="note section 0.3",
+    note_section="X26 section 0.3",
 )
 
 
@@ -168,7 +168,7 @@ BUTHE = Citation(
     ),
     hypotheses="x >= 1e9 (checked as log x > log 1e9 in intervals)",
     assumption="unconditional",
-    note_section="note section 0.3",
+    note_section="X26 section 0.3",
 )
 
 
@@ -192,7 +192,7 @@ JS_LEMMA_3_1 = Citation(
     statement="For all N >= 71, |A| > N/log N, where A = {N - p : p <= N, p does not divide N}.",
     hypotheses="N >= 71",
     assumption="unconditional",
-    note_section="note section 0.2",
+    note_section="X26 section 0.2",
 )
 
 
@@ -212,7 +212,7 @@ JS_LEMMA_3_2 = Citation(
     ),
     hypotheses="as stated per inequality",
     assumption="unconditional",
-    note_section="note section 0.2",
+    note_section="X26 section 0.2",
 )
 BJS_LEMMA_16 = Citation(
     key="BJS-L16",
@@ -221,7 +221,7 @@ BJS_LEMMA_16 = Citation(
     statement="For 2 <= x <= 1e12: log log x + M < sum_{p<=x} 1/p < log log x + M + 2/(sqrt(x) log x).",
     hypotheses="2 <= x <= 1e12",
     assumption="unconditional (computation)",
-    note_section="note section 0.2",
+    note_section="X26 section 0.2",
 )
 MERTENS_TEN12 = 10**12
 
@@ -272,10 +272,10 @@ BJS_THEOREM_6 = Citation(
         "0 < eps <= 1/74 (validated: the row used has eps' = 1/k with k >= 74 and eps < eps'); "
         "D >= z^2 for the lower bound and D >= z for the upper bound (validated by the caller as s >= 2, "
         "s_min >= 1).  The product hypothesis is proved in note section 4.2 under the fixed-z reading; "
-        "the proof of the theorem uses it at all levels below z as well."
+        "review R18 leaves open whether the proof of the theorem needs it at levels below z."
     ),
     assumption="unconditional",
-    note_section="note sections 0.1, 4.2",
+    note_section="X26 sections 0.1, 4.2",
 )
 
 
@@ -300,13 +300,17 @@ BJS_TABLE_1: tuple[SieveTableRow, ...] = tuple(
     )
 )
 """Table 1 "Values for C_1(eps) and C_2(eps)" of arXiv:2207.09452v6, transcribed from the
-v6 TeX source (the note, section 0.1; all 24 rows compared with the TeX by an independent referee).
+v6 TeX source (note X26 section 0.1; all 24 rows compared with the TeX by review R18 v3).
 By [BJS] Lemma 14, C1 = sum tau_{2n-1} belongs to the upper bound and C2 = sum tau_{2n}
 to the lower bound."""
 
 
+# SUPERSEDED (reviews R18, R20, R22): this is the original X26 Regime 3 path (half-open hypothesis below a fixed
+# z0 with u0 = 41, [BJS] Table 1 row 100, C1 = 276, C2 = 277). It does not certify the tail. The tail in use is
+# all_even_1p4_ext/tail_x31.py with constants from cn_certify and Q0 from hstar_certify. Kept only so that the
+# original X26 output stays reproducible.
 def bjs_table_row(eps: Iv) -> SieveTableRow:
-    """The row used for a proved hypothesis constant eps: the largest k with k <= 1/eps.hi.
+    """SUPERSEDED (reviews R18, R20, R22): see the comment above. The row used for a proved hypothesis constant eps: the largest k with k <= 1/eps.hi.
 
     If the hypothesis of Theorem 6 holds with eps, it holds with every eps' in
     [eps, 1/74]; the theorem is applied at eps' = 1/k with the tabulated
@@ -332,10 +336,10 @@ BJS_LEMMA_19 = Citation(
     ),
     hypotheses=(
         "formula domains as stated; the F formula is extended to [3, 5] from the delay equation "
-        "(sF)' = f(s-1) (the note, section 0.1)"
+        "(sF)' = f(s-1) (note X26 section 0.1)"
     ),
     assumption="unconditional",
-    note_section="note section 0.1",
+    note_section="X26 section 0.1",
 )
 
 BJS_LEMMA_38 = Citation(
@@ -348,7 +352,7 @@ BJS_LEMMA_38 = Citation(
     ),
     hypotheses="x >= 285",
     assumption="unconditional",
-    note_section="note section 0.1",
+    note_section="X26 section 0.1",
 )
 
 
@@ -369,7 +373,7 @@ BJS_LEMMA_23 = Citation(
     statement="For all x >= 45, sum_{n<=x} mu^2(n) <= 0.65 x.",
     hypotheses="x >= 45",
     assumption="unconditional",
-    note_section="note section 0.1 (benchmark only)",
+    note_section="X26 section 0.1 (benchmark only)",
 )
 JS_LEMMAS_5_7_5_8_THEOREM_5_9 = Citation(
     key="JS-L5.7/5.8/T5.9",
@@ -381,7 +385,7 @@ JS_LEMMAS_5_7_5_8_THEOREM_5_9 = Citation(
     ),
     hypotheses="parameters as printed in [JS]",
     assumption="GRH",
-    note_section="note sections 0.2, 5",
+    note_section="X26 sections 0.2, 5",
 )
 
 ALL_CITATIONS: tuple[Citation, ...] = (

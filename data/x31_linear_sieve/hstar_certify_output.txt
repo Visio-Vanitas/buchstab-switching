@@ -1,0 +1,77 @@
+[sanity] log 2 in [0.693147180559945309417232121458, 0.693147180559945309417232121459]
+[sanity] loglog 3 in [0.0940478276166990161743343320844, 0.0940478276166990161743343320845]  (expect 0.0940478276...)
+[sanity] half-open [97,113): eps in [0.016459793, 0.016459794]  (expect 0.0164598)
+[sanity] closed [103,113], all primes: eps in [0.017966528, 0.017966529]  (expect ~0.01797)
+[tail] B = 10000000: delta_B <= 0.0000393423, delta'_B <= 0.0000394423
+[scan] 664578 odd primes scanned, largest 9999991
+
+== target 1/74 ==
+   worst closed pair (scan, v <= B): (191, 199)
+   Q0 = {odd p <= 76} U [79, 103, 107, 149]
+   log Q0 <= 83.86455940   (certified LB for any admissible Q0: 83.84495091)
+   eps*(S0) <= eps_hi = 0.01301900015 ; 1/eps_hi >= 76.81081408 ; target 1/74 : PASS
+   BJS row 74: C1 = 631, C2 = 630 (theorem applied at eps' = 1/74)
+   HEURISTIC: alpha*~0.0957 -> log N_3 ~ 1175.5 (N_3 ~ 10^511); at 1e170: alpha >= 0.2760, s_min <= -0.322
+
+== target 1/80 ==
+   worst closed pair (scan, v <= B): (83, 83)
+   Q0 = {odd p <= 82} U [103, 107, 191, 223]
+   log Q0 <= 89.52005829   (certified LB for any admissible Q0: 89.50044981)
+   eps*(S0) <= eps_hi = 0.01238550780 ; 1/eps_hi >= 80.73952366 ; target 1/80 : PASS
+   BJS row 80: C1 = 461, C2 = 461 (theorem applied at eps' = 1/80)
+   HEURISTIC: alpha*~0.110 -> log N_3 ~ 1070.7 (N_3 ~ 10^465); at 1e170: alpha >= 0.2905, s_min <= -0.640
+
+== target 1/90 ==
+   worst closed pair (scan, v <= B): (109, 113)
+   Q0 = {odd p <= 92} U [97, 103, 107, 137, 149, 191, 227]
+   log Q0 <= 112.9439518   (certified LB for any admissible Q0: 103.3456859)
+   eps*(S0) <= eps_hi = 0.01071454326 ; 1/eps_hi >= 93.33108989 ; target 1/90 : PASS
+   BJS row 90: C1 = 336, C2 = 337 (theorem applied at eps' = 1/90)
+   HEURISTIC: alpha*~0.1235 -> log N_3 ~ 1145.5 (N_3 ~ 10^497); at 1e170: alpha >= 0.3503, s_min <= -1.957
+
+== target 1/100 ==
+   worst closed pair (scan, v <= B): (103, 103)
+   Q0 = {odd p <= 102} U [107, 109, 137, 149, 191, 227]
+   log Q0 <= 117.6156912   (certified LB for any admissible Q0: 117.5775912)
+   eps*(S0) <= eps_hi = 0.009940722704 ; 1/eps_hi >= 100.5963077 ; target 1/100 : PASS
+   BJS row 100: C1 = 276, C2 = 277 (theorem applied at eps' = 1/100)
+   HEURISTIC: alpha*~0.1344 -> log N_3 ~ 1085.8 (N_3 ~ 10^472); at 1e170: alpha >= 0.3622, s_min <= -2.219
+
+== target 1/120 ==
+   worst closed pair (scan, v <= B): (229, 241)
+   Q0 = {odd p <= 122} U [127, 137, 149, 179, 193, 197, 227, 269]
+   log Q0 <= 147.8977127   (certified LB for any admissible Q0: 142.6145089)
+   eps*(S0) <= eps_hi = 0.007815179285 ; 1/eps_hi >= 127.9561176 ; target 1/120 : PASS
+   BJS row 120: C1 = 218, C2 = 219 (theorem applied at eps' = 1/120)
+   HEURISTIC: alpha*~0.1458 -> log N_3 ~ 1211.6 (N_3 ~ 10^526); at 1e170: alpha >= 0.4396, s_min <= -3.921
+
+== target 1/140 ==
+   worst closed pair (scan, v <= B): (431, 467)
+   Q0 = {odd p <= 142} U [149, 163, 179, 193, 197, 223, 229, 269, 307, 419]
+   log Q0 <= 179.9817966   (certified LB for any admissible Q0: 174.3756619)
+   eps*(S0) <= eps_hi = 0.007044123626 ; 1/eps_hi >= 141.9623012 ; target 1/140 : PASS
+   BJS row 140: C1 = 189, C2 = 190 (theorem applied at eps' = 1/140)
+   HEURISTIC: alpha*~0.1551 -> log N_3 ~ 1348.6 (N_3 ~ 10^586); at 1e170: alpha >= 0.5216, s_min <= -5.724
+
+== target 1/150 ==
+   worst closed pair (scan, v <= B): (157, 157)
+   Q0 = {odd p <= 152} U [163, 179, 193, 197, 229, 239, 277, 307, 431]
+   log Q0 <= 185.1259115   (certified LB for any admissible Q0: 185.1067227)
+   eps*(S0) <= eps_hi = 0.006491209799 ; 1/eps_hi >= 154.0544876 ; target 1/150 : PASS
+   BJS row 140: C1 = 189, C2 = 190 (theorem applied at eps' = 1/140)
+   HEURISTIC: alpha*~0.1551 -> log N_3 ~ 1382.4 (N_3 ~ 10^600); at 1e170: alpha >= 0.5347, s_min <= -6.013
+
+== target 1/200 ==
+   worst closed pair (scan, v <= B): (419, 467)
+   Q0 = {odd p <= 202} U [223, 229, 239, 269, 281, 311, 347, 457, 599]
+   log Q0 <= 239.5298452   (certified LB for any admissible Q0: 239.5298451)
+   eps*(S0) <= eps_hi = 0.004949474572 ; 1/eps_hi >= 202.0416481 ; target 1/200 : PASS
+   BJS row 200: C1 = 153, C2 = 154 (theorem applied at eps' = 1/200)
+   HEURISTIC: alpha*~0.1684 -> log N_3 ~ 1599.8 (N_3 ~ 10^695); at 1e170: alpha >= 0.6737, s_min <= -9.071
+
+== X26 current (Q0 = odd primes < 41) ==
+   worst closed pair (scan, v <= B): (41, 43)
+   eps*(S) <= 0.037393016
+   eps*(S) >= 0.037352202 (certified, at that pair)
+
+ALL TARGETS PASS

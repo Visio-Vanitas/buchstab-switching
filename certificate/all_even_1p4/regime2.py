@@ -1,4 +1,4 @@
-"""Regime 2: thirty slabs covering 4e18 <= N < 1e170 (the note, section 2-3).
+"""Regime 2: thirty slabs covering 4e18 <= N < 1e170 (note X26 sections 2-3).
 
 For each slab [X_lo, X_hi) and every even N in it, the certificate shows
 
@@ -44,7 +44,7 @@ from .weights import (
 
 @dataclass(frozen=True)
 class SlabParams:
-    """Parameters of one slab, exactly as in the note.
+    """Parameters of one slab, exactly as in the original schedule.
 
     M: z is the least integer with z^M >= X_hi (up to the +1 below); a: size of Q1;
     m_odd / m_even: Bonferroni truncation orders of the lower / upper sieve on P2.
@@ -104,10 +104,10 @@ REGIME2_END = 10**170
 
 def require_schedule_covers(checks: CheckList, slabs: tuple[SlabParams, ...] = SLABS) -> None:
     """The slabs are contiguous half-open intervals covering [4e18, 1e170) (exact)."""
-    checks.require("schedule starts at 4e18", "note s3", slabs[0].x_lo, "==", REGIME2_START)
-    checks.require("schedule ends at 1e170", "note s3", slabs[-1].x_hi, "==", REGIME2_END)
+    checks.require("schedule starts at 4e18", "X26 s3", slabs[0].x_lo, "==", REGIME2_START)
+    checks.require("schedule ends at 1e170", "X26 s3", slabs[-1].x_hi, "==", REGIME2_END)
     for prev, nxt in zip(slabs, slabs[1:]):
-        checks.require(f"slabs {prev.index},{nxt.index} contiguous", "note s3", prev.x_hi, "==", nxt.x_lo)
+        checks.require(f"slabs {prev.index},{nxt.index} contiguous", "X26 s3", prev.x_hi, "==", nxt.x_lo)
 
 
 @dataclass(frozen=True)
@@ -173,8 +173,8 @@ def choose_z_y(checks: CheckList, p: SlabParams, log_x_hi: Iv) -> tuple[int, int
     properties needed are then checked with exact integers.
     """
     z = int(exp_iv(log_x_hi / Iv(p.m)).hi) + 1
-    checks.require("z^M >= X_hi", "note s3 item 1", z ** p.m, ">=", p.x_hi, z=z, M=p.m)
-    checks.require("z >= 3", "note s3 item 1", z, ">=", 3)
+    checks.require("z^M >= X_hi", "X26 s3 item 1", z ** p.m, ">=", p.x_hi, z=z, M=p.m)
+    checks.require("z >= 3", "X26 s3 item 1", z, ">=", 3)
     y1 = exp_iv(log_x_hi / Iv(5))
     y2 = exp_iv((log_x_hi - ln_iv(Iv(z))) / Iv(4))
     y = int(max(y1.hi, y2.hi)) + 1
@@ -286,7 +286,7 @@ def certify_slab(p: SlabParams) -> SlabResult:
     if len(q1) != p.a:
         raise ValueError("not enough primes for Q1")
     p_a = q1[-1]
-    checks.require("p_a < z", "note s2", p_a, "<", z, p_a=p_a, z=z)
+    checks.require("p_a < z", "X26 s2", p_a, "<", z, p_a=p_a, z=z)
     q1_prod = product(q1)
 
     # Moduli: every d (lower sieve) and q*d (upper sieve) is <= sqrt(X_lo) <= sqrt(N),
@@ -299,9 +299,9 @@ def certify_slab(p: SlabParams) -> SlabResult:
         p2 = []
         max_d_odd = q1_prod * (z ** p.m_odd)
         max_d_even = q1_prod * (z ** p.m_even)
-    checks.require("JS-L5.1 range: max d^2 <= X_lo", "note s1 (*)", max_d_odd * max_d_odd, "<=", p.x_lo,
+    checks.require("JS-L5.1 range: max d^2 <= X_lo", "X26 s1 (*)", max_d_odd * max_d_odd, "<=", p.x_lo,
                    max_d_odd=max_d_odd)
-    checks.require("JS-L5.1 range: (y max d)^2 <= X_lo", "note s1 (*)", (y * max_d_even) ** 2, "<=", p.x_lo,
+    checks.require("JS-L5.1 range: (y max d)^2 <= X_lo", "X26 s1 (*)", (y * max_d_even) ** 2, "<=", p.x_lo,
                    y=y, max_d_even=max_d_even)
 
     v_q1 = ONE
@@ -318,9 +318,9 @@ def certify_slab(p: SlabParams) -> SlabResult:
     v_lower = v_q1 * sv.v2_lower
 
     # Main term (Lemma 2(b)): needs R_odd > 0 and b > 0.
-    checks.require("R_odd > 0", "note s2 Lemma 2", sv.ratio_odd, ">", 0)
+    checks.require("R_odd > 0", "X26 s2 Lemma 2", sv.ratio_odd, ">", 0)
     bracket = sv.ratio_odd - HALF * sv.ratio_even * qs.inv
-    checks.require("bracket b > 0", "note s2 Lemma 2(b)", bracket, ">", 0)
+    checks.require("bracket b > 0", "X26 s2 Lemma 2(b)", bracket, ">", 0)
     main = v_lower * bracket
 
     # Per-modulus remainder (*) divided by N/log N, at N = X_lo (both parts decrease in N):
@@ -350,7 +350,7 @@ def certify_slab(p: SlabParams) -> SlabResult:
 
     err_total = err_a + err_aq + err_q2
     net = main - err_total
-    checks.require("net > 0", "note s3", net, ">", 0, main=main, err=err_total)
+    checks.require("net > 0", "X26 s3", net, ">", 0, main=main, err=err_total)
     return SlabResult(
         params=p, z=z, y=y, p_a=p_a, max_d_odd=max_d_odd, max_d_even=max_d_even, q_sums=qs, sieve=sv,
         v_lower=v_lower, bracket=bracket, main=main, err_per_modulus=err_per_d, err_a=err_a, err_aq=err_aq,

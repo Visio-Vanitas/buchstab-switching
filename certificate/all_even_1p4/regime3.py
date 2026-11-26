@@ -1,4 +1,4 @@
-"""Regime 3: every even N >= X_LS = 1e170 (the note, section 4).
+"""Regime 3: every even N >= X_LS = 1e170 (note X26 section 4).
 
 Sieve [BJS] Theorem 6 with the pre-sieve set Q = {3 <= p < u0, p does not divide N}:
 lower bound for S(A, P(z)), upper bound for each S(A_q, P(z)), z <= q < y, with
@@ -11,8 +11,13 @@ for every even N >= X_LS, each N-dependent piece being monotone in N and
 evaluated at N = X_LS (note section 4.4).
 
 STATUS: this regime depends on the reading of the product hypothesis of [BJS]
-Theorem 6 (fixed upper endpoint z), which is under repair (see the repository README).  The code
+Theorem 6 (fixed upper endpoint z), which review R18 leaves open.  The code
 checks arithmetic under that reading only.
+
+SUPERSEDED (reviews R18, R20, R22): this is the original X26 Regime 3 path (half-open hypothesis below a fixed
+z0 with u0 = 41, [BJS] Table 1 row 100, C1 = 276, C2 = 277). It does not certify the tail. The tail in use is
+all_even_1p4_ext/tail_x31.py with constants from cn_certify and Q0 from hstar_certify. Kept only so that the
+original X26 output stays reproducible.
 """
 
 from __future__ import annotations
@@ -112,14 +117,14 @@ def choose_alpha(checks: CheckList, log_x: Iv, b: Iv, log_q_prod: Iv) -> Iv:
     with localcontext(Context(prec=20, rounding=ROUND_CEILING, traps=ERROR_TRAPS)):
         alpha_dec = alpha_req.hi.quantize(Decimal("0.0001"))
     alpha = Iv(alpha_dec)
-    checks.require("alpha > (B+1)/log X", "note s4.1", alpha, ">", (b + ONE) / log_x)
-    checks.require("N^alpha/log^(B+1)N >= Q", "note s4.1", alpha * log_x - (b + ONE) * ln_iv(log_x), ">=",
+    checks.require("alpha > (B+1)/log X", "X26 s4.1", alpha, ">", (b + ONE) / log_x)
+    checks.require("N^alpha/log^(B+1)N >= Q", "X26 s4.1", alpha * log_x - (b + ONE) * ln_iv(log_x), ">=",
                    log_q_prod, alpha=alpha)
     return alpha
 
 
 def epsilon_bound(checks: CheckList, z0: Iv, u0: int) -> EpsilonBound:
-    """A constant eps for the product hypothesis of [BJS] Theorem 6, uniform in u and z >= z0.
+    """SUPERSEDED (reviews R18, R20, R22): see the module note. A constant eps for the product hypothesis of [BJS] Theorem 6, uniform in u and z >= z0.
 
     For u0 <= u < z (smaller u reduce to u = u0, note 4.2), with g(p) = 1/(p-1):
       prod_{u<=p<z} (1 - 1/(p-1))^-1 = prod (p-1)^2/(p(p-2)) * prod (1 - 1/p)^-1,
@@ -146,8 +151,8 @@ def epsilon_bound(checks: CheckList, z0: Iv, u0: int) -> EpsilonBound:
     eps = twin_tail * exp_iv(Iv(e_max) + Iv(e_low) + c_log * p2_tail) - ONE
     row = bjs_table_row(eps)
     eps_used = ONE / Iv(row.inv_eps)
-    checks.require("eps < eps' = 1/k (strict hypothesis)", "note s4.2", eps, "<", eps_used, k=row.inv_eps)
-    checks.require("eps' <= 1/74", "note s0.1 " + BJS_THEOREM_6.key, row.inv_eps, ">=", 74)
+    checks.require("eps < eps' = 1/k (strict hypothesis)", "X26 s4.2", eps, "<", eps_used, k=row.inv_eps)
+    checks.require("eps' <= 1/74", "X26 s0.1 " + BJS_THEOREM_6.key, row.inv_eps, ">=", 74)
     return EpsilonBound(twin_tail, p2_tail, e_max, e_low, c_log, eps, row, eps_used)
 
 
@@ -192,15 +197,15 @@ def half_q_sum(p: TailParams, m_iv: Iv, alpha: Iv, beta: Iv, log_x: Iv, z0: Iv, 
 
 
 def certify_tail(p: TailParams = TAIL) -> TailResult:
-    """Certify net > 0 for every even N >= X_LS (note section 4); raise otherwise."""
+    """SUPERSEDED (reviews R18, R20, R22): see the module note. Certify net > 0 for every even N >= X_LS (note section 4); raise otherwise."""
     checks = CheckList("tail")
     require_js_lemma_3_1(p.x_ls)
     x_iv = Iv(p.x_ls)
     log_x = ln_iv(x_iv)
     m_iv = Iv(p.m)
     beta = Iv.from_fraction(Fraction(p.m - 1, 4 * p.m))
-    checks.require("M > 5", "note s4.1", p.m, ">", 5)
-    checks.require("beta > 1/5", "note s1 (1.1)", beta, ">", Decimal("0.2"))
+    checks.require("M > 5", "X26 s4.1", p.m, ">", 5)
+    checks.require("beta > 1/5", "X26 s1 (1.1)", beta, ">", Decimal("0.2"))
     b = Iv(Decimal(p.b))
 
     # 4.1 parameters
@@ -211,18 +216,18 @@ def certify_tail(p: TailParams = TAIL) -> TailResult:
 
     log_z0 = log_x / m_iv
     z0 = exp_iv(log_z0)
-    checks.require("log z0 > 8.9", "note s4.1", log_z0, ">", Decimal("8.9"))
-    checks.require("z0 > 285", "note s4.1", z0, ">", 285)
+    checks.require("log z0 > 8.9", "X26 s4.1", log_z0, ">", Decimal("8.9"))
+    checks.require("z0 > 285", "X26 s4.1", z0, ">", 285)
     log_h0 = HALF * log_x - (b + ONE) * ln_iv(log_x)
     log_1e9 = ln_iv(Iv(10**9))
-    checks.require("H >= 1e9", "note s4.1", log_h0, ">", log_1e9)
-    checks.require("y <= H", "note s4.1", beta * log_x, "<=", log_h0)
-    checks.require("1/2 - beta > (B+1)/log X", "note s4.1", HALF - beta, ">", (b + ONE) / log_x)
+    checks.require("H >= 1e9", "X26 s4.1", log_h0, ">", log_1e9)
+    checks.require("y <= H", "X26 s4.1", beta * log_x, "<=", log_h0)
+    checks.require("1/2 - beta > (B+1)/log X", "X26 s4.1", HALF - beta, ">", (b + ONE) / log_x)
 
     s = m_iv * (HALF - alpha)
     s_min = m_iv * (HALF - alpha - beta)
-    checks.require("s >= 2 (D >= z^2, lower bound)", "note s4.1 " + BJS_THEOREM_6.key, s, ">=", 2)
-    checks.require("s_min >= 1 (D/q >= z, upper bound)", "note s4.1 " + BJS_THEOREM_6.key, s_min, ">=", 1)
+    checks.require("s >= 2 (D >= z^2, lower bound)", "X26 s4.1 " + BJS_THEOREM_6.key, s, ">=", 2)
+    checks.require("s_min >= 1 (D/q >= z, upper bound)", "X26 s4.1 " + BJS_THEOREM_6.key, s_min, ">=", 1)
 
     # 4.2 epsilon and the table row
     eps = epsilon_bound(checks, z0, p.u0)
@@ -237,7 +242,7 @@ def certify_tail(p: TailParams = TAIL) -> TailResult:
     lb_a = f_s - eps.eps_used * c2 * e2 * h_s
     half_sum = half_q_sum(p, m_iv, alpha, beta, log_x, z0, eps)
     main_bracket = lb_a - half_sum
-    checks.require("main bracket > 0", "note s4.3", main_bracket, ">", 0)
+    checks.require("main bracket > 0", "X26 s4.3", main_bracket, ">", 0)
     main = (ONE - delta_v) * main_bracket
 
     # 4.4 errors, each divided by M U_N N/log^2 N, with U_N >= U_c
@@ -248,7 +253,7 @@ def certify_tail(p: TailParams = TAIL) -> TailResult:
     log_x_bm2 = pow_real_iv(log_x, b - TWO)
     log_x_bm3 = pow_real_iv(log_x, b - Iv(3))
     log_x_bm1 = pow_real_iv(log_x, b - ONE)
-    checks.require("B > 3 (log powers increase in N)", "note s4.4", b - Iv(3), ">", 0)
+    checks.require("B > 3 (log powers increase in N)", "X26 s4.4", b - Iv(3), ">", 0)
     # R1 = R + 1/2 sum_q sum_d |r(qd)|: distinct squarefree n < QD <= H, so <= (1 + 1/2) c4G N/log^B N.
     err_r1 = (ONE + HALF) * c4g / (m_iv * U_C * log_x_bm2)
     # R2 = 1/2 sum_q |r(q)| sum_{d<QD} mu^2(d)/phi(d) <= 1/2 c4G N/log^B N * 1.1 log H, log H <= 1/2 log N.
@@ -258,12 +263,12 @@ def certify_tail(p: TailParams = TAIL) -> TailResult:
     err_rq = HALF * (ONE + delta_v) * phi_max * c4g / log_x_bm1
     # q^2: |A_{q^2}| <= N/q^2, sum_{q>=z} 1/q^2 <= 1/(z-1); log^2 N/(2 M U_c (N^(1/M) - 1)) decreases
     # for log N > 2M.
-    checks.require("log X > 2M", "note s4.4", log_x, ">", Iv(2 * p.m))
+    checks.require("log X > 2M", "X26 s4.4", log_x, ">", Iv(2 * p.m))
     err_q2 = (log_x ** 2) / (TWO * m_iv * U_C * (z0 - ONE))
 
     err_total = err_r1 + err_r2 + err_rq + err_q2
     net = main - err_total
-    checks.require("tail net > 0", "note s4.4", net, ">", 0, main=main, err=err_total)
+    checks.require("tail net > 0", "X26 s4.4", net, ">", 0, main=main, err=err_total)
     return TailResult(
         params=p, log_x=log_x, beta=beta, q_prod=q_prod, alpha=alpha, z0=z0, log_h0=log_h0, s=s, s_min=s_min,
         epsilon=eps, delta_v=delta_v, f_s=f_s, h_s=h_s, lb_a=lb_a, half_sum=half_sum, main_bracket=main_bracket,

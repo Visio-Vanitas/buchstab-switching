@@ -29,7 +29,7 @@ Progress = Callable[[Union[BenchmarkResult, SlabResult, SlabsDone, TailResult]],
 STATUS_LINE = (
     "This certificate checks arithmetic given the cited theorems; it does not prove the cited "
     "theorems. The tail regime (N >= 1e170) depends on the hypothesis scope of the explicit linear "
-    "sieve theorem ([BJS] Theorem 6), which is under repair (see the repository README)."
+    "sieve theorem ([BJS] Theorem 6), which review R18 leaves open."
 )
 
 
@@ -70,7 +70,7 @@ def run_certificate(slab_indices: tuple[int, ...] | None = None, with_benchmark:
                     with_tail: bool = True, on_progress: Progress | None = None) -> CertificateRun:
     """Run the selected parts; any failed check raises CertificationError."""
     global_checks = CheckList("global")
-    global_checks.require("li(e^5) < e^5/3", "note s0.4", LI_E5, "<", E5_OVER_3)
+    global_checks.require("li(e^5) < e^5/3", "X26 s0.4", LI_E5, "<", E5_OVER_3)
     require_schedule_covers(global_checks)
 
     benchmark = None

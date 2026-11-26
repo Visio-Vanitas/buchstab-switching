@@ -23,7 +23,7 @@ from .interval import HALF, ONE, TWO, Iv
 from .primes import PRIMES
 from .remainder import grh_remainder_coeff
 
-REF = "note s5; " + JS_LEMMAS_5_7_5_8_THEOREM_5_9.key
+REF = "X26 s5; " + JS_LEMMAS_5_7_5_8_THEOREM_5_9.key
 
 
 @dataclass(frozen=True)
