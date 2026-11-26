@@ -1,4 +1,4 @@
-"""The weighted inequality (1.1) and the Bonferroni sieve weights (the note, section 1-2).
+"""The weighted inequality (1.1) and the Bonferroni sieve weights (note X26 sections 1-2).
 
 Weighted inequality (note section 1).  For real z < y with z y^4 >= N and
 y^5 > N, put w(a) = 1 - (1/2)#{q in [z,y) : q | a} - (1/2)#{q in [z,y) : q^2 | a}
@@ -24,9 +24,9 @@ def require_weight_conditions(checks: CheckList, z: int, y: int, x_hi: int) -> N
 
     z y^4 >= x_hi > N and y^5 > x_hi > N, and z < y (exact integer checks).
     """
-    checks.require("weights: y^5 > X_hi", "note s1 (1.1)", y ** 5, ">", x_hi, y=y)
-    checks.require("weights: z*y^4 >= X_hi", "note s1 (1.1)", z * (y ** 4), ">=", x_hi, z=z, y=y)
-    checks.require("weights: y > z", "note s1 (1.1)", y, ">", z, z=z, y=y)
+    checks.require("weights: y^5 > X_hi", "X26 s1 (1.1)", y ** 5, ">", x_hi, y=y)
+    checks.require("weights: z*y^4 >= X_hi", "X26 s1 (1.1)", z * (y ** 4), ">=", x_hi, z=z, y=y)
+    checks.require("weights: y > z", "X26 s1 (1.1)", y, ">", z, z=z, y=y)
 
 
 def elementary_symmetric(weights: list[Iv], max_k: int) -> list[Iv]:

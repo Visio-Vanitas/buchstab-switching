@@ -9,7 +9,7 @@ typed in as a decimal approximation.
 ``E_GAMMA``    e^gamma;  ``E_NEG_GAMMA`` = e^-gamma
 ``C2_TWIN``    twin-prime constant C_2 = prod_{p>2} (1 - 1/(p-1)^2)
 ``M0``         Meissel-Mertens constant M_0 = gamma + sum_p (log(1-1/p) + 1/p)
-``U_C``        U_c = 2 e^-gamma C_2 <= U_N  (the note, section 0.5)
+``U_C``        U_c = 2 e^-gamma C_2 <= U_N  (note X26 section 0.5)
 ``LI2``        li(2) (used in [JS] Lemma 5.1)
 ``LI_E5``      li(e^5) (used for li(x) < x/(log x - 2), note section 0.4)
 =============  ==============================================================

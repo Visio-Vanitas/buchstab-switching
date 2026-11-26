@@ -1,0 +1,205 @@
+# comparator/run_comparator.sh on lean/AllEvenOnePlusFour at a5c1fa9, Colab high-RAM CPU VM, 2026-11-26.
+# Machine paths rewritten relative to this directory; nothing else changed.
+== toolchain
+$ lean --version
+Lean (version 4.37.0-rc1, x86_64-unknown-linux-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release)
+[exit 0]
+$ lake --version
+Lake version 5.0.0-src+0b77e12 (Lean version 4.37.0-rc1)
+[exit 0]
+== Mathlib cache
+[cache exit 0] (Mathlib only; the project itself is compiled below)
+== build
+$ lake build Challenge AllEvenOnePlusFour
+⚠ [18292/18309] Replayed Challenge
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Challenge.lean:58:8: declaration uses `sorry`
+⚠ [18293/18309] Ran Challenge:irArts
+warning: Challenge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18295/18309] Replayed AllEvenOnePlusFour.Statement
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18296/18309] Ran AllEvenOnePlusFour.Statement:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18297/18309] Replayed AllEvenOnePlusFour.Sanity
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18298/18309] Ran AllEvenOnePlusFour.Sanity:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18299/18309] Replayed AllEvenOnePlusFour.Weights
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean:48:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Weights.lean:109:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Weights.lean:136:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Weights.lean:153:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+⚠ [18300/18309] Ran AllEvenOnePlusFour.Weights:irArts
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18301/18309] Replayed AllEvenOnePlusFour.Bonferroni
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean:45:61: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+warning: AllEvenOnePlusFour/Bonferroni.lean:55:61: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+⚠ [18302/18309] Ran AllEvenOnePlusFour.Bonferroni:irArts
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18303/18309] Replayed AllEvenOnePlusFour.GRHInterface
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18304/18309] Ran AllEvenOnePlusFour.GRHInterface:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18305/18309] Built AllEvenOnePlusFour.Reduction (4.2s)
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Reduction.lean:65:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: AllEvenOnePlusFour/Reduction.lean:81:4: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+⚠ [18306/18309] Ran AllEvenOnePlusFour.Reduction:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18307/18309] Built AllEvenOnePlusFour (3.3s)
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [18308/18309] Ran AllEvenOnePlusFour:irArts
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Bonferroni.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Weights.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AllEvenOnePlusFour/Statement.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+Build completed successfully (18309 jobs).
+[exit 0]
+== setup 1: comparator.json (challenge Challenge.lean, theorem all_even_one_plus_four)
+$ bash -c lake env leanexport Challenge -- $(cat export-targets.txt) > .lake/exp/challenge.export
+[exit 0]
+$ bash -c lake env leanexport AllEvenOnePlusFour -- $(cat export-targets.txt) > .lake/exp/solution.export
+PANIC at LeanExport.dumpConstant LeanExport.Basic:254:48: Constant all_even_one_plus_four not found in environment.
+backtrace:
+~/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa6085a5) [0x7bca09c3e5a5]
+~/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa5fec44) [0x7bca09c34c44]
+~/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(lean_panic_fn_borrowed+0x2b) [0x7bca09c34d7b]
+leanexport(panic spec at LeanExport.dumpConstant+0x279) [0x5796bef293f9]
+leanexport(List.forIn'.loop [arity↓] spec at LeanExport.dumpEnv+0x262) [0x5796bef420c2]
+leanexport(LeanExport.dumpEnv [λ]+0x167) [0x5796bef42537]
+leanexport(LeanExport.dumpEnv [boxed, λ]+0x13) [0x5796bef42793]
+leanexport(LeanExport.M.run [arity↓]+0x33) [0x5796bef18f63]
+~/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa5fcd47) [0x7bca09c32d47]
+~/.elan/toolchains/leanprover--lean4---v4.37.0-rc1/lib/lean/libleanshared.so(+0xa5fd135) [0x7bca09c33135]
+/lib/x86_64-linux-gnu/libc.so.6(+0x9cb84) [0x7bc9ff4b1b84]
+/lib/x86_64-linux-gnu/libc.so.6(+0x129ecc) [0x7bc9ff53eecc]
+[exit 134]
+sha256: ee55bb50e64e7e32a9303c95cfe72e2b5eaf6cd2932219b96631d352debb5ccd challenge.export; a445d4858a1c7ba12794d0e721bda7c038c3851bb486a14f93b7bdc0f4b15b88 solution.export
+external kernels available: leanchecker leanchecker-paranoid nanoda_bin 
+$ lake comparator --inadvisably-no-sandbox --config ./comparator.json --challenge-from-export .lake/exp/challenge.export --solution-from-export .lake/exp/solution.export
+WARNING: Sandbox disabled, this run is not trustworthy.
+error: Const not found in solution: 'all_even_one_plus_four'
+[exit 1]
+== setup 2: comparator/reduction.json (challenge comparator/ChallengeReduction.lean, the conditional reduction)
+$ env LEAN_PATH=.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReductionStatement.olean comparator/ChallengeReductionStatement.lean
+[exit 0]
+$ env LEAN_PATH=.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReductionWeights.olean comparator/ChallengeReductionWeights.lean
+[exit 0]
+$ env LEAN_PATH=.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeReduction.olean comparator/ChallengeReduction.lean
+comparator/ChallengeReduction.lean:56:8: warning: declaration uses `sorry`
+comparator/ChallengeReduction.lean:60:8: warning: declaration uses `sorry`
+[exit 0]
+$ bash -c LEAN_PATH=.lake/comparator lake env leanexport ChallengeReduction -- $(cat comparator/reduction-export-targets.txt) > .lake/exp/red-challenge.export
+[exit 0]
+$ bash -c lake env leanexport AllEvenOnePlusFour -- $(cat comparator/reduction-export-targets.txt) > .lake/exp/red-solution.export
+[exit 0]
+sha256: bbdc89ac80f77a351e817c36b839cf6c5f32ea768b6f5a89a52823300b66c6fd red-challenge.export; b2c6d17548687e464021bb9c4f1e0184478258759b3e2f58b01790ea55c12654 red-solution.export
+$ lake comparator --inadvisably-no-sandbox --config ./comparator/reduction.json --challenge-from-export .lake/exp/red-challenge.export --solution-from-export .lake/exp/red-solution.export
+WARNING: Sandbox disabled, this run is not trustworthy.
+Running Lean paranoid kernel on solution
+Lean paranoid kernel accepts the solution
+Running nanoda kernel on solution
+nanoda kernel accepts the solution
+Running Lean default kernel on solution
+Lean default kernel accepts the solution
+Your solution is okay!
+[exit 0]
+== rehearsal: setup 2 with the challenge itself as solution (must be rejected for sorryAx)
+$ lake comparator --inadvisably-no-sandbox --config ./comparator/reduction.json --challenge-from-export .lake/exp/red-challenge.export --solution-from-export .lake/exp/red-challenge.export
+WARNING: Sandbox disabled, this run is not trustworthy.
+error: Illegal axiom detected: 'sorryAx'
+[exit 1]
+== DONE

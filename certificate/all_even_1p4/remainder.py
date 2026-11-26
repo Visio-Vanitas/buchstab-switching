@@ -1,4 +1,4 @@
-"""The remainder bound (*) of the note, section 1, per modulus.
+"""The remainder bound (*) of note X26 section 1, per modulus.
 
 Setting (note section 1): N even, A = {N - p : p <= N prime, p does not divide N},
 A_d = {a in A : d | a}, r(d) = |A_d| - |A|/phi(d).  For 3 <= d <= sqrt(N) with

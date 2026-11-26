@@ -1,6 +1,6 @@
 """Bounds for sums over primes and for pi(x), derived from the cited results.
 
-Notation (the note, section 0.2): E_<(x) := sum_{p<x} 1/p - log log x - M0.
+Notation (note X26 section 0.2): E_<(x) := sum_{p<x} 1/p - log log x - M0.
 """
 
 from __future__ import annotations

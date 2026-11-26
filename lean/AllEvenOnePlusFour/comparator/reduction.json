@@ -1,0 +1,23 @@
+{
+  "challenge_module": "ChallengeReduction",
+  "solution_module": "AllEvenOnePlusFour",
+  "theorem_names": [
+    "AllEvenOnePlusFour.all_even_one_plus_four_of_inputs",
+    "AllEvenOnePlusFour.all_even_one_plus_four_of_conditionalInputs"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "external_kernels": {
+    "Lean paranoid": [
+      "leanchecker-paranoid",
+      "--silent",
+      "--from-export"
+    ],
+    "nanoda": [
+      "nanoda_bin"
+    ]
+  }
+}

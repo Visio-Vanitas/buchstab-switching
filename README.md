@@ -6,48 +6,63 @@ Explicit Chen-type results for **every** even integer, conditional on GRH for Di
 
 > **(GRH)** Every even `N >= 4` is `p + η` with `p` prime and `Ω(η) <= 4`.
 
-Prior explicit all-`N` results: `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
+Prior explicit all-`N` results: D. R. Johnston (2026) reports `Ω(η) <= 16` under GRH (thesis summary, Bull. Aust. Math. Soc. 113 (2026), 372–374, Theorem 2), improving `Ω(η) <= 31` under GRH and `Ω(η) <= 395` unconditionally (Johnston–Starichkova, arXiv:2208.01229), from the explicit Chen theorem of Bordignon–Johnston–Starichkova (arXiv:2207.09452). They remark that their method cannot go below `K = 4`.
 
 GRH enters only through an explicit bound for `π(x; q, a)` (Johnston–Starichkova Lemma 5.1, from Grenié–Molteni), i.e. level of distribution `1/2` with explicit constants for each modulus. The premise is pinned to the Lean formalisation at `leanprover-community/riemann-hypothesis@91b273530883b723ef4422436e0dc3557749325a` (`src/Challenge.lean`, Mathlib-only statements).
 
 ## Method
 
-Sifted set `A = {N − p : p ≤ N, p ∤ N}`, density `g(p) = 1/(p−1)` on `p ∤ N`, linear sieve. Kuhn–Richert type weights on `z ≤ q < y` with `z·y^4 ≥ N`, `y^5 > N` (in the tail `z = N^{1/22}`, `y = N^{21/88}`; per-slab integers below `10^170`):
+Sifted set `A = {N − p : p ≤ N, p ∤ N}`, density `g(p) = 1/(p−1)` on `p ∤ N`, linear sieve. Kuhn–Richert type weights on `z ≤ q < y` with `z·y^4 ≥ N`, `y^5 > N` (per-slab integers below `10^500`):
 
 `w(a) = 1 − ½·#{z ≤ q < y : q | a} − ½·#{z ≤ q < y : q² | a}`,
 
 and `w(a) > 0`, `(a, P(z)) = 1` force `Ω(a) <= 4`. No switching term is needed at `K = 4`.
 
-Three regimes:
+Three ranges:
 
 | Range | Argument | Margin |
 |---|---|---|
 | `4 <= N <= 4·10^18` | numerical verification of Goldbach (Oliveira e Silva–Herzog–Pardi) | n/a |
-| `4·10^18 <= N < 10^170` | 30 contiguous slabs; exact pre-sieve by small primes, hybrid Bonferroni truncation, monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `3.31·10^-4` |
-| `N >= 10^170` | explicit Jurkat–Richert linear sieve (arXiv:2207.09452v6, Thm 6, Table 1 at `ε' = 1/100`, `C_1 = 276`, `C_2 = 277`), pre-sieve by primes `< 41`, monotonicity in `N` of every `N`-dependent term | net `1.489·10^-3` |
+| `4·10^18 <= N < 10^500` | 58 contiguous slabs, each certified with a Brun block sieve (blocks of primes with caps on the number of prime factors; parity rule for lower/upper bounds), monotonicity in the primes dividing `N` so that one evaluation covers every `N` in a slab | min. net `> 1.6796·10^-3` |
+| `N >= 10^500` | explicit Jurkat–Richert linear sieve with an arbitrary pre-sieve set, proved here under the hypothesis on all closed prime intervals with `ε = 1/80` (`C_1 = 391.82`, `C_2 = 390.69`); pre-sieve by the odd primes `<= 82` and `103, 107, 191, 223` | net `> 0.07522` (`> 0.03909` with the classical recursion constants) |
 
-All inequalities are checked by a stdlib-only Python certificate: integers and directed-rounding decimals at 90 digits, no floats, `Inexact`/`Rounded` trapped outside directed contexts. Runtime about 3 minutes.
+All inequalities are checked by a stdlib-only Python certificate: integers and directed-rounding decimals, no floats. Every certified number has been reproduced by an independent replay from the recorded parameters.
 
 ## Status (read this before citing)
 
-- **Established, with no substantive objection after two rounds of independent refereeing:** under GRH every even `4 <= N < 10^170` is `p + η`, `Ω(η) <= 4`. Every imported statement was compared with the TeX source of the cited papers; the certificate reruns byte-identically.
-- **Tail regime `N >= 10^170`: not established, under repair.** Theorem 6 of arXiv:2207.09452v6 states its hypothesis `∏_{u ≤ p < z} (1 − g(p))^{-1} ≤ (1+ε) log z / log u` "for all `1 < u < z`" at the theorem's own `z`. An independent derivation, confirmed by three referees, shows that the Jurkat–Richert induction behind it (Lemma on `T_n`, in particular the case `n` odd, `1 <= s < 3`, which passes through the level `D^{1/3}`) uses the condition at all lower levels, including real ones, i.e. on closed prime intervals `[u, v]`; under the fixed-`z` condition alone the lemma fails (explicit profile at `n = 3`, `s = 1.5`). With a pre-sieve below 41 our data violate the all-levels condition (`ε ≈ 0.0165` on `[97, 113)`), so the tail as written is outside the theorem as proved. A corrected statement (all-levels hypothesis, arbitrary pre-sieve set, recomputed `C_1`, `C_2`) and a redesigned tail with the slab method pushed beyond `10^170` are in progress. The all-`N` statement above is therefore a target, not a claim.
-- Primary sources not yet read first-hand: Schoenfeld, Büthe, Robin, Cai, Halberstam–Richert (monotonicity of `F`, `f`), Nathanson Ch. 9.
+- **The argument covers every even `N >= 4`.** Each part (the weighted inequality, the block sieve, the corrected linear sieve and its constants, the certificate code for both computed ranges) was read by several independent readers, each part at least twice, with no error found.
+- **Correction to the literature.** Theorem 6 of Bordignon–Johnston–Starichkova (arXiv:2207.09452v6) states its product hypothesis only at the theorem's own `z`; its Jurkat–Richert induction uses it on all closed prime intervals, and under the fixed-`z` condition alone the key lemma fails (explicit profile at `n = 3`, `s = 1.5`). Its Table 1 is not reproduced by its own recursion. We prove the theorem under the all-intervals hypothesis with an arbitrary pre-sieve and recompute the constants.
+- Quoted without a first-hand check of the source: the Goldbach verification to `4·10^18`; Nathanson, *Additive Number Theory: The Classical Bases*, Thm 9.4 (identification of the sieve functions `F`, `f`); Johnston–Starichkova Lemmas 3.1, 5.1, (3.1)–(3.3) and the monotonicity of `F`, `f`; Schoenfeld; Robin.
 - `K = 3` for all even `N >= 4` is work in progress and is **not** claimed.
 
 ## Contents
 
 | Path | What |
 |---|---|
-| `notes/all-even-1p4-under-grh.md` | the argument, with every imported statement quoted |
-| `certificate/all_even_1p4/` | the certificate as a typed, tested, stdlib-only Python package: `cd certificate && python -m all_even_1p4` (about 3 minutes); every cited bound is range-checked at call time, every inequality is a recorded check |
-| `tables/` | generated by the certificate: `parameter_table.md` (per-slab and tail parameters, error terms, margins), `summary.json` (all checks, full precision), `run_log.txt` |
-| `lean/AllEvenOnePlusFour/` | Lake project (Lean `v4.37.0-rc1`, Mathlib `31ce06ea`): `Challenge.lean` (Mathlib-only statement), kernel-checked weight lemma (`w(a) > 0 ⟹ Ω(a) ≤ 4`), Bonferroni signs, and the reduction of the theorem to explicit analytic hypotheses, one per regime. `#print axioms`: `propext`, `Classical.choice`, `Quot.sound` only; `sorryAx` only for the challenge statement. The analytic number theory is hypothesis there, not proof. |
+| `notes/proof-map.md` | **start here**: the theorem, the three ranges with final parameters, what is quoted |
+| `notes/frame-weighted-inequality.md` | sources quoted verbatim, the weighted inequality, the worst case over the primes dividing `N` (§0–§2) |
+| `notes/linear-sieve/` | the explicit linear sieve with pre-sieve under the closed-interval hypothesis (S1–S4), and why weaker hypotheses do not suffice (S5–S6) |
+| `notes/block-sieve/` | the Brun block sieve used for `4·10^18 <= N < 10^500` |
+| `certificate/` | stdlib-only Python: `all_even_1p4/` (interval layer, cited bounds, remainders, tests), `all_even_1p4_ext/` (block-sieve slabs, linear-sieve tail, replay), `linear_sieve/` (certification of the pre-sieve hypothesis and of the constants `C_1`, `C_2`) |
+| `data/` | certified ladder and tail (`certificate/`), pre-sieve and constant certificates (`linear_sieve_inputs/`, `linear_sieve_constants/`), replay logs |
+| `lean/AllEvenOnePlusFour/` | Lake project (Lean `v4.37.0-rc1`, Mathlib `31ce06ea`): `Challenge.lean` (Mathlib-only statement), kernel-checked weight lemma (`w(a) > 0 ⟹ Ω(a) ≤ 4`), and the reduction of the theorem to explicit analytic hypotheses (stated with the earlier split point `10^170`). `#print axioms`: `propext`, `Classical.choice`, `Quot.sound`. The analytic number theory is not formalised. |
+
+Labels such as `X26`, `X31`, `X32` in code comments and raw logs refer to the frame note, the linear-sieve notes and the block-sieve note respectively.
+
+## Reproduce
+
+```
+cd certificate
+python3 -m pytest -q all_even_1p4/tests
+python3 -I all_even_1p4_ext/replay.py ../data/certificate/ladder_4e18_500_all.json ../data/certificate/tail/tail_at_500.json
+```
+
+The replay re-certifies all 58 slabs and the tail from the recorded parameters (a few minutes) and ends with `ALL PASS`.
 
 ## What we ask of readers
 
-1. The scope of the product hypothesis in the explicit linear sieve (Nathanson, Lemma 9.8, Thms 9.5 and 9.7): is there a formulation weaker than all levels that the induction supports?
-2. Any missing error term in the tail, given the size of the margin.
-3. Does `lean/AllEvenOnePlusFour/Challenge.lean` say what the target statement says (note `η = 1` is allowed, `Ω(1) = 0`)?
+1. Does `lean/AllEvenOnePlusFour/Challenge.lean` say what the target statement says (note `η = 1` is allowed, `Ω(1) = 0`)?
+2. The explicit linear sieve with pre-sieve under the closed-interval hypothesis, and its constants.
+3. Any missing remainder term in either computed range.
 
 Derivations and scripts were produced largely by AI agents under human direction and refereed by independent readers; treat every claim here as unrefereed in the journal sense.

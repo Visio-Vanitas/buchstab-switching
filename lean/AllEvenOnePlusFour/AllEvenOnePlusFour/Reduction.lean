@@ -8,21 +8,19 @@ The note splits the even `N ≥ 4` into three regimes:
 
 * **Regime 1**, `4 ≤ N ≤ 4·10¹⁸`: Goldbach's conjecture, verified by computation
   (Oliveira e Silva, Herzog and Pardi; quoted in the note, §0.6, via [BJS] §1 and [JS] §1).
-* **Regime 2**, `4·10¹⁸ ≤ N < 10¹⁷⁰`: thirty slabs, each certified by the script
-  `certify_all_even_1p4.py` using Bonferroni sieves (§2–§3) and, under GRH,
-  [JS, Lemma 5.1] and Schoenfeld's bound (§0.2, §0.3).
-* **Regime 3**, `N ≥ 10¹⁷⁰`: the explicit linear sieve [BJS, Theorem 6]
-  (arXiv:2207.09452v6) with a pre-sieve (§4), again with [JS, Lemma 5.1] under GRH.
+* **Regime 2**, `4·10¹⁸ ≤ N < 10⁵⁰⁰`: 58 slabs, each certified by `certificate/all_even_1p4_ext/regime2_brun.py`
+  with a Brun block sieve and, under GRH, [JS, Lemma 5.1] and Schoenfeld's bound.
+* **Regime 3**, `N ≥ 10⁵⁰⁰`: the explicit linear sieve with pre-sieve, proved in `notes/linear-sieve/`
+  under the hypothesis on all closed prime intervals, again with [JS, Lemma 5.1] under GRH.
 
 None of these analytic or computational inputs is proved in Lean. Each enters as an explicit
 hypothesis (a `Prop`, never an `axiom`). What *is* proved here is that these hypotheses imply
 the theorem, via the weight lemma `cardFactors_le_four_of_weight_pos` of `Weights.lean`.
 
-**Status of the inputs (independent review).** Regimes 1 and 2 drew no decisive objection in two rounds
-of review. Regime 3 as written checks the hypothesis of [BJS, Theorem 6] at the
-sieving level only, while the proof of that theorem uses it at all lower levels, so
-`WeightedSievePositiveOn (Set.Ici (10 ^ 170))` must be treated as **unverified**. The theorem
-`prime_add_of_lt_tailStart` records what follows from Regimes 1 and 2 alone.
+**Status of the inputs.** Regime 2 (`4·10¹⁸ ≤ N < 10⁵⁰⁰`) is certified with a Brun block sieve and
+Regime 3 (`N ≥ 10⁵⁰⁰`) with the explicit linear sieve proved under the hypothesis on all closed prime
+intervals (`notes/proof-map.md`). The theorem `prime_add_of_lt_tailStart` records what follows from
+Regimes 1 and 2 alone.
 
 ## The sifted set
 
@@ -112,17 +110,17 @@ def WeightedSievePositiveOn (S : Set ℕ) : Prop :=
 /-- The upper end `4·10¹⁸` of Regime 1. -/
 def goldbachBound : ℕ := 4 * 10 ^ 18
 
-/-- The start `10¹⁷⁰` of Regime 3. -/
-def tailStart : ℕ := 10 ^ 170
+/-- The start `10⁵⁰⁰` of Regime 3. -/
+def tailStart : ℕ := 10 ^ 500
 
 /-- The analytic and computational inputs of the note, one field per regime. -/
 structure AnalyticInputs : Prop where
   /-- Regime 1: Goldbach verified for even `4 ≤ N ≤ 4·10¹⁸` (computation, unconditional). -/
   regime1 : GoldbachUpTo goldbachBound
-  /-- Regime 2: the thirty Bonferroni slabs, `4·10¹⁸ ≤ N < 10¹⁷⁰` (certificate script). -/
+  /-- Regime 2: the 58 block-sieve slabs, `4·10¹⁸ ≤ N < 10⁵⁰⁰` (certificate script). -/
   regime2 : WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)
-  /-- Regime 3: the explicit linear sieve [BJS, Theorem 6], `N ≥ 10¹⁷⁰`
-  (**open** after independent review: hypothesis scope of [BJS, Theorem 6]). -/
+  /-- Regime 3: the explicit linear sieve with pre-sieve under the closed-interval hypothesis,
+  `N ≥ 10⁵⁰⁰` (certificate script). -/
   regime3 : WeightedSievePositiveOn (Set.Ici tailStart)
 
 /-- The same inputs, with Regimes 2 and 3 stated as consequences of GRH. -/
@@ -132,7 +130,7 @@ structure ConditionalInputs : Prop where
   /-- Regime 2, as a consequence of GRH. -/
   regime2 : DirichletLNonvanishingRightOfHalf →
     WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)
-  /-- Regime 3, as a consequence of GRH (open after independent review). -/
+  /-- Regime 3, as a consequence of GRH. -/
   regime3 : DirichletLNonvanishingRightOfHalf → WeightedSievePositiveOn (Set.Ici tailStart)
 
 /-! ### The theorems -/
@@ -152,7 +150,7 @@ theorem exists_prime_add_of_weightedSievePositiveOn {S : Set ℕ} {N : ℕ}
   obtain ⟨z, y, hzy, hy, hpos⟩ := h N hN hev
   exact exists_prime_add_of_weightedSum_pos hzy hy hpos
 
-/-- **Regimes 1 and 2 only.** Every even `4 ≤ N < 10¹⁷⁰` is `p + m` with `Ω m ≤ 4`.
+/-- **Regimes 1 and 2 only.** Every even `4 ≤ N < 10⁵⁰⁰` is `p + m` with `Ω m ≤ 4`.
 This part does not use the disputed Regime 3. -/
 theorem prime_add_of_lt_tailStart (h₁ : GoldbachUpTo goldbachBound)
     (h₂ : WeightedSievePositiveOn (Set.Ico goldbachBound tailStart)) :

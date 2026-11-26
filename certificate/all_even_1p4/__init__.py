@@ -1,7 +1,7 @@
-"""Certificate for the note: under GRH every even N >= 4 is p + eta with Omega(eta) <= 4.
+"""Certificate for note X26: under GRH every even N >= 4 is p + eta with Omega(eta) <= 4.
 
 Arithmetic check in exact integers and outward-rounded Decimal intervals (see
-``interval``).  Run with ``python -m all_even_1p4`` from certificate.
+``interval``).  Run with ``python -m all_even_1p4`` from research/goldbach/scripts.
 See README.md for the architecture, the cited results and the status.
 """
 

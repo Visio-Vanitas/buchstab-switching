@@ -1,7 +1,7 @@
-"""Regression against frozen full-precision reference values.
+"""Regression against the original monolithic script.
 
 ``data/original_reference.json`` holds the full-precision bounds returned by the
-earlier single-file implementation of the same certificate.  The fast tests
+unmodified original (made by ``make_original_reference.py``).  The fast tests
 compare two slabs; the full test (set ALL_EVEN_1P4_FULL=1, several minutes)
 runs the whole certificate and compares every bound the original returns.
 
@@ -30,6 +30,7 @@ from all_even_1p4.regime2 import SLABS, SlabResult, certify_slab
 
 HERE = Path(__file__).resolve().parent
 REFERENCE = json.loads((HERE / "data" / "original_reference.json").read_text())
+ORIGINAL_OUTPUT = HERE / "data" / "earlier_split_output.txt"
 TOLERANCE = Fraction(1, 10**80)
 FULL = os.environ.get("ALL_EVEN_1P4_FULL") == "1"
 
@@ -59,6 +60,23 @@ class _Compare(unittest.TestCase):
         self.assert_lower(f"slab {r.params.index} main", r.main.lo, old["main_lo"])
         self.assert_upper(f"slab {r.params.index} err", r.err_total.hi, old["err_hi"])
         self.assert_lower(f"slab {r.params.index} net", r.net.lo, old["net_lo"])
+
+
+class ReferenceFileTest(unittest.TestCase):
+    """The reference file agrees with the original's committed text output (6 decimals)."""
+
+    def test_reference_matches_original_output(self) -> None:
+        text = ORIGINAL_OUTPUT.read_text()
+        pattern = re.compile(r"Slab\s+(\d+):.*main>=([\d.]+) err<=([\d.]+) net>=([\d.]+)")
+        rows = {int(m.group(1)): m.groups()[1:] for m in pattern.finditer(text)}
+        self.assertEqual(len(rows), 30)
+        half_unit = Fraction(5, 10**7)
+        for old in REFERENCE["regime2"]:
+            printed = rows[old["index"]]
+            for value, shown in zip((old["main_lo"], old["err_hi"], old["net_lo"]), printed):
+                self.assertLessEqual(abs(Fraction(value) - Fraction(shown)), half_unit)
+        net = re.search(r"NET COEFF\s+>= ([\d.]+)", text).group(1)
+        self.assertLessEqual(abs(Fraction(REFERENCE["regime3"]["net"][0]) - Fraction(net)), half_unit)
 
 
 class ConstantsTest(_Compare):

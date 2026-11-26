@@ -67,7 +67,7 @@ class OutwardnessTest(unittest.TestCase):
             self.assertGreaterEqual(_frac(iv.hi) ** 2, f)
 
     def test_sqrt_fix_needed(self) -> None:
-        """Decimal.sqrt ignores directed rounding (a rounding leak); sqrt_down/up do not."""
+        """Decimal.sqrt ignores directed rounding (the leak of review R18); sqrt_down/up do not."""
         with localcontext(Context(prec=PREC, rounding=ROUND_FLOOR)):
             r_floor = Decimal(3).sqrt()
         with localcontext(Context(prec=PREC, rounding=ROUND_CEILING)):
