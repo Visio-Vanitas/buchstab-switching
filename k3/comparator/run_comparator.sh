@@ -26,7 +26,7 @@ else
 fi
 cp BuchstabSwitching/Certificates/Types.lean comparator/ChallengeK3Types.lean
 sed 's/import BuchstabSwitching.Certificates.Types/import ChallengeK3Types/' BuchstabSwitching/Certificates/Data.lean > comparator/ChallengeK3Data.lean
-for m in ChallengeK3Types ChallengeK3Data ChallengeK3MertensTwoVar ChallengeK3DirichletGRH ChallengeK3Schoenfeld ChallengeK3MertensExt ChallengeK3EulerV ChallengeK3Constants ChallengeK3Reduction; do
+for m in ChallengeK3Types ChallengeK3Data ChallengeK3MertensTwoVar ChallengeK3DirichletGRH ChallengeK3Schoenfeld ChallengeK3MertensExt ChallengeK3Constants ChallengeK3Reduction; do
   run env LEAN_PATH="$COMP_HOST" lake env lean --root=comparator -o ".lake/comparator/$m.olean" "comparator/$m.lean"
 done
 ulimit -s hard 2>/dev/null || true

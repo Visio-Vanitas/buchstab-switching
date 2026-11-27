@@ -7,8 +7,9 @@ classical analytic lemmas in `BuchstabSwitching/External/` should target the **`
 ## Open Formalization Targets on `on-dev`
 
 Regime 2 (`127/127` slabs), Regime 3 (`120` ray strips), closed `(H*)`, `BuchstabSeriesPremise`
-(`buchstabSeriesPremise_proved`), and `RobinOmegaBound` (`robinOmegaBound_holds`, PR `#4`) are
-already proved unconditionally in Lean 4.
+(`buchstabSeriesPremise_proved`), `RobinOmegaBound` (`robinOmegaBound_holds`, PR `#4`),
+`CertifiedConstants` (`canonicalConstants`), and `EulerProductVPremise`
+(`eulerProductVPremise_of_schoenfeld_and_mertens`) are already proved in Lean 4.
 
 > **Out of Scope (`SmallEvenPremise`)**: `External/FiniteVerification/SmallEven.lean`
 > (`4 ≤ N < 4 * 10^18` distributed binary prime verification, Oliveira e Silva–Herzog–Pardi 2014)
@@ -17,11 +18,9 @@ already proved unconditionally in Lean 4.
 
 | Field / Target | Interface Module | Mathematical Goal |
 | :--- | :--- | :--- |
-| `js_ap : JSLemma51Premise consts.li2` | `External/CharacterSums/DirichletGRH.lean` | Prove Grenié–Molteni (2019, Cor. 1) / Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1) explicit AP bound from `DirichletLNonvanishingRightOfHalf` |
-| `schoenfeld : SchoenfeldPrimePremise consts.li2` | `External/SchoenfeldRH/PrimeCountingRH.lean` | Prove Schoenfeld (1976, Cor. 1) explicit RH bound `\|π(x) - li(x)\| ≤ √x log x / (8π)` (`x ≥ 2657`) from `DirichletLNonvanishingRightOfHalf` |
-| `mertens : MertensPrimeSumPremise consts.M0` | `External/MertensSums/ReciprocalPrimeSums.lean` | Prove explicit Mertens reciprocal-prime sum bounds (`jsMertensLoErr` / `jsMertensHiErr`, JS Lemma 3.2 & BJS Lemmas 16–17) |
-| `euler_v : EulerProductVPremise consts.U_c consts.eNegGamma` | `External/EulerProductV/ProductAsymptotic.lean` | Prove unconditional BJS (`arXiv:2207.09452v6`, Lemma 38 `vjlem`) shifted-prime Euler product asymptotic `V_N(⌈x⌉)` (`x ≥ 285`) |
-| `consts : CertifiedConstants` | `External/NumericalConstants/ExplicitConstants.lean` | Construct a concrete `CertifiedConstants` inhabitant with proved rational interval bounds for `γ`, `e^γ`, `e^{-γ}`, `M_0`, `C_{2,twin}`, `U_c`, `H_0`, `li(2)`, `α_0`, `H_σ`, `C_J`, `H̃`, `log 2`, `e^2` |
+| `js_ap : JSLemma51Premise canonicalLi2` | `External/CharacterSums/DirichletGRH.lean` | Prove Grenié–Molteni (2019, Cor. 1) / Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1) explicit AP bound from `DirichletLNonvanishingRightOfHalf` |
+| `schoenfeld : SchoenfeldPrimePremise canonicalLi2` | `External/SchoenfeldRH/PrimeCountingRH.lean` | Prove Schoenfeld (1976, Cor. 1) explicit RH bound `\|π(x) - li(x)\| ≤ √x log x / (8π)` (`x ≥ 2657`) from `DirichletLNonvanishingRightOfHalf` |
+| `mertens : MertensPrimeSumPremise meisselMertensConst` | `External/MertensSums/ReciprocalPrimeSums.lean` | Prove explicit Mertens reciprocal-prime sum bounds (`jsMertensLoErr` / `jsMertensHiErr`, JS Lemma 3.2 & BJS Lemmas 16–17) |
 
 To discharge a target:
 1. Keep the existing `def <TargetPremise> : Prop` signature unchanged in its subfolder under
@@ -39,7 +38,7 @@ To discharge a target:
    `lake build --wfail` with zero `sorry`, zero `admit`, zero `axiom` declarations, zero
    `native_decide`, and `#print axioms` reporting only `[propext, Classical.choice, Quot.sound]`.
 2. **Fast local compilation workflow**:
-   - **Subfolder iteration (~5–30s)**: None of the 5 target subfolders above import
+   - **Subfolder iteration (~5–30s)**: None of the 3 target subfolders above import
      `SlabCertInst*`, so during development run:
      ```bash
      cd k3 && lake exe cache get

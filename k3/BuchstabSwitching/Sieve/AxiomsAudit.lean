@@ -92,10 +92,13 @@ with zero `sorryAx` and zero custom `axiom` declarations.
 #print axioms BuchstabSwitching.External.BuchstabSeriesPremise.buchstabf_le_one_sub_sum
 #print axioms BuchstabSwitching.External.buchstabSeriesPremise_proved
 #print axioms BuchstabSwitching.External.robinOmegaBound_holds
+#print axioms BuchstabSwitching.External.canonicalConstants
+#print axioms BuchstabSwitching.External.eulerProductVPremise_of_schoenfeld_and_mertens
 #print axioms BuchstabSwitching.External.slabSieveEnclosurePremise_of_sieveBridge
 #print axioms BuchstabSwitching.External.Regime2abSlabBridge.of_sieveEngines
 #print axioms BuchstabSwitching.External.Regime2cSlabBridge.of_sieveEngines
 #print axioms BuchstabSwitching.External.asymptoticRayEnclosurePremise_of_sieveBridge
+#print axioms BuchstabSwitching.External.asymptoticRayEnclosurePremise_of_canonical
 #print axioms BuchstabSwitching.External.externalPremises_of_classical
 
 -- 16. Main theorems

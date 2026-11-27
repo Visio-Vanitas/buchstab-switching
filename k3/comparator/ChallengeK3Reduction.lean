@@ -3,7 +3,6 @@ import ChallengeK3MertensTwoVar
 import ChallengeK3DirichletGRH
 import ChallengeK3Schoenfeld
 import ChallengeK3MertensExt
-import ChallengeK3EulerV
 import ChallengeK3Constants
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime.Basic
@@ -63,15 +62,14 @@ structure ExternalPremises : Prop where
   slab_enclosure : SlabSieveEnclosurePremise
   ray_enclosure : AsymptoticRayEnclosurePremise
 
-structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
+structure ClassicalBasicLemmas : Prop where
   small_even : SmallEvenPremise
-  js_ap : JSLemma51Premise consts.li2
-  schoenfeld : SchoenfeldPrimePremise consts.li2
-  mertens : MertensPrimeSumPremise consts.M0
-  euler_v : EulerProductVPremise consts.U_c consts.eNegGamma
+  js_ap : JSLemma51Premise canonicalLi2
+  schoenfeld : SchoenfeldPrimePremise canonicalLi2
+  mertens : MertensPrimeSumPremise meisselMertensConst
 
 theorem externalPremises_of_classical
-    {consts : CertifiedConstants} (hCls : ClassicalBasicLemmas consts) :
+    (hCls : ClassicalBasicLemmas) :
     ExternalPremises := by
   sorry
 
@@ -96,9 +94,8 @@ theorem all_even_one_plus_three_of_premises
   sorry
 
 theorem all_even_one_plus_three_of_classical
-    (consts : External.CertifiedConstants)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
-    (hCls : External.ClassicalBasicLemmas consts) :
+    (hCls : External.ClassicalBasicLemmas) :
     AllEvenPrimePlusAlmostPrime 3 := by
   sorry
 
