@@ -258,7 +258,7 @@ theorem DPlus_prod_lt (D : ℝ) (S : Finset ℕ) (hD : 1 < D) (hS : DPlus D S) :
     · subst hne; simpa using hD
     · have hlen_pos : 0 < (descPrimes S).length := by
         rw [descPrimes, Finset.length_sort]
-        exact Finset.card_pos.mpr (Finset.ne_empty_iff_nonempty.mp hne)
+        exact Finset.card_pos.mpr (Finset.nonempty_iff_ne_empty.mpr hne)
       have hall := (DPlus_iff_forall D S).mp hS
       refine prod_lt_of_prefix_bound hD hpos ?_
       by_cases hpar : ((descPrimes S).length - 1) % 2 = 0
@@ -279,7 +279,7 @@ theorem DMinus_prod_lt_of_card_ne_one (D : ℝ) (S : Finset ℕ) (hD : 1 < D)
     by_cases hne : S = ∅
     · subst hne; simpa using hD
     · have hcard_ge2 : 2 ≤ S.card := by
-        have := Finset.card_pos.mpr (Finset.ne_empty_iff_nonempty.mp hne)
+        have := Finset.card_pos.mpr (Finset.nonempty_iff_ne_empty.mpr hne)
         omega
       have hlen2 : 2 ≤ (descPrimes S).length := by
         rw [descPrimes, Finset.length_sort]; exact hcard_ge2

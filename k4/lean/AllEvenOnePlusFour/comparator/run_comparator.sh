@@ -1,5 +1,5 @@
 #!/bin/bash
-# Comparator run for lean/AllEvenOnePlusFour (needs elan; Lean v4.37.0-rc1 ships lake comparator,
+# Comparator run for lean/AllEvenOnePlusFour (needs elan; Lean v4.36.0 ships lake comparator,
 # leanexport, leanchecker-paranoid and nanoda_bin). Output goes to comparator_output.txt.
 # It runs comparator without its sandbox, so run it in a VM or sandbox of your own.
 set -u

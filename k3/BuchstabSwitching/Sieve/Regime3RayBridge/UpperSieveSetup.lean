@@ -43,7 +43,7 @@ lemma rayStripPrimes_pairwiseDisjoint (N L : ℕ) :
       have hmem := (Finset.mem_filter.mp hqi).1
       by_cases hN0 : N = 0
       · subst hN0
-        simp [midPrimes, rayY] at hmem
+        simp [midPrimes] at hmem
       · exact_mod_cast Nat.succ_le_of_lt (Nat.pos_of_ne_zero hN0)
     have hu_le : rayStripU 16 L (i.1 + 1) ≤ rayStripU 16 L j.1 := by
       unfold rayStripU

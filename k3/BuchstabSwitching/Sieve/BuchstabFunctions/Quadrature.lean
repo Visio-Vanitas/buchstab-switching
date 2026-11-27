@@ -141,11 +141,11 @@ theorem innerQuadIntegrand_deriv_pos {t : ℝ} (h2 : 2 ≤ t) (h4 : t ≤ 4) :
         have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
         have hpow : (2.7 : ℝ) ^ 4 < (Real.exp 1) ^ 4 :=
           pow_lt_pow_left₀ h1 (by norm_num) (by norm_num)
-        rw [← Real.exp_natCast_mul] at hpow
+        rw [← Real.exp_nat_mul] at hpow
         norm_num at hpow
         linarith
       have hpow3 : (3 : ℝ) ^ 3 < (Real.exp (4 / 3 : ℝ)) ^ 3 := by
-        rw [← Real.exp_natCast_mul]
+        rw [← Real.exp_nat_mul]
         norm_num
         exact hexp
       nlinarith [Real.exp_pos (4 / 3 : ℝ), pow_pos (Real.exp_pos (4 / 3 : ℝ)) 2]

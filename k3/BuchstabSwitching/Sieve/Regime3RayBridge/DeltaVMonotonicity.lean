@@ -12,7 +12,7 @@ private lemma antitoneOn_id_div_exp_sub_two :
     AntitoneOn (fun t : ℝ => t / (Real.exp t - 2)) (Set.Ici 2) := by
   have hexp2_gt2 : (2 : ℝ) < Real.exp 2 := by
     have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
-    have hsq : Real.exp 2 = Real.exp 1 ^ 2 := by rw [← Real.exp_natCast_mul]; norm_num
+    have hsq : Real.exp 2 = Real.exp 1 ^ 2 := by rw [← Real.exp_nat_mul]; norm_num
     rw [hsq]
     have hp : (2.7 : ℝ) ^ 2 ≤ Real.exp 1 ^ 2 := pow_le_pow_left₀ (by norm_num) h1.le 2
     linarith [show (2 : ℝ) < (2.7 : ℝ) ^ 2 by norm_num]
@@ -30,9 +30,9 @@ private lemma antitoneOn_id_div_exp_sub_two :
       have ht_gt2 : 2 < t := by simpa [interior_Ici] using ht
       have hderiv : HasDerivAt (fun x : ℝ => (Real.exp x - 2) / x)
           ((Real.exp t * t - (Real.exp t - 2) * 1) / t ^ 2) t := by
-        have hnum : HasDerivAt (fun x : ℝ => Real.exp x - 2) (Real.exp t) t := by
-          simpa using (Real.hasDerivAt_exp t).fun_sub (hasDerivAt_const t 2)
-        exact hnum.fun_div (hasDerivAt_id t) (by linarith)
+        have hnum : HasDerivAt (fun x : ℝ => Real.exp x - 2) (Real.exp t) t :=
+          (Real.hasDerivAt_exp t).sub_const 2
+        exact hnum.div (hasDerivAt_id t) (by linarith)
       rw [hderiv.deriv]
       have hnum : 0 ≤ Real.exp t * t - (Real.exp t - 2) * 1 := by
         have hrew : Real.exp t * t - (Real.exp t - 2) * 1 = (t - 1) * Real.exp t + 2 := by ring
@@ -294,7 +294,7 @@ theorem deltaV_bjs_le_rayDeltaV {M K N : ℕ} (hM : 1 ≤ M) (hM_le : M ≤ 16) 
   have hN_ge_3M : 3 ^ M ≤ N := by
     have hpow : (3 : ℝ) ^ M ≤ Real.exp 10 ^ M := pow_le_pow_left₀ (by norm_num) h3_le_exp10 M
     have hexp : Real.exp 10 ^ M = Real.exp (10 * (M : ℝ)) := by
-      rw [← Real.exp_natCast_mul]; ring_nf
+      rw [← Real.exp_nat_mul]; ring_nf
     have hle : Real.exp (10 * (M : ℝ)) ≤ (N : ℝ) := by
       rw [← Real.exp_log hN_pos]; exact Real.exp_le_exp.mpr hlog
     exact_mod_cast (hpow.trans (hexp ▸ hle))

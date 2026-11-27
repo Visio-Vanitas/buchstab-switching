@@ -113,7 +113,7 @@ theorem jsMertensHiErr_eq_small {x : ℝ} (hx : Real.log x ≤ 8.9) :
       have hexp10 : Real.exp 8.9 ≤ Real.exp 10 := Real.exp_le_exp.mpr (by norm_num)
       have hexp3 : Real.exp 10 < (3 : ℝ) ^ 10 := by
         have h1 : Real.exp 10 = (Real.exp 1) ^ 10 := by
-          rw [← Real.exp_natCast_mul]
+          rw [← Real.exp_nat_mul]
           norm_num
         rw [h1]
         exact pow_lt_pow_left₀ exp_one_lt_three' (Real.exp_pos 1).le (by omega)

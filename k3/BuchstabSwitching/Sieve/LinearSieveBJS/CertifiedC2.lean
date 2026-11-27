@@ -416,7 +416,7 @@ private lemma tauList_sound (n tP tpP aP : ℕ) (xs : List (ℕ × ℕ × ℕ)) 
       have hstep_le : (tauStepVal (m + 2) tP aP b : ℝ) / (scaleT : ℝ) ≤ (t : ℝ) / (scaleT : ℝ) :=
         div_le_div_of_nonneg_right (by exact_mod_cast ht_chk) hst.le
       refine le_trans ?_ hstep_le
-      rw [tauBJS]; dsimp only
+      rw [tauBJS]
       by_cases hev : Even (m + 2)
       · have hmod : (m + 2) % 2 = 0 := Nat.even_iff.mp hev
         simp only [hev, ↓reduceIte, tauStepVal, hmod]

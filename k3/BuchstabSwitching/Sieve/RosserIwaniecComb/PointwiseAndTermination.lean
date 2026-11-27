@@ -26,7 +26,7 @@ private lemma sieveV_ones (P : Finset ℕ) :
     sieveV (fun _ => (1 : ℝ)) P = if P = ∅ then 1 else 0 := by
   by_cases hP : P = ∅
   · subst hP; simp [sieveV]
-  · obtain ⟨p, hp⟩ := Finset.ne_empty_iff_nonempty.mp hP
+  · obtain ⟨p, hp⟩ := Finset.nonempty_iff_ne_empty.mpr hP
     have hzero : sieveV (fun _ => (1 : ℝ)) P = 0 :=
       Finset.prod_eq_zero hp (by norm_num)
     simp [hP, hzero]
@@ -132,16 +132,15 @@ private lemma getElem_le_of_sublist {L₁ L₂ : List ℕ} (hsub : L₁.Sublist 
 
 private lemma sort_asc_eq_reverse_desc (S : Finset ℕ) :
     S.sort (· ≤ ·) = (descPrimes S).reverse := by
-  have hlt : (descPrimes S).SortedGT := S.sortedGT_sort
-  have hrev_lt : (descPrimes S).reverse.SortedLT := by
-    rw [List.sortedLT_iff_pairwise, List.pairwise_reverse]
-    simpa [descPrimes, List.sortedGT_iff_pairwise] using hlt
+  have hnodup : (descPrimes S).reverse.Nodup :=
+    List.nodup_reverse.mpr (S.sort_nodup (· ≥ ·))
+  have hpair : (descPrimes S).reverse.Pairwise (· ≤ ·) :=
+    List.pairwise_reverse.mpr (S.pairwise_sort (· ≥ ·))
   have htoFin : (descPrimes S).reverse.toFinset = S := by
     ext x
     simp [descPrimes]
-  calc S.sort (· ≤ ·)
-    _ = (descPrimes S).reverse.toFinset.sort (· ≤ ·) := by rw [htoFin]
-    _ = (descPrimes S).reverse := hrev_lt.sort_toFinset
+  conv_lhs => rw [← htoFin]
+  exact (List.toFinset_sort (· ≤ ·) hnodup).mpr hpair
 
 /-- **Finite-terminating Rosser–Iwaniec vanishing lemma** (`NOTES_K3_DERIVATION.md` §4 &
 `linear_sieve.py:compute_n_term`):

@@ -34,7 +34,7 @@ theorem three_lt_cBuchstab : 3 < cBuchstab := by
   have hexp1 : (9 / 4 : ℝ) < Real.exp 1 := by
     linarith [Real.exp_one_gt_d9]
   have hsq : (3 / 2 : ℝ) ^ 2 < (Real.exp (1 / 2 : ℝ)) ^ 2 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     norm_num
     exact hexp1
   have hhalf : (3 / 2 : ℝ) < Real.exp (1 / 2 : ℝ) := by

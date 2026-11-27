@@ -17,7 +17,7 @@ analytic sieve infrastructure:
 
 Both Lean 4 formalizations (`k4/lean/AllEvenOnePlusFour/` and `k3/`) use:
 
-- **Toolchain**: `leanprover/lean4:v4.37.0-rc1` with Mathlib `31ce06eaadf4a200c0e1407c5f10953cf606b8f8` (`propext`, `Classical.choice`, `Quot.sound` only; zero custom `axiom` declarations, zero `native_decide`).
+- **Toolchain**: `leanprover/lean4:v4.36.0` with Mathlib `fc4f59e577feb1a4956671bc04ac18aaaf8cd842` (`propext`, `Classical.choice`, `Quot.sound` only; zero custom `axiom` declarations, zero `native_decide`).
 - **GRH Statement Source**: `DirichletLNonvanishingRightOfHalf` matches verbatim the Mathlib-only statement in [`lsernau/grh-lean`](https://github.com/lsernau/grh-lean) at commit `72fead102f663d5c7a407964a13dc0cf9d977207` (`grh-compact/src/Statements.lean` and `grh/src/Statements.lean`, where `src/Main.lean` proves `LFunction_ne_zero_of_half_lt_re : DirichletLNonvanishingRightOfHalf`).
 
 GRH enters both certificates only through the explicit AP prime-counting bound of Grenié–Molteni / Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1). Both packages use the closed-interval `(H*)` correction replacing Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Theorem 6).

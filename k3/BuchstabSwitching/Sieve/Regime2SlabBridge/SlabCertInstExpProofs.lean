@@ -1,5 +1,6 @@
 import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSciProofs
 import BuchstabSwitching.External.NumericalConstants.ExplicitConstants
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 /-!
 # Division-Free Q64 `log`, `exp`, and Factorial Constants
@@ -413,7 +414,7 @@ lemma expUbDyadic_sound {t : Dyadic} (h : (expUbDyadic t).1 = true) :
       dsimp only [r0]; rw [Dyadic.ofQ64_toReal, le_div_iff₀ q64Scale_pos, one_mul]
       exact_mod_cast hge.trans (Nat.le_add_right _ _)
     have hexp_eq : Real.exp t.toReal = (Real.exp y) ^ (2 ^ s) := by
-      rw [← Real.exp_natCast_mul]; congr 1
+      rw [← Real.exp_nat_mul]; congr 1
       dsimp only [y]; rw [Nat.cast_pow, Nat.cast_ofNat, mul_div_cancel₀ _ (by positivity)]
     refine ⟨?_, dyadicSquareUb_ge_one s r0 hr0_ge1⟩
     rw [hexp_eq]; exact dyadicSquareUb_sound s r0 (Real.exp y) (Real.exp_pos y).le hr0_ge
@@ -497,7 +498,7 @@ lemma expGeQ64_sound {x64 : ℕ} {x : ℝ} (hx_nn : 0 ≤ x)
   have hsq5 := square5Q64_sound 5 (expGeLoopQ64 x64 inv32Succ64Lb q64Scale q64Scale)
     (Real.exp (x / 32)) (hloop.trans hsum)
   have hexp32 : (Real.exp (x / 32)) ^ (2 ^ 5) = Real.exp x := by
-    rw [← Real.exp_natCast_mul]; congr 1; push_cast; ring
+    rw [← Real.exp_nat_mul]; congr 1; push_cast; ring
   rw [hexp32] at hsq5
   unfold expGeQ64
   by_cases hle : q64Scale ≤ square5Q64 5 (expGeLoopQ64 x64 inv32Succ64Lb q64Scale q64Scale)

@@ -229,7 +229,7 @@ lemma le_ceilDiv_real (a b : ℕ) (hb : 0 < b) :
 
 private lemma exp_one_div_16_lt : Real.exp (1 / 16 : ℝ) < (expStepNum : ℝ) / (scaleF : ℝ) := by
   have hpow : (Real.exp (1 / 16 : ℝ)) ^ 16 < ((expStepNum : ℝ) / (scaleF : ℝ)) ^ 16 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     have h1 : ((16 : ℕ) : ℝ) * (1 / 16 : ℝ) = 1 := by norm_num
     rw [h1]
     have hexp : Real.exp 1 < (27182818286 / 10000000000 : ℝ) := exp_one_lt_d9'

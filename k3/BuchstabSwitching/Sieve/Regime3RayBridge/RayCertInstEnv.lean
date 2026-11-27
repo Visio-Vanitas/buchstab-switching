@@ -173,7 +173,7 @@ lemma rayZIntLb_16_X_LS_ge :
     linarith
   have he80 : (10 : ℝ) ^ 20 + 1 ≤ Real.exp 80 := by
     have he10 := exp_ten_ge_20001
-    have h80 : Real.exp 80 = Real.exp 10 ^ 8 := by rw [← Real.exp_natCast_mul]; norm_num
+    have h80 : Real.exp 80 = Real.exp 10 ^ 8 := by rw [← Real.exp_nat_mul]; norm_num
     rw [h80]
     have hp : (20001 : ℝ) ^ 8 ≤ Real.exp 10 ^ 8 := pow_le_pow_left₀ (by norm_num) he10 8
     linarith [show (10 : ℝ) ^ 20 + 1 ≤ (20001 : ℝ) ^ 8 by norm_num]
@@ -350,7 +350,7 @@ lemma rayLbA_16_X_LS_ge_cert :
   have he2_ge_2 : (2 : ℝ) ≤ Real.exp 2 := by
     have := Real.add_one_le_exp (2 : ℝ); linarith
   have he2_ub : Real.exp 2 ≤ (739 / 100 : ℝ) := by
-    have h2 : Real.exp 2 = Real.exp 1 ^ 2 := by rw [← Real.exp_natCast_mul]; norm_num
+    have h2 : Real.exp 2 = Real.exp 1 ^ 2 := by rw [← Real.exp_nat_mul]; norm_num
     rw [h2]
     have h1 : Real.exp 1 ≤ (2.7183 : ℝ) := by linarith [Real.exp_one_lt_d9]
     have hp := pow_le_pow_left₀ (Real.exp_pos 1).le h1 2
@@ -430,7 +430,7 @@ lemma rayErrorSumInt_16_X_LS_le_cert (consts : External.CertifiedConstants) :
       div_le_div_of_nonneg_left (by norm_num) (by norm_num) (pow_le_pow_left₀ (by norm_num) hpi_lo.le 2)
     have hexp : (10 : ℝ) ^ 20 ≤ Real.exp ((0.1 : ℝ) * Real.log (asymptoticCert.X_LS : ℝ)) := by
       have he10 := exp_ten_ge_20001
-      have h80 : Real.exp 80 = Real.exp 10 ^ 8 := by rw [← Real.exp_natCast_mul]; norm_num
+      have h80 : Real.exp 80 = Real.exp 10 ^ 8 := by rw [← Real.exp_nat_mul]; norm_num
       have hge80 : Real.exp 80 ≤ Real.exp ((0.1 : ℝ) * Real.log (asymptoticCert.X_LS : ℝ)) :=
         Real.exp_le_exp.mpr (by linarith)
       have hp : (20001 : ℝ) ^ 8 ≤ Real.exp 10 ^ 8 := pow_le_pow_left₀ (by norm_num) he10 8
@@ -528,7 +528,7 @@ lemma rayErrorSumInt_16_X_LS_le_cert (consts : External.CertifiedConstants) :
       rw [he_le]
       refine one_div_le_one_div_of_le (by norm_num) ?_
       have he10 := exp_ten_ge_20001
-      have h80 : Real.exp 80 = Real.exp 10 ^ 8 := by rw [← Real.exp_natCast_mul]; norm_num
+      have h80 : Real.exp 80 = Real.exp 10 ^ 8 := by rw [← Real.exp_nat_mul]; norm_num
       have harg : (80 : ℝ) ≤ ((0.5 : ℝ) - rayBeta 16) * Real.log (asymptoticCert.X_LS : ℝ) := by
         unfold rayBeta; nlinarith
       have hp : (20001 : ℝ) ^ 8 ≤ Real.exp 10 ^ 8 := pow_le_pow_left₀ (by norm_num) he10 8

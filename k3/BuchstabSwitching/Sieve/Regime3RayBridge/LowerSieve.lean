@@ -22,7 +22,7 @@ section SieveBounds
 private lemma two_pow_le_exp (k : ℕ) : (2 : ℝ) ^ k ≤ Real.exp (k : ℝ) := by
   have h1 : (2 : ℝ) ≤ Real.exp 1 := by linarith [Real.exp_one_gt_d9]
   calc (2 : ℝ) ^ k ≤ (Real.exp 1) ^ k := pow_le_pow_left₀ (by norm_num) h1 k
-    _ = Real.exp (k : ℝ) := by rw [← Real.exp_natCast_mul, mul_one]
+    _ = Real.exp (k : ℝ) := by rw [← Real.exp_nat_mul, mul_one]
 
 lemma X_LS_facts {N : ℕ} (hN : asymptoticCert.X_LS ≤ N) :
     (0 : ℝ) < (asymptoticCert.X_LS : ℝ) ∧
@@ -119,7 +119,7 @@ lemma log_le_001_mul_of_1200_le {u : ℝ} (hu : (1200 : ℝ) ≤ u) :
   have h1200 : Real.log 1200 / 1200 < (0.01 : ℝ) := by
     have h8 : (1200 : ℝ) < Real.exp 8 := by
       have h27 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
-      have he8 : Real.exp 8 = Real.exp 1 ^ 8 := by rw [← Real.exp_natCast_mul]; norm_num
+      have he8 : Real.exp 8 = Real.exp 1 ^ 8 := by rw [← Real.exp_nat_mul]; norm_num
       rw [he8]
       have hp : (2.7 : ℝ) ^ 8 ≤ Real.exp 1 ^ 8 := pow_le_pow_left₀ (by norm_num) h27.le 8
       linarith [show (1200 : ℝ) < (2.7 : ℝ) ^ 8 by norm_num]
@@ -452,11 +452,11 @@ theorem regime3_lower_sieve_lb (consts : External.CertifiedConstants)
   have hQ_prod_le_exp : (Q_prod : ℝ) ≤ Real.exp 165 := by
     have h10_3 : (10 : ℝ) < Real.exp 3 := by
       have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
-      have he3 : Real.exp 3 = Real.exp 1 ^ 3 := by rw [← Real.exp_natCast_mul]; norm_num
+      have he3 : Real.exp 3 = Real.exp 1 ^ 3 := by rw [← Real.exp_nat_mul]; norm_num
       rw [he3]
       linarith [pow_le_pow_left₀ (by norm_num : (0 : ℝ) ≤ 2.7) h1.le 3,
         show (10 : ℝ) < (2.7 : ℝ) ^ 3 by norm_num]
-    have he165 : Real.exp 165 = Real.exp 3 ^ 55 := by rw [← Real.exp_natCast_mul]; norm_num
+    have he165 : Real.exp 165 = Real.exp 3 ^ 55 := by rw [← Real.exp_nat_mul]; norm_num
     have hpow : (10 : ℝ) ^ 55 < Real.exp 165 := by
       rw [he165]
       exact pow_lt_pow_left₀ h10_3 (by norm_num) (by decide)

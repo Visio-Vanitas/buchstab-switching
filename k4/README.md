@@ -26,7 +26,7 @@ satisfying $z y^4 \ge N$ and $y^5 > N$ (`w(a) > 0`, $(a, P(z)) = 1 \implies \Ome
 - [`notes/`](notes/proof-map.md): `proof-map.md` (architecture and parameter summary) and `frame-weighted-inequality.md` (combinatorial frame & prime-divisor worst case).
 - [`certificate/`](certificate/all_even_1p4/README.md): stdlib-only Python packages `all_even_1p4/` (interval arithmetic, cited bounds, remainders, unittest suite) and `all_even_1p4_ext/` (Brun block slabs, linear-sieve tail, replay). Reads linear-sieve provenance from `../shared/data/linear_sieve_inputs/`.
 - [`data/certificate/`](data/certificate/README.md): certified ladder (`ladder_4e18_500_all.json`, `LADDER_TABLE.md`), tail (`tail/tail_at_500.json`), cross-checks, and replay logs.
-- [`lean/AllEvenOnePlusFour/`](lean/AllEvenOnePlusFour/README.md): Lean `v4.37.0-rc1` / Mathlib `31ce06ea` project containing `Challenge.lean`, kernel-checked weight lemma `w(a) > 0 ⟹ Ω(a) ≤ 4`, reduction to explicit regime hypotheses at `10^500`, and `comparator/` verification (`propext`, `Classical.choice`, `Quot.sound`).
+- [`lean/AllEvenOnePlusFour/`](lean/AllEvenOnePlusFour/README.md): Lean `v4.36.0` / Mathlib `fc4f59e5` project containing `Challenge.lean`, kernel-checked weight lemma `w(a) > 0 ⟹ Ω(a) ≤ 4`, reduction to explicit regime hypotheses at `10^500`, and `comparator/` verification (`propext`, `Classical.choice`, `Quot.sound`).
 
 ## Reproduce
 

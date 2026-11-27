@@ -10,10 +10,10 @@ core and the reduction to the analytic inputs are kernel-checked. Every analytic
 computational input is an explicit `Prop` hypothesis, one per regime; none is an `axiom`.
 Regime 2 covers `4·10^18 ≤ N < 10^500` (block sieve), Regime 3 covers `N ≥ 10^500` (linear sieve).
 
-## Status: compiled (2026-11-26)
+## Status: compiled (2026-11-27)
 
-`lake build` completes (0 errors) with `leanprover/lean4:v4.37.0-rc1` and Mathlib
-`31ce06ea`. `lake env lean AxiomsCheck.lean` exits with status 0. Every library theorem
+`lake build` completes (0 errors) with `leanprover/lean4:v4.36.0` and Mathlib
+`fc4f59e5`. `lake env lean AxiomsCheck.lean` exits with status 0. Every library theorem
 depends only on `propext`, `Classical.choice` and `Quot.sound`. `sorryAx` appears only for
 `all_even_one_plus_four` in `Challenge.lean`. The analytic inputs remain explicit hypotheses
 (see below), so this checks the reduction, not the analytic number theory.
@@ -22,13 +22,13 @@ depends only on `propext`, `Classical.choice` and `Quot.sound`. `sorryAx` appear
 
 | | |
 |---|---|
-| Lean | `leanprover/lean4:v4.37.0-rc1` (`lean-toolchain`) |
-| Mathlib | `31ce06eaadf4a200c0e1407c5f10953cf606b8f8` (`lakefile.toml`, pinned in `lake-manifest.json`) |
+| Lean | `leanprover/lean4:v4.36.0` (`lean-toolchain`) |
+| Mathlib | `fc4f59e577feb1a4956671bc04ac18aaaf8cd842` (`lakefile.toml`, pinned in `lake-manifest.json`) |
 
 The four GRH-type `Prop` definitions in `Challenge.lean` match `https://github.com/lsernau/grh-lean`
 (commit `72fead102f663d5c7a407964a13dc0cf9d977207`, files `grh-compact/src/Statements.lean` and
 `grh/src/Statements.lean`, proved in `src/Main.lean` as `LFunction_ne_zero_of_half_lt_re`)
-verbatim in Mathlib terms; this package keeps its `v4.37.0-rc1` / Mathlib `31ce06ea` build
+verbatim in Mathlib terms; this package keeps its `v4.36.0` / Mathlib `fc4f59e5` build
 (aligned with `k3/`). `lake-manifest.json` came from a `lake update` that resolved all dependencies.
 
 ## Build

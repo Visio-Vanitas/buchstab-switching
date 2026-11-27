@@ -396,7 +396,7 @@ theorem brun_block_pointwise_lower (blocks : List (Finset ℕ)) (caps : List ℕ
     rw [h]
     by_cases hAe : A = ∅
     · subst hAe; simp
-    · rcases Finset.ne_empty_iff_nonempty.mp hAe with ⟨p, hp⟩
+    · rcases Finset.nonempty_iff_ne_empty.mpr hAe with ⟨p, hp⟩
       simp [hAe, Finset.prod_eq_zero hp]
   have hsplit : ∑ S ∈ A.powerset, (-1 : ℤ) ^ S.card =
       ∑ S ∈ A.powerset.filter (BrunAdmissible blocks caps), (-1 : ℤ) ^ S.card +
@@ -413,7 +413,7 @@ theorem brun_block_pointwise_lower (blocks : List (Finset ℕ)) (caps : List ℕ
     refine Finset.sum_nonneg fun t _ => ?_
     by_cases ht : badTail blocks A t.1 t.2.2 = ∅
     · simp [ht]
-    · rcases Finset.ne_empty_iff_nonempty.mp ht with ⟨p, hp⟩
+    · rcases Finset.nonempty_iff_ne_empty.mpr ht with ⟨p, hp⟩
       simp [Finset.prod_eq_zero hp]
   linarith
 
@@ -509,7 +509,7 @@ theorem brun_block_div_pointwise_lower (Q₁ : Finset ℕ) (blocks : List (Finse
     rw [h]
     by_cases hA1 : A₁ = ∅
     · simp [hA1]
-    · rcases Finset.ne_empty_iff_nonempty.mp hA1 with ⟨p, hp⟩
+    · rcases Finset.nonempty_iff_ne_empty.mpr hA1 with ⟨p, hp⟩
       simp [hA1, Finset.prod_eq_zero hp]
   have hbrun₂ : (∑ S₂ ∈ A₂.powerset.filter (BrunAdmissible blocks caps), (-1 : ℤ) ^ S₂.card) ≤
       if A₂ = ∅ then 1 else 0 :=

@@ -1,5 +1,9 @@
 import BuchstabSwitching.Sieve.BonferroniHybrid
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Tactic
@@ -892,17 +896,17 @@ private theorem neg_log_one_sub_le {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < 1) :
     have h2t : 2 * (1 - t) ≠ 0 := mul_ne_zero two_ne_zero h1t
     have hd1 : HasDerivAt (fun u : ℝ => u) 1 t := hasDerivAt_id' t
     have hd2 : HasDerivAt (fun u : ℝ => u ^ 2) (2 * t) t := by
-      simpa using (hasDerivAt_id' t).fun_pow 2
+      simpa using hasDerivAt_pow 2 t
     have hd3 : HasDerivAt (fun u : ℝ => 1 - u) (-1) t := by
       simpa using (hasDerivAt_id' t).const_sub 1
     have hd4 : HasDerivAt (fun u : ℝ => 2 * (1 - u)) (-2) t := by
       simpa using hd3.const_mul 2
     have hd_quot : HasDerivAt (fun u : ℝ => u ^ 2 / (2 * (1 - u)))
         ((2 * t * (2 * (1 - t)) - t ^ 2 * (-2)) / (2 * (1 - t)) ^ 2) t :=
-      hd2.fun_div hd4 h2t
+      hd2.div hd4 h2t
     have hd_log : HasDerivAt (fun u : ℝ => Real.log (1 - u)) (-1 / (1 - t)) t :=
       hd3.log h1t
-    exact (hd1.fun_add hd_quot).fun_add hd_log
+    exact (hd1.add hd_quot).add hd_log
   have hmono : MonotoneOn f (Set.Ico 0 1) := by
     refine monotoneOn_of_deriv_nonneg (convex_Ico 0 1) hcont ?_ ?_
     · intro t ht

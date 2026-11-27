@@ -15,6 +15,7 @@ namespace BuchstabSwitching
 
 section MonotoneAsymptoticVJ
 
+set_option maxHeartbeats 800000 in
 /-- Soundness of `j_over_logz_lb` for `1 < r < 3` (with `Real.exp 10 < z`). -/
 theorem j_over_logz_lb_le_div_log {M0 : ℝ} (hM : External.MertensPrimeSumPremise M0)
     {z r : ℝ} (hz : Real.exp 10 < z) (hr1 : 1 < r) (hr3 : r < 3)
@@ -216,7 +217,7 @@ theorem j_over_logz_lb_le_div_log {M0 : ℝ} (hM : External.MertensPrimeSumPremi
               Real.log z =
               H_0 * ((1 / 2 : ℝ) * ((r - t0) * Real.log z) + alpha0) +
               C_J * Real.exp (-(1 / 4 : ℝ) * (r - t0) * Real.log z) := by
-            field_simp [hlog_z_pos.ne']
+            rw [add_mul, div_mul_cancel₀ _ hlog_z_pos.ne']
             ring
           linarith
         have hmert_ub :
@@ -245,7 +246,7 @@ theorem j_over_logz_lb_le_div_log {M0 : ℝ} (hM : External.MertensPrimeSumPremi
             have h0 : Real.log w0 = t0 * Real.log z := Real.log_exp _
             rw [h1, h0]
             congr 1
-            field_simp [hlog_z_pos.ne']
+            exact mul_div_mul_right t1 t0 hlog_z_pos.ne'
           have hEhi := jsMertensHiErr_le_mertErrHiExp ht0_ge1 ht0_lt_t1.le hlog_z
           have hElo : External.jsMertensLoErr w0 = (2.964e-6 : ℝ) / (t0 * Real.log z) := by
             simp [External.jsMertensLoErr, w0, Real.log_exp]
@@ -473,7 +474,7 @@ theorem j_over_logz_lb_le_div_log {M0 : ℝ} (hM : External.MertensPrimeSumPremi
         have hlog_r : Real.log (Real.log B1 / Real.log B0) = Real.log (b1 / b0) := by
           have h1 : Real.log B1 = b1 * Real.log z := Real.log_exp _
           have h0 : Real.log B0 = b0 * Real.log z := Real.log_exp _
-          rw [h1, h0]; congr 1; field_simp [hlog_z_pos.ne']
+          rw [h1, h0, mul_div_mul_right b1 b0 hlog_z_pos.ne']
         have hElo : External.jsMertensLoErr B1 = (2.964e-6 : ℝ) / (b1 * Real.log z) := by
           simp [External.jsMertensLoErr, B1, Real.log_exp]
         have hEhi := jsMertensHiErr_le_mertErrHiExp hb0_ge1 (le_refl b0) hlog_z
@@ -507,7 +508,7 @@ theorem j_over_logz_lb_le_div_log {M0 : ℝ} (hM : External.MertensPrimeSumPremi
             Real.log z =
             (H_0 / 2) * ((r - a1 - b1) * Real.log z) -
               C_J * Real.exp (-(1 / 4 : ℝ) * (r - a1 - b1) * Real.log z) := by
-          field_simp [hlog_z_pos.ne']
+          rw [sub_mul, div_mul_cancel₀ _ hlog_z_pos.ne', mul_assoc]
         linarith
       have hm1_nn : 0 ≤ mertLbPanel a0 a1 (Real.log z) := le_max_left _ _
       have hm2_nn : 0 ≤ mertLbPanel b0 b1 (Real.log z) := le_max_left _ _
@@ -572,7 +573,7 @@ theorem j_over_logz_lb_le_div_log {M0 : ℝ} (hM : External.MertensPrimeSumPremi
           mertLbPanel (G.a i.castSucc) (G.a i.succ) (Real.log z) *
             mertLbPanel (G.b i j.castSucc) (G.b i j.succ) (Real.log z) *
             jRemLbPanel (r - G.a i.succ - G.b i j.succ) (Real.log z)) * Real.log z := by
-    field_simp [hlog_z_pos.ne']
+    rw [add_mul, sub_mul, sub_mul, div_mul_cancel₀ _ hlog_z_pos.ne']
   rw [hexpand]
   linarith
 
@@ -612,7 +613,7 @@ theorem j_over_logz_lb_lt_one_le_div_log {z r : ℝ} (hz : Real.exp 10 < z)
   have hmul : (H_0 / 2 * r - C_J * Real.exp (-(1 / 4 : ℝ) * r * Real.log z) / Real.log z) *
       Real.log z =
       H_0 / 2 * (r * Real.log z) - C_J * Real.exp (-(1 / 4 : ℝ) * r * Real.log z) := by
-    field_simp [hlog_z_pos.ne']
+    rw [sub_mul, div_mul_cancel₀ _ hlog_z_pos.ne', mul_assoc]
   linarith
 
 /-- `vj_monotone_lb` lower-bounds `External.VN 2 (Nat.ceil z) * J_full (Nat.ceil z) (z ^ r)`
@@ -646,7 +647,8 @@ theorem vj_monotone_lb_le_VN_two_mul_J_full_ceil {M0 : ℝ}
     have heq : ((1 - delta_v) * (eNegGamma * U_c) / Real.log z) *
         (j_over_logz_lb (Real.log z) r t G * Real.log z) =
         U_c * eNegGamma * (1 - delta_v) * j_over_logz_lb (Real.log z) r t G := by
-      field_simp [hlog_z_pos.ne']
+      rw [div_mul_eq_mul_div, mul_div_assoc, mul_div_cancel_right₀ _ hlog_z_pos.ne']
+      ring
     linarith
   · push Not at hj_nn
     have hlhs_le0 : U_c * eNegGamma * (1 - delta_v) * j_over_logz_lb (Real.log z) r t G ≤ 0 :=
@@ -708,7 +710,8 @@ theorem vj_monotone_lb_lt_one_le_VN_two_mul_J_full
           U_c * eNegGamma * (1 - delta_v) *
             j_over_logz_lb (Real.log z) r
               (fun _ : Fin 1 => (1 : ℝ)) (TwoPrimeExpGrid.empty r) := by
-        field_simp [hlog_z_pos.ne']
+        rw [div_mul_eq_mul_div, mul_div_assoc, mul_div_cancel_right₀ _ hlog_z_pos.ne']
+        ring
       linarith
     · push Not at hj_nn
       have hlhs_le0 : U_c * eNegGamma * (1 - delta_v) *

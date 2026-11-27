@@ -202,7 +202,7 @@ theorem bonferroni_hybrid_pointwise (Q₁ P₂ : Finset ℕ) (n m : ℕ) (_hdisj
     rw [hpascal A.card k]
     by_cases hA : A = ∅
     · subst hA; simp
-    · have hne : A.card ≠ 0 := Finset.card_ne_zero.mpr (Finset.ne_empty_iff_nonempty.mp hA)
+    · have hne : A.card ≠ 0 := Finset.card_ne_zero.mpr (Finset.nonempty_iff_ne_empty.mpr hA)
       simp [hA, hne]
   have hcop₁ : (∀ p ∈ Q₁, ¬ p ∣ n) ↔ A₁ = ∅ := by
     simp [A₁, Finset.filter_eq_empty_iff]

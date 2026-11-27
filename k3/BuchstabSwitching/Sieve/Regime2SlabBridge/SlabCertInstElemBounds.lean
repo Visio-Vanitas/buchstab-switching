@@ -19,7 +19,7 @@ noncomputable section
 
 private lemma exp_ten_lt_27000 : Real.exp 10 < (27000 : ℝ) := by
   have hpow := pow_lt_pow_left₀ Real.exp_one_lt_d9 (Real.exp_pos 1).le (by norm_num : 10 ≠ 0)
-  rw [← Real.exp_natCast_mul] at hpow
+  rw [← Real.exp_nat_mul] at hpow
   norm_num at hpow; linarith
 
 private lemma inv_log_integrable_Icc {a b : ℝ} (ha : 2 ≤ a) (hab : a ≤ b) :

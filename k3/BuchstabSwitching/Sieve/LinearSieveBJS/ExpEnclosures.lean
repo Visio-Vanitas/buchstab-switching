@@ -30,49 +30,49 @@ theorem exp_neg_one_lt : Real.exp (-1) < (10000000000 / 27182818283 : ℝ) := by
   linarith
 
 theorem exp_neg_nat_eq (k : ℕ) : Real.exp (-(k : ℝ)) = (Real.exp (-1)) ^ k := by
-  rw [← Real.exp_natCast_mul]
+  rw [← Real.exp_nat_mul]
   congr 1
   ring
 
 theorem exp_one_fifth_gt : (12214027 / 10000000 : ℝ) < Real.exp (1 / 5 : ℝ) := by
   have hpow : ((12214027 / 10000000 : ℝ) ^ 5) < (Real.exp (1 / 5 : ℝ)) ^ 5 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     norm_num
     linarith [exp_one_gt_d9']
   exact lt_of_pow_lt_pow_left₀ 5 (Real.exp_pos _).le hpow
 
 theorem exp_one_fifth_lt : Real.exp (1 / 5 : ℝ) < (12214028 / 10000000 : ℝ) := by
   have hpow : (Real.exp (1 / 5 : ℝ)) ^ 5 < (12214028 / 10000000 : ℝ) ^ 5 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     norm_num
     linarith [exp_one_lt_d9']
   exact lt_of_pow_lt_pow_left₀ 5 (by norm_num) hpow
 
 theorem exp_two_fifths_lt : Real.exp (2 / 5 : ℝ) < (12214028 / 10000000 : ℝ) ^ 2 := by
   have h : Real.exp (2 / 5 : ℝ) = (Real.exp (1 / 5 : ℝ)) ^ 2 := by
-    rw [← Real.exp_natCast_mul]; norm_num
+    rw [← Real.exp_nat_mul]; norm_num
   rw [h]
   exact pow_lt_pow_left₀ exp_one_fifth_lt (Real.exp_pos _).le (by norm_num)
 
 theorem exp_three_fifths_lt : Real.exp (3 / 5 : ℝ) < (12214028 / 10000000 : ℝ) ^ 3 := by
   have h : Real.exp (3 / 5 : ℝ) = (Real.exp (1 / 5 : ℝ)) ^ 3 := by
-    rw [← Real.exp_natCast_mul]; norm_num
+    rw [← Real.exp_nat_mul]; norm_num
   rw [h]
   exact pow_lt_pow_left₀ exp_one_fifth_lt (Real.exp_pos _).le (by norm_num)
 
 theorem exp_four_fifths_lt : Real.exp (4 / 5 : ℝ) < (12214028 / 10000000 : ℝ) ^ 4 := by
   have h : Real.exp (4 / 5 : ℝ) = (Real.exp (1 / 5 : ℝ)) ^ 4 := by
-    rw [← Real.exp_natCast_mul]; norm_num
+    rw [← Real.exp_nat_mul]; norm_num
   rw [h]
   exact pow_lt_pow_left₀ exp_one_fifth_lt (Real.exp_pos _).le (by norm_num)
 
 theorem log_two_lt_seven_tenths : Real.log 2 < (7 / 10 : ℝ) := by
   rw [Real.log_lt_iff_lt_exp (by norm_num)]
   have hpow : (2 : ℝ) ^ 10 < (Real.exp (7 / 10 : ℝ)) ^ 10 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [exp_one_gt_d9']
     have h7 : (2.7 : ℝ) ^ 7 < (Real.exp 1) ^ 7 := pow_lt_pow_left₀ h1 (by norm_num) (by norm_num)
-    rw [← Real.exp_natCast_mul] at h7
+    rw [← Real.exp_nat_mul] at h7
     norm_num at h7 ⊢
     linarith
   exact lt_of_pow_lt_pow_left₀ 10 (Real.exp_pos _).le hpow
@@ -80,10 +80,10 @@ theorem log_two_lt_seven_tenths : Real.log 2 < (7 / 10 : ℝ) := by
 theorem log_three_lt_eleven_tenths : Real.log 3 < (11 / 10 : ℝ) := by
   rw [Real.log_lt_iff_lt_exp (by norm_num)]
   have hpow : (3 : ℝ) ^ 10 < (Real.exp (11 / 10 : ℝ)) ^ 10 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     have h1 : (2.718 : ℝ) < Real.exp 1 := by linarith [exp_one_gt_d9']
     have h11 : (2.718 : ℝ) ^ 11 < (Real.exp 1) ^ 11 := pow_lt_pow_left₀ h1 (by norm_num) (by norm_num)
-    rw [← Real.exp_natCast_mul] at h11
+    rw [← Real.exp_nat_mul] at h11
     norm_num at h11 ⊢
     linarith
   exact lt_of_pow_lt_pow_left₀ 10 (Real.exp_pos _).le hpow

@@ -478,6 +478,7 @@ private lemma jOddStepUb_eq_chunks (M : ℕ) :
   simp only [jOddStepUb, chunkStepSum, oddSqf1024Data, List.filter_append, List.map_append,
     List.sum_append, Nat.add_assoc]
 
+set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 200000 in
 private lemma jOddStepTableFast_eq : jOddStepTableFast = jOddStepTable := by
   simp only [jOddStepTable, jOddStepUb_eq_chunks]; decide

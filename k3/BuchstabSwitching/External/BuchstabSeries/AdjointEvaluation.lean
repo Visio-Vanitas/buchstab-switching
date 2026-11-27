@@ -141,9 +141,11 @@ lemma pAdj_hasDerivAt {s₀ : ℝ} (hs₀ : 0 < s₀) :
             (Real.exp (-(s₀ + 1) * t - expIntE t) - s₀ * (t * Real.exp (-s₀ * t - expIntE t))) t := by
         intro t ht
         rw [uIcc_of_le hT] at ht
-        have hexp_d : HasDerivAt (fun x : ℝ => -s₀ * x - expIntE x) (-s₀ - expIntKernel t) t := by
-          simpa using ((hasDerivAt_id t).const_mul (-s₀)).fun_sub (hasDerivAt_expIntE t)
-        refine ((hasDerivAt_id t).fun_mul (hexp_d.exp)).congr_deriv ?_
+        have hlin : HasDerivAt (fun x : ℝ => -s₀ * x) (-s₀) t := by
+          simpa using (hasDerivAt_id' t).const_mul (-s₀)
+        have hexp_d : HasDerivAt (fun x : ℝ => -s₀ * x - expIntE x) (-s₀ - expIntKernel t) t :=
+          hlin.sub (hasDerivAt_expIntE t)
+        refine ((hasDerivAt_id t).mul (hexp_d.exp)).congr_deriv ?_
         by_cases ht0 : t = 0
         · subst ht0
           simp [expIntE]
@@ -219,7 +221,7 @@ lemma pAdj_one_eq : pAdj 1 = Real.exp (-Real.eulerMascheroniConstant) := by
       have hexp : HasDerivAt (fun x => Real.exp (-expIntE x))
           (Real.exp (-expIntE t) * (-expIntKernel t)) t :=
         (hasDerivAt_expIntE t).neg.exp
-      refine ((hasDerivAt_id t).fun_mul hexp).congr_deriv ?_
+      refine ((hasDerivAt_id t).mul hexp).congr_deriv ?_
       by_cases ht0 : t = 0
       · subst ht0; simp [expIntE]
       · rw [expIntKernel_of_ne_zero ht0]
@@ -343,7 +345,7 @@ lemma J_buf_const (C : ℝ) {s : ℝ} (hs : 2 ≤ s) : J_buf C s = J_buf C 2 := 
         simpa using (hasDerivAt_id x).sub_const (1 : ℝ)
       simpa [Function.comp_def] using hI_bot_base.comp x hlin
     have hI_d : HasDerivAt (fun t => ∫ u in (t - 1)..t, H u) (H x - H (x - 1)) x := by
-      refine (hI_top.fun_sub hI_bot).congr_of_eventuallyEq ?_
+      refine (hI_top.sub hI_bot).congr_of_eventuallyEq ?_
       filter_upwards [Ioi_mem_nhds hx2] with t (ht : (2 : ℝ) < t)
       have hadd := intervalIntegral.integral_add_adjacent_intervals
         (hH_int 1 (t - 1) (by norm_num) (by linarith))
@@ -372,7 +374,7 @@ lemma J_buf_at_two (C : ℝ) : J_buf C 2 = C * Real.exp (-Real.eulerMascheroniCo
     have hderiv : ∀ t ∈ uIcc (1 : ℝ) 2, HasDerivAt (fun x => -pAdj x) (pAdj (t + 1) / t) t := by
       intro t ht
       rw [uIcc_of_le (by norm_num)] at ht
-      simpa [neg_div, neg_neg] using (pAdj_hasDerivAt (by linarith [ht.1])).fun_neg
+      exact (pAdj_hasDerivAt (by linarith [ht.1])).neg.congr_deriv (by ring)
     have hint : IntervalIntegrable (fun t => pAdj (t + 1) / t) volume 1 2 := by
       refine ContinuousOn.intervalIntegrable ?_
       rw [uIcc_of_le (by norm_num)]

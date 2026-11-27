@@ -50,14 +50,14 @@ private lemma offsetLogIntegral_exp_two_gt :
     have hpow : r ^ 8 ≤ (1133 / 1000 : ℝ) ^ 8 := pow_le_pow_left₀ (Real.exp_pos _).le hle 8
     have hr8 : r ^ 8 = Real.exp 1 := by
       dsimp only [r]
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     rw [hr8] at hpow
     have hnum : (1133 / 1000 : ℝ) ^ 8 < (2716 / 1000 : ℝ) := by norm_num
     linarith [exp_one_ge_2716_div_1000]
   have hr_pow : ∀ k : ℕ, r ^ k = Real.exp ((k : ℝ) / 8) := fun k => by
     dsimp only [r]
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     ring_nf
   have hr6_gt2 : (2 : ℝ) < r ^ 6 := by
     have h1 : (2 : ℝ) < (1133 / 1000 : ℝ) ^ 6 := by norm_num
@@ -154,7 +154,7 @@ theorem offsetLogIntegral_gt_div_log {x : ℝ} (hx : Real.exp 2 ≤ x) :
     have h2 : (27 / 10 : ℝ) ^ 2 ≤ (Real.exp 1) ^ 2 :=
       pow_le_pow_left₀ (by norm_num) exp_one_ge_27_div_10 2
     have h3 : (Real.exp 1) ^ 2 = Real.exp 2 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     linarith
   have hG_hasDeriv : ∀ t ∈ Set.Icc (Real.exp 2) x,
@@ -178,8 +178,8 @@ theorem offsetLogIntegral_gt_div_log {x : ℝ} (hx : Real.exp 2 ≤ x) :
       intervalIntegral.integral_hasDerivAt_right hint hmeas hcont
     have hfrac : HasDerivAt (fun s : ℝ => s / Real.log s)
         (((1 : ℝ) * Real.log t - t * t⁻¹) / (Real.log t) ^ 2) t :=
-      (hasDerivAt_id t).fun_div (Real.hasDerivAt_log ht_pos.ne') hlog_pos.ne'
-    convert hintDeriv.fun_sub hfrac using 1
+      (hasDerivAt_id t).div (Real.hasDerivAt_log ht_pos.ne') hlog_pos.ne'
+    convert hintDeriv.sub hfrac using 1
     field_simp [ht_pos.ne', hlog_pos.ne']
     ring
   have hG0 : 0 < G (Real.exp 2) := by
@@ -214,7 +214,7 @@ theorem offsetLogIntegral_sub_div_log_ge {x : ℝ} (hx : 2 * Real.exp 2 ≤ x) :
     have h2 : (27 / 10 : ℝ) ^ 2 ≤ (Real.exp 1) ^ 2 :=
       pow_le_pow_left₀ (by norm_num) exp_one_ge_27_div_10 2
     have h3 : (Real.exp 1) ^ 2 = Real.exp 2 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     linarith
   have hx2_gt2 : (2 : ℝ) < x / 2 := lt_of_lt_of_le hexp2_gt2 hx2_ge
@@ -238,8 +238,8 @@ theorem offsetLogIntegral_sub_div_log_ge {x : ℝ} (hx : 2 * Real.exp 2 ≤ x) :
       intervalIntegral.integral_hasDerivAt_right hint hmeas hcont
     have hfrac : HasDerivAt (fun s : ℝ => s / Real.log s)
         (((1 : ℝ) * Real.log t - t * t⁻¹) / (Real.log t) ^ 2) t :=
-      (hasDerivAt_id t).fun_div (Real.hasDerivAt_log ht_pos.ne') hlog_pos.ne'
-    convert hintDeriv.fun_sub hfrac using 1
+      (hasDerivAt_id t).div (Real.hasDerivAt_log ht_pos.ne') hlog_pos.ne'
+    convert hintDeriv.sub hfrac using 1
     field_simp [ht_pos.ne', hlog_pos.ne']
     ring
   have hint_deriv : IntervalIntegrable (fun t : ℝ => 1 / (Real.log t) ^ 2)
@@ -286,7 +286,7 @@ private lemma rel_loss_bound_of_four_mul_pow18 {x : ℝ} (hx : 4 * (10 : ℝ) ^ 
       linarith
     have h3 : Real.exp 3 < Real.log x := by
       have he3 : Real.exp 3 = (Real.exp 1) ^ 3 := by
-        rw [← Real.exp_natCast_mul]
+        rw [← Real.exp_nat_mul]
         norm_num
       linarith
     calc (3 : ℝ) = Real.log (Real.exp 3) := (Real.log_exp 3).symm
@@ -295,7 +295,7 @@ private lemma rel_loss_bound_of_four_mul_pow18 {x : ℝ} (hx : 4 * (10 : ℝ) ^ 
   have hx_eq : x = Real.exp u := (Real.exp_log hx_pos).symm
   have hsqrt_eq : Real.sqrt x = Real.exp (u / 2) := by
     have hsq : (Real.exp (u / 2)) ^ 2 = (Real.sqrt x) ^ 2 := by
-      rw [← Real.exp_natCast_mul, Real.sq_sqrt hx_pos.le]
+      rw [← Real.exp_nat_mul, Real.sq_sqrt hx_pos.le]
       have harg : (2 : ℕ) * (u / 2) = u := by norm_num; ring
       rw [harg, Real.exp_log hx_pos]
     nlinarith [Real.exp_pos (u / 2), Real.sqrt_nonneg x]
@@ -383,7 +383,7 @@ private lemma loss_le_quarter_div_log_sq {x : ℝ} (hx : 4 * (10 : ℝ) ^ 18 ≤
       linarith
     have h3 : Real.exp 3 < Real.log x := by
       have he3 : Real.exp 3 = (Real.exp 1) ^ 3 := by
-        rw [← Real.exp_natCast_mul]
+        rw [← Real.exp_nat_mul]
         norm_num
       linarith
     calc (3 : ℝ) = Real.log (Real.exp 3) := (Real.log_exp 3).symm
@@ -392,7 +392,7 @@ private lemma loss_le_quarter_div_log_sq {x : ℝ} (hx : 4 * (10 : ℝ) ^ 18 ≤
   have hx_eq : x = Real.exp u := (Real.exp_log hx_pos).symm
   have hsqrt_eq : Real.sqrt x = Real.exp (u / 2) := by
     have hsq : (Real.exp (u / 2)) ^ 2 = (Real.sqrt x) ^ 2 := by
-      rw [← Real.exp_natCast_mul, Real.sq_sqrt hx_pos.le]
+      rw [← Real.exp_nat_mul, Real.sq_sqrt hx_pos.le]
       have harg : (2 : ℕ) * (u / 2) = u := by norm_num; ring
       rw [harg, Real.exp_log hx_pos]
     nlinarith [Real.exp_pos (u / 2), Real.sqrt_nonneg x]
@@ -502,7 +502,7 @@ theorem shiftedSet_card_gt_div_log {li2 : ℝ} {N : ℕ}
   have hexp2 : 2 * Real.exp 2 ≤ (N : ℝ) := by
     have h2e2 : 2 * Real.exp 2 ≤ 2 * (274 / 100 : ℝ) ^ 2 := by
       have hpow : Real.exp 2 = (Real.exp 1) ^ 2 := by
-        rw [← Real.exp_natCast_mul]
+        rw [← Real.exp_nat_mul]
         norm_num
       have hle : (Real.exp 1) ^ 2 ≤ (274 / 100 : ℝ) ^ 2 :=
         pow_le_pow_left₀ (Real.exp_pos 1).le External.exp_one_lt_274_div_100.le 2
@@ -538,7 +538,7 @@ lemma sqrt_mul_log_sq_div_self_antitoneOn :
     have hsqrt_z : 0 < Real.sqrt z := Real.sqrt_pos.mpr hz
     have hexp_half : Real.exp (Real.log z / 2) = Real.sqrt z := by
       have hsq : (Real.exp (Real.log z / 2)) ^ 2 = (Real.sqrt z) ^ 2 := by
-        rw [← Real.exp_natCast_mul, Real.sq_sqrt hz.le]
+        rw [← Real.exp_nat_mul, Real.sq_sqrt hz.le]
         have harg : (2 : ℕ) * (Real.log z / 2) = Real.log z := by norm_num; ring
         rw [harg, Real.exp_log hz]
       nlinarith [Real.exp_pos (Real.log z / 2)]
@@ -567,7 +567,7 @@ theorem offsetLogIntegral_div_shiftedSet_card_le {li2 X_lo : ℝ} {N : ℕ}
   have hlogN_pos : 0 < Real.log (N : ℝ) := by linarith [forty_le_log_of_four_mul_pow18 hN_real]
   have hexp4_lt : Real.exp 4 ≤ 4 * (10 : ℝ) ^ 18 := by
     have hpow : Real.exp 4 = (Real.exp 1) ^ 4 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     have hle : (Real.exp 1) ^ 4 ≤ (274 / 100 : ℝ) ^ 4 :=
       pow_le_pow_left₀ (Real.exp_pos 1).le External.exp_one_lt_274_div_100.le 4

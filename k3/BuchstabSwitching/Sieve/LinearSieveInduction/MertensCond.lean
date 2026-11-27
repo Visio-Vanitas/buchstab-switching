@@ -291,7 +291,7 @@ theorem allLevelsMertensCondFrom_of_large_u
     have h10 : (1024 : ℝ) ≤ Real.exp 10 := by
       calc (1024 : ℝ) = (2 : ℝ) ^ 10 := by norm_num
         _ ≤ (Real.exp 1) ^ 10 := pow_le_pow_left₀ (by norm_num) h1 10
-        _ = Real.exp 10 := by rw [← Real.exp_natCast_mul]; norm_num
+        _ = Real.exp 10 := by rw [← Real.exp_nat_mul]; norm_num
     have h101 : Real.exp 10 ≤ Real.exp 10.1 := Real.exp_le_exp.mpr (by norm_num)
     linarith
   refine allLevelsMertensCondFrom_of_prod_bound (u₀ := u) (by linarith) hK ?_ ?_ ?_

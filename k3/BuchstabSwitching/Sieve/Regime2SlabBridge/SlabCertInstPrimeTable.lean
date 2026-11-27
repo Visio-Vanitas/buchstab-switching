@@ -201,6 +201,7 @@ def primeChunks : List (List ℕ) := [
 /-- Complete list of all `2,961` primes `< 27000` in strictly increasing order. -/
 def primesLt27000 : List ℕ := primeChunks.flatten
 
+set_option maxHeartbeats 2000000 in
 lemma primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by decide
 
 private lemma small164_check :

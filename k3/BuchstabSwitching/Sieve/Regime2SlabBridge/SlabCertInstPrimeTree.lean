@@ -72,8 +72,10 @@ def treeFlatten : OddPrimeTree → List PrimeLeafEntry
   | .leaf _ es => es
   | .node _ l r => treeFlatten l ++ treeFlatten r
 
+set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 200000 in
 private lemma oddPrimeTree_ok : checkOddPrimeTree oddPrimeTree = true := by decide
+set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 200000 in
 private lemma oddPrimeTree_primes_eq : (treeFlatten oddPrimeTree).map (·.p) = oddPrimesLt27000 := by decide
 

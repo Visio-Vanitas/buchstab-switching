@@ -381,7 +381,7 @@ lemma exp_t_logz_ge_pow2_86 {t : ℝ} (ht : 1 ≤ t) :
     nlinarith
   have h2_le_e : (2 : ℝ) ≤ Real.exp 1 := by linarith [Real.exp_one_gt_d9]
   have hp : (2 : ℝ) ^ 86 ≤ Real.exp 1 ^ 86 := pow_le_pow_left₀ (by norm_num) h2_le_e 86
-  have he86 : Real.exp 1 ^ 86 = Real.exp 86 := by rw [← Real.exp_natCast_mul]; norm_num
+  have he86 : Real.exp 1 ^ 86 = Real.exp 86 := by rw [← Real.exp_nat_mul]; norm_num
   rw [he86] at hp
   exact hp.trans (Real.exp_le_exp.mpr h86)
 

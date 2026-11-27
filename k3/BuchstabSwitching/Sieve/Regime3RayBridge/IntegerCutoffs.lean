@@ -237,9 +237,9 @@ theorem rayY_le_rpow_beta_ray {N : ℕ} (hN : 10 ^ 600 ≤ N) :
             by_contra h
             push Not at h
             have h3 : (2 : ℝ) ^ 3 ≤ (Real.exp (2 / 3 : ℝ)) ^ 3 := pow_le_pow_left₀ (by norm_num) h 3
-            rw [← Real.exp_natCast_mul] at h3
+            rw [← Real.exp_nat_mul] at h3
             norm_num at h3
-            have he2 : (Real.exp 1) ^ 2 = Real.exp 2 := by rw [← Real.exp_natCast_mul]; norm_num
+            have he2 : (Real.exp 1) ^ 2 = Real.exp 2 := by rw [← Real.exp_nat_mul]; norm_num
             have he_lt : Real.exp 1 < (2.75 : ℝ) := by linarith [Real.exp_one_lt_d9]
             have he2_lt : (Real.exp 1) ^ 2 < (2.75 : ℝ) ^ 2 :=
               pow_lt_pow_left₀ he_lt (Real.exp_pos 1).le (by norm_num)

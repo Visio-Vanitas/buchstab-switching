@@ -239,7 +239,7 @@ lemma exp_ten_gt_two : (2 : ℝ) < Real.exp 10 := by
     have := Real.add_one_le_exp (1 : ℝ)
     linarith [Real.exp_one_gt_d9]
   have h10 : Real.exp 10 = (Real.exp 1) ^ 10 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     norm_num
   rw [h10]
   have hpow : (2 : ℝ) < (2 : ℝ) ^ 10 := by norm_num

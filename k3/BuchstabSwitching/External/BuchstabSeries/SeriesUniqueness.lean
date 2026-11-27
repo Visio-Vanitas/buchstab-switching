@@ -292,13 +292,13 @@ private lemma g_ser_self_invariant {s : ℝ} (hs : 3 ≤ s) :
     have hg_d : HasDerivAt g_ser (-(g_ser (t - 1) / (t - 1))) t := by
       have hsub : HasDerivAt (fun x => g_ser 3 - ∫ u in (3 : ℝ)..x, g_ser (u - 1) / (u - 1))
           (-(g_ser (t - 1) / (t - 1))) t :=
-        ((hasDerivAt_const t (g_ser 3)).fun_sub hI).congr_deriv (by simp)
+        ((hasDerivAt_const t (g_ser 3)).sub hI).congr_deriv (by simp)
       refine hsub.congr_of_eventuallyEq ?_
       filter_upwards [Ioi_mem_nhds ht.1] with x hx
       exact hg_eq x hx.le
     have hlin : HasDerivAt (fun x : ℝ => x - 1) 1 t := by
       simpa using (hasDerivAt_id t).sub_const (1 : ℝ)
-    convert hlin.fun_mul hg_d using 1
+    convert hlin.mul hg_d using 1
     have ht1_ne : t - 1 ≠ 0 := by linarith [ht.1]
     field_simp
     ring

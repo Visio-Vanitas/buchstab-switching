@@ -1,4 +1,8 @@
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.Data.Nat.Prime.Basic
@@ -36,15 +40,15 @@ theorem neg_log_one_sub_le {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < 1) :
     have h2t1 : 2 * (1 - t) ≠ 0 := mul_ne_zero two_ne_zero ht1
     have h1 : HasDerivAt (fun s : ℝ => s) 1 t := hasDerivAt_id t
     have h1mt : HasDerivAt (fun s : ℝ => 1 - s) (-1) t := by
-      simpa using (hasDerivAt_const t (1 : ℝ)).fun_sub (hasDerivAt_id t)
+      simpa using (hasDerivAt_id' t).const_sub 1
     have hden : HasDerivAt (fun s : ℝ => 2 * (1 - s)) (-2) t := by
-      simpa using (hasDerivAt_const t (2 : ℝ)).fun_mul h1mt
+      simpa using h1mt.const_mul 2
     have h2 : HasDerivAt (fun s : ℝ => s ^ 2 / (2 * (1 - s)))
         ((2 * t ^ (2 - 1) * (2 * (1 - t)) - t ^ 2 * (-2)) / (2 * (1 - t)) ^ 2) t :=
-      (hasDerivAt_pow 2 t).fun_div hden h2t1
+      (hasDerivAt_pow 2 t).div hden h2t1
     have h3 : HasDerivAt (fun s : ℝ => Real.log (1 - s)) ((1 - t)⁻¹ * (-1)) t :=
       (Real.hasDerivAt_log ht1).comp t h1mt
-    convert (h1.fun_add h2).fun_add h3 using 1
+    convert (h1.add h2).add h3 using 1
     field_simp
     ring
   have hf_cont : ContinuousOn f (Set.Icc 0 x) := fun t ht =>
@@ -75,13 +79,13 @@ theorem neg_log_one_sub_ratio_mono {x y : ℝ} (hx : 0 < x) (hxy : x ≤ y) (hy 
     have ht1 : 1 - t ≠ 0 := by linarith [ht.2]
     have ht2 : t ^ 2 ≠ 0 := pow_ne_zero 2 ht0
     have h1mt : HasDerivAt (fun s : ℝ => 1 - s) (-1) t := by
-      simpa using (hasDerivAt_const t (1 : ℝ)).fun_sub (hasDerivAt_id t)
+      simpa using (hasDerivAt_id' t).const_sub 1
     have hlog : HasDerivAt (fun s : ℝ => Real.log (1 - s)) ((1 - t)⁻¹ * (-1)) t :=
       (Real.hasDerivAt_log ht1).comp t h1mt
     have hnum : HasDerivAt (fun s : ℝ => -Real.log (1 - s) - s) (-((1 - t)⁻¹ * (-1)) - 1) t :=
-      hlog.fun_neg.fun_sub (hasDerivAt_id t)
+      hlog.neg.sub (hasDerivAt_id t)
     have hden : HasDerivAt (fun s : ℝ => s ^ 2) (2 * t ^ (2 - 1)) t := hasDerivAt_pow 2 t
-    convert hnum.fun_div hden ht2 using 1
+    convert hnum.div hden ht2 using 1
     field_simp
     ring
   have hg_cont : ContinuousOn g (Set.Ioo 0 1) := fun t ht =>
@@ -112,7 +116,7 @@ theorem log_sub_one_div_strictMonoOn :
       have h1 : (27 : ℝ) < (5 / 2 : ℝ) ^ 4 := by norm_num
       have h2 : (5 / 2 : ℝ) ^ 4 ≤ (Real.exp 1) ^ 4 := pow_le_pow_left₀ (by norm_num) hexp_ge 4
       have h3 : (Real.exp 1) ^ 4 = Real.exp 4 := by
-        rw [← Real.exp_natCast_mul]
+        rw [← Real.exp_nat_mul]
         norm_num
       linarith
     have hexp43 : (3 : ℝ) < Real.exp (4 / 3) := by
@@ -121,7 +125,7 @@ theorem log_sub_one_div_strictMonoOn :
       have hpow : (Real.exp (4 / 3)) ^ 3 ≤ (3 : ℝ) ^ 3 :=
         pow_le_pow_left₀ (Real.exp_pos _).le hle 3
       have h4 : (Real.exp (4 / 3)) ^ 3 = Real.exp 4 := by
-        rw [← Real.exp_natCast_mul]
+        rw [← Real.exp_nat_mul]
         norm_num
       rw [h4] at hpow
       norm_num at hpow
@@ -134,10 +138,10 @@ theorem log_sub_one_div_strictMonoOn :
     have ht0 : t ≠ 0 := by linarith [ht.1]
     have ht1 : t - 1 ≠ 0 := by linarith [ht.1]
     have hsub : HasDerivAt (fun s : ℝ => s - 1) 1 t := by
-      simpa using (hasDerivAt_id' t).fun_sub (hasDerivAt_const t (1 : ℝ))
+      simpa using (hasDerivAt_id' t).sub_const (1 : ℝ)
     have hnum : HasDerivAt (fun s : ℝ => Real.log (s - 1)) ((t - 1)⁻¹ * 1) t := by
       simpa [Function.comp_def] using (Real.hasDerivAt_log ht1).comp t hsub
-    convert hnum.fun_div (hasDerivAt_id' t) ht0 using 1
+    convert hnum.div (hasDerivAt_id' t) ht0 using 1
     field_simp
   have hf_cont : ContinuousOn f (Set.Icc (2 : ℝ) 4) := fun t ht =>
     (hf_hasDeriv t ht).continuousAt.continuousWithinAt
@@ -178,7 +182,7 @@ private lemma half_lt_log_two : (1 / 2 : ℝ) < Real.log 2 := by
     push Not at hle
     have hsq : (2 : ℝ) ^ 2 ≤ (Real.exp (1 / 2)) ^ 2 := pow_le_pow_left₀ (by norm_num) hle 2
     have h1 : (Real.exp (1 / 2)) ^ 2 = Real.exp 1 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     rw [h1] at hsq
     linarith [exp_one_lt_three]
@@ -221,7 +225,7 @@ private lemma integral_inv_log_exp_five_lt :
   have he_lt : e < 3 := exp_one_lt_three
   have he_pow : ∀ k : ℕ, Real.exp (k : ℝ) = e ^ k := fun k => by
     have hk : (k : ℝ) = (k : ℝ) * 1 := (mul_one _).symm
-    conv_lhs => rw [hk, Real.exp_natCast_mul]
+    conv_lhs => rw [hk, Real.exp_nat_mul]
   have hp1 : (2 : ℝ) ≤ e := by linarith
   have hp2 : e ≤ e ^ 2 := by nlinarith
   have hp3 : e ^ 2 ≤ e ^ 3 := by nlinarith
@@ -308,10 +312,10 @@ theorem offsetLogIntegral_lt_div_log_sub_two {x : ℝ} (hx : Real.exp 5 ≤ x) :
     have hlog_pos : 0 < Real.log t := by linarith
     have hlog2_ne : Real.log t - 2 ≠ 0 := by linarith
     have hden : HasDerivAt (fun s : ℝ => Real.log s - 2) (t⁻¹ - 0) t :=
-      (Real.hasDerivAt_log ht_pos.ne').fun_sub (hasDerivAt_const t (2 : ℝ))
+      (Real.hasDerivAt_log ht_pos.ne').sub (hasDerivAt_const t (2 : ℝ))
     have hfrac : HasDerivAt (fun s : ℝ => s / (Real.log s - 2))
         (((1 : ℝ) * (Real.log t - 2) - t * (t⁻¹ - 0)) / (Real.log t - 2) ^ 2) t :=
-      (hasDerivAt_id t).fun_div hden hlog2_ne
+      (hasDerivAt_id t).div hden hlog2_ne
     have hint_sub : Set.uIcc 2 t ⊆ Set.Ioi 1 := by
       rw [Set.uIcc_of_le ht_gt2.le]
       intro s hs
@@ -326,7 +330,7 @@ theorem offsetLogIntegral_lt_div_log_sub_two {x : ℝ} (hx : Real.exp 5 ≤ x) :
     have hintDeriv : HasDerivAt (fun u : ℝ => ∫ s in (2 : ℝ)..u, 1 / Real.log s)
         (1 / Real.log t) t :=
       intervalIntegral.integral_hasDerivAt_right hint hmeas hcont
-    convert hfrac.fun_sub hintDeriv using 1
+    convert hfrac.sub hintDeriv using 1
     field_simp [ht_pos.ne', hlog_pos.ne', hlog2_ne]
     ring
   have hG_cont : ContinuousOn G (Set.Icc (Real.exp 5) x) := fun t ht =>
@@ -805,7 +809,7 @@ theorem twin_tail_mul_exp_s2_tail_le {u : ℝ} (hu : Real.exp 10.1 ≤ u) (S : F
     have h10 : (1024 : ℝ) ≤ Real.exp 10 := by
       calc (1024 : ℝ) = (2 : ℝ) ^ 10 := by norm_num
         _ ≤ (Real.exp 1) ^ 10 := pow_le_pow_left₀ (by norm_num) h1 10
-        _ = Real.exp 10 := by rw [← Real.exp_natCast_mul]; norm_num
+        _ = Real.exp 10 := by rw [← Real.exp_nat_mul]; norm_num
     have h101 : Real.exp 10 ≤ Real.exp 10.1 := Real.exp_le_exp.mpr (by norm_num)
     linarith
   have hu3 : 3 ≤ u := by linarith
@@ -898,7 +902,7 @@ theorem eps_large_u_two_var_sound
     have h10 : (1024 : ℝ) ≤ Real.exp 10 := by
       calc (1024 : ℝ) = (2 : ℝ) ^ 10 := by norm_num
         _ ≤ (Real.exp 1) ^ 10 := pow_le_pow_left₀ (by norm_num) h1 10
-        _ = Real.exp 10 := by rw [← Real.exp_natCast_mul]; norm_num
+        _ = Real.exp 10 := by rw [← Real.exp_nat_mul]; norm_num
     have h101 : Real.exp 10 ≤ Real.exp 10.1 := Real.exp_le_exp.mpr (by norm_num)
     linarith
   have hw2 : 2 ≤ w := by linarith

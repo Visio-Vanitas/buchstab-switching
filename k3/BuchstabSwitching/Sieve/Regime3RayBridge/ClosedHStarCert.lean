@@ -45,7 +45,7 @@ private lemma exp_89_lt_8000 : Real.exp (8.9 : ℝ) < (8000 : ℝ) := by
   have h8 : Real.exp 8 < (2982 : ℝ) := by
     have hpow := pow_lt_pow_left₀ (by linarith [Real.exp_one_lt_d9] : Real.exp 1 < 2.7183)
       (Real.exp_pos 1).le (by norm_num : 8 ≠ 0)
-    rw [← Real.exp_natCast_mul] at hpow
+    rw [← Real.exp_nat_mul] at hpow
     have hnum : (2.7183 : ℝ) ^ 8 < (2982 : ℝ) := by norm_num
     norm_num at hpow; linarith
   have h09 : Real.exp (9 / 10 : ℝ) < (2.46 : ℝ) := by
@@ -76,7 +76,7 @@ theorem jsMertensHiErr_le_1614 {b : ℕ} (hb : 8000 < b) :
       have h143_sq : (143 : ℝ) ^ 2 < Real.exp 10 := by
         have h10e := pow_lt_pow_left₀ (by linarith [Real.exp_one_gt_d9] : (2.7 : ℝ) < Real.exp 1)
           (by norm_num) (by norm_num : 10 ≠ 0)
-        rw [← Real.exp_natCast_mul] at h10e; norm_num at h10e ⊢; linarith
+        rw [← Real.exp_nat_mul] at h10e; norm_num at h10e ⊢; linarith
       have hsqrt_gt : (143 : ℝ) < Real.sqrt (b : ℝ) := by
         rw [← Real.sqrt_sq (by norm_num : (0 : ℝ) ≤ 143)]
         exact Real.sqrt_lt_sqrt (by norm_num) (h143_sq.trans hexp10_lt)
@@ -572,7 +572,7 @@ theorem closedHStarCond_Q0_100 {M0 : ℝ} (hM : External.MertensPrimeSumPremise 
     dsimp only
     have hlog8 : (8 : ℝ) < Real.log (8000 : ℝ) := by
       have hpow1 := pow_lt_pow_left₀ Real.exp_one_lt_d9 (Real.exp_pos 1).le (by norm_num : 8 ≠ 0)
-      rw [← Real.exp_natCast_mul] at hpow1
+      rw [← Real.exp_nat_mul] at hpow1
       have hnum : (2.7182818286 : ℝ) ^ 8 < (8000 : ℝ) := by norm_num
       norm_num at hpow1; exact (Real.lt_log_iff_exp_lt (by norm_num)).mpr (by linarith)
     have hdiv : (2.964e-6 : ℝ) / Real.log ((8000 : ℕ) : ℝ) ≤ (2.964e-6 : ℝ) / 8 :=

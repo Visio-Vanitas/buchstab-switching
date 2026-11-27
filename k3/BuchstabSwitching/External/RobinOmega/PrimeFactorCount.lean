@@ -36,7 +36,7 @@ lemma two_lt_exp_one : (2 : ℝ) < Real.exp 1 := by
     linarith
   have hsq : (9 / 4 : ℝ) ≤ (Real.exp (1 / 2)) ^ 2 := by nlinarith
   have hexp : (Real.exp (1 / 2)) ^ 2 = Real.exp 1 := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     norm_num
   linarith
 
@@ -57,7 +57,7 @@ lemma exp_exp_one_lt_sixteen : Real.exp (Real.exp 1) < (16 : ℝ) := by
   have hlt1 : Real.exp (Real.exp 1) < Real.exp (11 / 4 : ℝ) :=
     Real.exp_lt_exp.mpr hexp1
   have hpow : (Real.exp (11 / 4 : ℝ)) ^ 4 = (Real.exp 1) ^ 11 := by
-    rw [← Real.exp_natCast_mul, ← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul, ← Real.exp_nat_mul]
     norm_num
   have hpow_lt : (Real.exp 1) ^ 11 < (16 : ℝ) ^ 4 := by
     have h1 : (Real.exp 1) ^ 11 < (274 / 100 : ℝ) ^ 11 :=
@@ -283,7 +283,7 @@ lemma sq_div_exp_antitoneOn :
   have hsq : (v / u) ^ 2 ≤ (Real.exp ((v - u) / 2)) ^ 2 :=
     pow_le_pow_left₀ (div_nonneg hv_pos.le hu_pos.le) hstep 2
   have hexp_sq : (Real.exp ((v - u) / 2)) ^ 2 = Real.exp v / Real.exp u := by
-    rw [← Real.exp_natCast_mul]
+    rw [← Real.exp_nat_mul]
     have harg : (2 : ℕ) * ((v - u) / 2) = v - u := by norm_num; ring
     rw [harg, Real.exp_sub]
   rw [hexp_sq, div_pow] at hsq
@@ -383,7 +383,7 @@ lemma log_div_sqrt_antitoneOn :
     Real.add_one_le_exp ((Real.log y - Real.log x) / 2)
   have hexp_sqrt : Real.exp ((Real.log y - Real.log x) / 2) = Real.sqrt y / Real.sqrt x := by
     have hsq : (Real.exp ((Real.log y - Real.log x) / 2)) ^ 2 = (Real.sqrt y / Real.sqrt x) ^ 2 := by
-      rw [← Real.exp_natCast_mul, div_pow, Real.sq_sqrt hy_pos.le, Real.sq_sqrt hx_pos.le]
+      rw [← Real.exp_nat_mul, div_pow, Real.sq_sqrt hy_pos.le, Real.sq_sqrt hx_pos.le]
       have harg : (2 : ℕ) * ((Real.log y - Real.log x) / 2) = Real.log y - Real.log x := by
         norm_num; ring
       rw [harg, Real.exp_sub, Real.exp_log hy_pos, Real.exp_log hx_pos]

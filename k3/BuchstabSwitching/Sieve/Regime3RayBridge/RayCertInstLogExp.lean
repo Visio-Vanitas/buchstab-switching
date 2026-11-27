@@ -300,7 +300,7 @@ lemma expGe_sound {num den : ℕ} (hden : 0 < den) :
       Real.exp ((num : ℝ) / (den : ℝ)) := by
     have hp : ((((Real.exp ((num : ℝ) / (32 * (den : ℝ))) ^ 2) ^ 2) ^ 2) ^ 2) ^ 2 =
         Real.exp ((num : ℝ) / (32 * (den : ℝ))) ^ (32 : ℕ) := by ring
-    rw [hp, ← Real.exp_natCast_mul]
+    rw [hp, ← Real.exp_nat_mul]
     congr 1
     have hden_ne : (den : ℝ) ≠ 0 := by exact_mod_cast hden.ne'
     push_cast; field_simp [hden_ne]
@@ -320,7 +320,7 @@ lemma expNegUb_sound {num den : ℕ} (hden : 0 < den) :
     have hexp_ge2 : (2 : ℝ) ≤ Real.exp 1 := by linarith [Real.exp_one_gt_d9]
     have hexp40 : (scaleS : ℝ) ≤ Real.exp 40 := by
       have hpow : (2 : ℝ) ^ 40 ≤ Real.exp 1 ^ 40 := pow_le_pow_left₀ (by norm_num) hexp_ge2 40
-      have he40 : Real.exp 1 ^ 40 = Real.exp 40 := by rw [← Real.exp_natCast_mul]; norm_num
+      have he40 : Real.exp 1 ^ 40 = Real.exp 40 := by rw [← Real.exp_nat_mul]; norm_num
       have h240 : (scaleS : ℝ) ≤ (2 : ℝ) ^ 40 := by unfold scaleS; norm_num
       linarith
     have hexp_ge_S : (scaleS : ℝ) ≤ Real.exp ((num : ℝ) / (den : ℝ)) :=

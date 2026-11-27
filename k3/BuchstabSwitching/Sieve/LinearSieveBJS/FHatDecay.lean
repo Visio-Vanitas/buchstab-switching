@@ -97,10 +97,10 @@ theorem fHat_two_le_exp_two_mul {s : ℝ} (hs2 : 2 ≤ s) :
         have hlog52 : Real.log (5 / 2 : ℝ) < 11 / 12 := by
           rw [Real.log_lt_iff_lt_exp (by norm_num)]
           have hpow : (5 / 2 : ℝ) ^ 12 < (Real.exp (11 / 12 : ℝ)) ^ 12 := by
-            rw [← Real.exp_natCast_mul]
+            rw [← Real.exp_nat_mul]
             have h1 : (2.718 : ℝ) < Real.exp 1 := by linarith [exp_one_gt_d9']
             have h11 : (2.718 : ℝ) ^ 11 < (Real.exp 1) ^ 11 := pow_lt_pow_left₀ h1 (by norm_num) (by norm_num)
-            rw [← Real.exp_natCast_mul] at h11
+            rw [← Real.exp_nat_mul] at h11
             norm_num at h11 ⊢
             linarith
           exact lt_of_pow_lt_pow_left₀ 12 (Real.exp_pos _).le hpow
@@ -113,7 +113,7 @@ theorem fHat_two_le_exp_two_mul {s : ℝ} (hs2 : 2 ≤ s) :
           rw [mul_comm (Real.exp 2) _, mul_assoc, hcomb, Real.exp_neg, ← one_div]
           have hhalf : Real.exp (1 / 2 : ℝ) ≤ 165 / 100 := by
             have hpow : (Real.exp (1 / 2 : ℝ)) ^ 2 < (165 / 100 : ℝ) ^ 2 := by
-              rw [← Real.exp_natCast_mul]; norm_num
+              rw [← Real.exp_nat_mul]; norm_num
               linarith [exp_one_lt_d9']
             exact (lt_of_pow_lt_pow_left₀ 2 (by norm_num) hpow).le
           have hinv : (100 / 165 : ℝ) ≤ 1 / Real.exp (1 / 2 : ℝ) := by
@@ -171,10 +171,10 @@ theorem fHat_two_le_exp_two_mul {s : ℝ} (hs2 : 2 ≤ s) :
                 rw [← Real.exp_add]; ring_nf
               have he32 : Real.exp (3 / 2 : ℝ) ≤ 45 / 10 := by
                 have hpow : (Real.exp (3 / 2 : ℝ)) ^ 2 < (45 / 10 : ℝ) ^ 2 := by
-                  rw [← Real.exp_natCast_mul]; norm_num
+                  rw [← Real.exp_nat_mul]; norm_num
                   have h3 : (Real.exp 1) ^ 3 < (27182818286 / 10000000000 : ℝ) ^ 3 :=
                     pow_lt_pow_left₀ exp_one_lt_d9' (Real.exp_pos 1).le (by norm_num)
-                  rw [← Real.exp_natCast_mul] at h3
+                  rw [← Real.exp_nat_mul] at h3
                   norm_num at h3 ⊢
                   linarith
                 exact (lt_of_pow_lt_pow_left₀ 2 (by norm_num) hpow).le

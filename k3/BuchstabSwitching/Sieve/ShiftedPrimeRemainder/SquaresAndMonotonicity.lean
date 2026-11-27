@@ -138,7 +138,7 @@ theorem epd_norm_antitoneOn {X_lo li2 : ℝ} (hX_lo : 4 * (10 : ℝ) ^ 18 ≤ X_
     positivity
   have hexp4_lt : Real.exp 4 ≤ 4 * (10 : ℝ) ^ 18 := by
     have hpow : Real.exp 4 = (Real.exp 1) ^ 4 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     have hle : (Real.exp 1) ^ 4 ≤ (274 / 100 : ℝ) ^ 4 :=
       pow_le_pow_left₀ (Real.exp_pos 1).le External.exp_one_lt_274_div_100.le 4

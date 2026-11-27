@@ -351,7 +351,7 @@ private lemma jsMertensHiErr_le_eta_plus_B {B b : ℕ} (hB : 250000 ≤ B) (hBb 
   have hlogB10 : 10 < Real.log (B : ℝ) := by
     have hexp10 : Real.exp 10 < (250000 : ℝ) := by
       have h1 : Real.exp 1 < (2.75 : ℝ) := by linarith [Real.exp_one_lt_d9]
-      have h10 : Real.exp 10 = (Real.exp 1) ^ 10 := by rw [← Real.exp_natCast_mul]; norm_num
+      have h10 : Real.exp 10 = (Real.exp 1) ^ 10 := by rw [← Real.exp_nat_mul]; norm_num
       have hpow : (Real.exp 1) ^ 10 < (2.75 : ℝ) ^ 10 :=
         pow_lt_pow_left₀ h1 (Real.exp_pos 1).le (by norm_num)
       have hnum : (2.75 : ℝ) ^ 10 < (250000 : ℝ) := by norm_num

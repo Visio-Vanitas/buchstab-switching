@@ -281,7 +281,7 @@ private lemma strip_aq_ub_sound (consts : External.CertifiedConstants) (k : Fin 
         nlinarith
       have h2e : (2 : ℝ) ≤ Real.exp 1 := by linarith [Real.exp_one_gt_d9]
       have hp : (2 : ℝ) ^ 86 ≤ Real.exp 1 ^ 86 := pow_le_pow_left₀ (by norm_num) h2e 86
-      have he86 : Real.exp 1 ^ 86 = Real.exp 86 := by rw [← Real.exp_natCast_mul]; norm_num
+      have he86 : Real.exp 1 ^ 86 = Real.exp 86 := by rw [← Real.exp_nat_mul]; norm_num
       rw [he86] at hp
       have hexp86 : (scaleS : ℝ) ≤ Real.exp (rayStripU 16 120 k.1 * Real.log (asymptoticCert.X_LS : ℝ)) := by
         have hS_le : (scaleS : ℝ) ≤ (2 : ℝ) ^ 86 := by unfold scaleS; norm_num

@@ -370,7 +370,7 @@ theorem H_bjs_le_three {s M : ℝ} (hs : 3 ≤ s) (hM : s ≤ M) :
         ring
       have h_e12 : Real.exp 1 - (78629 / 1000000 : ℝ) * Real.exp 2 ≤ 3 * kappa3 := by
         have h2_gt : (27182818283 / 10000000000 : ℝ) ^ 2 ≤ Real.exp 2 := by
-          have hsq : Real.exp 2 = (Real.exp 1) ^ 2 := by rw [← Real.exp_natCast_mul]; norm_num
+          have hsq : Real.exp 2 = (Real.exp 1) ^ 2 := by rw [← Real.exp_nat_mul]; norm_num
           rw [hsq]
           exact pow_le_pow_left₀ (by norm_num) exp_one_gt_d9'.le 2
         have he1 := exp_one_lt_d9'

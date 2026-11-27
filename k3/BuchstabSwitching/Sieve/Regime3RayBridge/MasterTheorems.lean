@@ -196,12 +196,12 @@ theorem regime3_switchingBalance_analytic_lb (consts : External.CertifiedConstan
         _ = (10 : ℝ) ^ 55 := by rw [Nat.cast_pow]; norm_num
     have h10_3 : (10 : ℝ) < Real.exp 3 := by
       have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
-      have he3 : Real.exp 3 = Real.exp 1 ^ 3 := by rw [← Real.exp_natCast_mul]; norm_num
+      have he3 : Real.exp 3 = Real.exp 1 ^ 3 := by rw [← Real.exp_nat_mul]; norm_num
       rw [he3]
       linarith [pow_le_pow_left₀ (by norm_num : (0 : ℝ) ≤ 2.7) h1.le 3,
         show (10 : ℝ) < (2.7 : ℝ) ^ 3 by norm_num]
     have hQ_le_exp : (∏ q ∈ Q0_100, (q : ℝ)) ≤ Real.exp 165 := by
-      have he165 : Real.exp 165 = Real.exp 3 ^ 55 := by rw [← Real.exp_natCast_mul]; norm_num
+      have he165 : Real.exp 165 = Real.exp 3 ^ 55 := by rw [← Real.exp_nat_mul]; norm_num
       have hpow : (10 : ℝ) ^ 55 < Real.exp 165 := by rw [he165]; exact pow_lt_pow_left₀ h10_3 (by norm_num) (by decide)
       exact (hQ_prod_lt.trans hpow).le
     have hlogQ_le : logQ ≤ 165 := by

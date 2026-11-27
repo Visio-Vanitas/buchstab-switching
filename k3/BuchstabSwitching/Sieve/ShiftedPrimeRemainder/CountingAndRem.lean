@@ -236,7 +236,7 @@ lemma forty_le_log_of_four_mul_pow18 {x : ℝ} (hx : 4 * (10 : ℝ) ^ 18 ≤ x) 
     (40 : ℝ) ≤ Real.log x := by
   have hexp40 : Real.exp 40 ≤ 4 * (10 : ℝ) ^ 18 := by
     have hpow : Real.exp 40 = (Real.exp 1) ^ 40 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     have hle : (Real.exp 1) ^ 40 ≤ (274 / 100 : ℝ) ^ 40 :=
       pow_le_pow_left₀ (Real.exp_pos 1).le External.exp_one_lt_274_div_100.le 40
@@ -251,7 +251,7 @@ private lemma log_forty_lt_four : Real.log 40 < 4 := by
     have h2 : (27 / 10 : ℝ) ^ 4 ≤ (Real.exp 1) ^ 4 :=
       pow_le_pow_left₀ (by norm_num) exp_one_ge_27_div_10 4
     have h3 : (Real.exp 1) ^ 4 = Real.exp 4 := by
-      rw [← Real.exp_natCast_mul]
+      rw [← Real.exp_nat_mul]
       norm_num
     linarith
   calc Real.log 40 < Real.log (Real.exp 4) := Real.log_lt_log (by norm_num) hlt

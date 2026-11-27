@@ -25,7 +25,7 @@ theorem sum_filter_ge_mul_sieveV_eq (g : ℕ → ℝ) (P : Finset ℕ) (u : ℝ)
   | ind m ih =>
     by_cases hP : P = ∅
     · subst hP; simp [sieveV]
-    · have hPne : P.Nonempty := Finset.ne_empty_iff_nonempty.mp hP
+    · have hPne : P.Nonempty := Finset.nonempty_iff_ne_empty.mpr hP
       have hcard_pos : 0 < P.card := Finset.card_pos.mpr hPne
       set p := P.max' hPne
       set P' := P.erase p
@@ -214,7 +214,7 @@ theorem abel_summation_bjs {g : ℕ → ℝ} {P : Finset ℕ} {z D u K M : ℝ}
       refine intervalIntegral.integral_nonneg hsM fun t ht => ?_
       exact hφ_nn (t - 1) (by linarith [ht.1])
     refine mul_nonneg hVP (add_nonneg (mul_nonneg (by linarith) hφs) (mul_nonneg (by positivity) hI_nn))
-  · have hPsub_ne : Psub.Nonempty := Finset.ne_empty_iff_nonempty.mp hPsub_empty
+  · have hPsub_ne : Psub.Nonempty := Finset.nonempty_iff_ne_empty.mpr hPsub_empty
     set L : List ℕ := Psub.sort (· ≤ ·)
     set k : ℕ := L.length
     have hk_pos : 0 < k := by

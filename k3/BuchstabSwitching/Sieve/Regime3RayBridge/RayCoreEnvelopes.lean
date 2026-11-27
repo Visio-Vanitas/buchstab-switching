@@ -5,6 +5,11 @@ import BuchstabSwitching.External.EulerProductV.ProductAsymptotic
 import BuchstabSwitching.External.NumericalConstants.ExplicitConstants
 import BuchstabSwitching.Certificates.Data
 import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Tactic
 
 namespace BuchstabSwitching
@@ -28,7 +33,7 @@ private lemma log_ten_lt_three : Real.log 10 < (3 : ℝ) := by
   have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
   have h3 : (10 : ℝ) < Real.exp 3 := by
     have he3 : Real.exp 3 = Real.exp 1 ^ 3 := by
-      rw [← Real.exp_natCast_mul]; norm_num
+      rw [← Real.exp_nat_mul]; norm_num
     rw [he3]
     have hp : (2.7 : ℝ) ^ 3 ≤ Real.exp 1 ^ 3 :=
       pow_le_pow_left₀ (by norm_num) h1.le 3
@@ -68,7 +73,7 @@ theorem log_log_asymptoticCert_X_LS_lt :
     Real.log (Real.log (asymptoticCert.X_LS : ℝ)) < (8 : ℝ) := by
   have h1 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
   have h8 : (1800 : ℝ) < Real.exp 8 := by
-    have he8 : Real.exp 8 = Real.exp 1 ^ 8 := by rw [← Real.exp_natCast_mul]; norm_num
+    have he8 : Real.exp 8 = Real.exp 1 ^ 8 := by rw [← Real.exp_nat_mul]; norm_num
     rw [he8]
     have hp : (2.7 : ℝ) ^ 8 ≤ Real.exp 1 ^ 8 :=
       pow_le_pow_left₀ (by norm_num) h1.le 8
@@ -101,10 +106,10 @@ lemma antitoneOn_pow_mul_exp_neg (k : ℕ) {c : ℝ} (hc : 0 < c) :
             u ^ k * (-c * Real.exp (-c * u))) u := by
         have hp : HasDerivAt (fun x : ℝ => x ^ k) ((k : ℝ) * u ^ (k - 1)) u := hasDerivAt_pow k u
         have hlin : HasDerivAt (fun x : ℝ => -c * x) (-c) u := by
-          simpa using (hasDerivAt_const u (-c)).fun_mul (hasDerivAt_id u)
+          simpa using (hasDerivAt_id' u).const_mul (-c)
         have he : HasDerivAt (fun x : ℝ => Real.exp (-c * x)) (-c * Real.exp (-c * u)) u := by
           simpa [mul_comm] using hlin.exp
-        exact hp.fun_mul he
+        exact hp.mul he
       rw [hderiv.deriv]
       have hfac : (k : ℝ) * u ^ (k - 1) * Real.exp (-c * u) + u ^ k * (-c * Real.exp (-c * u)) =
           ((k : ℝ) - c * u) * u ^ (k - 1) * Real.exp (-c * u) := by
@@ -133,8 +138,9 @@ lemma antitoneOn_log_div_id :
     have hu_gt : Real.exp 1 < u := by simpa [interior_Ici] using hu
     have hu_pos : 0 < u := lt_trans (Real.exp_pos 1) hu_gt
     have hderiv : HasDerivAt (fun x : ℝ => Real.log x / x)
-        ((1 / u * u - Real.log u * 1) / u ^ 2) u := by
-      simpa [one_div] using (Real.hasDerivAt_log hu_pos.ne').fun_div (hasDerivAt_id u) hu_pos.ne'
+        ((1 / u * u - Real.log u * 1) / u ^ 2) u :=
+      ((Real.hasDerivAt_log hu_pos.ne').div (hasDerivAt_id' u) hu_pos.ne').congr_deriv
+        (by simp [one_div])
     rw [hderiv.deriv]
     have hlog_gt1 : 1 < Real.log u := by
       rw [← Real.log_exp 1]
@@ -189,11 +195,11 @@ lemma one_lt_of_pos_log_pos {X : ℝ} (hX : 0 < X) (hlog : 0 < Real.log X) : 1 <
 lemma exp_ten_ge_20001 : (20001 : ℝ) ≤ Real.exp 10 := by
   have h27 : (2.7 : ℝ) < Real.exp 1 := by linarith [Real.exp_one_gt_d9]
   have he5 : (142 : ℝ) ≤ Real.exp 5 := by
-    have h1 : Real.exp 5 = Real.exp 1 ^ 5 := by rw [← Real.exp_natCast_mul]; norm_num
+    have h1 : Real.exp 5 = Real.exp 1 ^ 5 := by rw [← Real.exp_nat_mul]; norm_num
     rw [h1]
     have hp : (2.7 : ℝ) ^ 5 ≤ Real.exp 1 ^ 5 := pow_le_pow_left₀ (by norm_num) h27.le 5
     linarith [show (142 : ℝ) ≤ (2.7 : ℝ) ^ 5 by norm_num]
-  have hsq : Real.exp 10 = Real.exp 5 ^ 2 := by rw [← Real.exp_natCast_mul]; norm_num
+  have hsq : Real.exp 10 = Real.exp 5 ^ 2 := by rw [← Real.exp_nat_mul]; norm_num
   rw [hsq]
   have hp : (142 : ℝ) ^ 2 ≤ Real.exp 5 ^ 2 := pow_le_pow_left₀ (by norm_num) he5 2
   linarith [show (20001 : ℝ) ≤ (142 : ℝ) ^ 2 by norm_num]
@@ -202,7 +208,7 @@ lemma rayZIntLb_gt_1e12 {X : ℝ} (hlogX : (1200 : ℝ) ≤ Real.log X) :
     (10 : ℝ) ^ 12 + 2 ≤ rayZIntLb 16 X := by
   have hz0 : Real.exp 75 ≤ rayZ0 16 X := rayZ0_ge_exp_75 hlogX
   have he30 : (10 : ℝ) ^ 12 + 3 ≤ Real.exp 30 := by
-    have he : Real.exp 30 = Real.exp 10 ^ 3 := by rw [← Real.exp_natCast_mul]; norm_num
+    have he : Real.exp 30 = Real.exp 10 ^ 3 := by rw [← Real.exp_nat_mul]; norm_num
     rw [he]
     have hp : (20001 : ℝ) ^ 3 ≤ Real.exp 10 ^ 3 :=
       pow_le_pow_left₀ (by norm_num) exp_ten_ge_20001 3

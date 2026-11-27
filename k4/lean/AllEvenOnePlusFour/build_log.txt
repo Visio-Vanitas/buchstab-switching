@@ -1,16 +1,16 @@
 info: mathlib: remote URL changed
   old: https://github.com/leanprover-community/mathlib4
   new: https://github.com/leanprover-community/mathlib4.git
-✔ [18293/18313] Built AllEvenOnePlusFour.Statement (21s)
-⚠ [18295/18313] Built Challenge (21s)
+✔ [18250/18270] Built AllEvenOnePlusFour.Statement (44s)
+⚠ [18252/18270] Built Challenge (44s)
 warning: Challenge.lean:60:8: declaration uses `sorry`
-✔ [18298/18313] Built AllEvenOnePlusFour.Bonferroni (21s)
-✔ [18300/18313] Built AllEvenOnePlusFour.Weights (21s)
-✔ [18302/18313] Built AllEvenOnePlusFour.GRHInterface (3.7s)
-✔ [18304/18313] Built AllEvenOnePlusFour.Sanity (3.8s)
-✔ [18306/18313] Built AllEvenOnePlusFour.Reduction (4.1s)
-✔ [18308/18313] Built AllEvenOnePlusFour (3.3s)
-ℹ [18311/18313] Built AxiomsCheck (3.2s)
+✔ [18255/18270] Built AllEvenOnePlusFour.Bonferroni (44s)
+✔ [18257/18270] Built AllEvenOnePlusFour.Weights (44s)
+✔ [18259/18270] Built AllEvenOnePlusFour.GRHInterface (4.3s)
+✔ [18261/18270] Built AllEvenOnePlusFour.Sanity (4.5s)
+✔ [18263/18270] Built AllEvenOnePlusFour.Reduction (4.3s)
+✔ [18265/18270] Built AllEvenOnePlusFour (3.9s)
+ℹ [18268/18270] Built AxiomsCheck (3.0s)
 info: AxiomsCheck.lean:30:0: 'allEvenPrimePlusAlmostPrime_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: AxiomsCheck.lean:31:0: 'dirichletLNonvanishingRightOfHalf_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: AxiomsCheck.lean:32:0: 'all_even_one_plus_four_of_conditionalInputs'' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -43,7 +43,7 @@ info: AxiomsCheck.lean:56:0: 'AllEvenOnePlusFour.not_allEvenPrimePlusAlmostPrime
 info: AxiomsCheck.lean:57:0: 'AllEvenOnePlusFour.goldbach_of_le_forty' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: AxiomsCheck.lean:58:0: 'AllEvenOnePlusFour.primePlusAlmostPrime_one_of_le_forty' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: AxiomsCheck.lean:61:0: 'all_even_one_plus_four' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
-Build completed successfully (18313 jobs).
+Build completed successfully (18270 jobs).
 'allEvenPrimePlusAlmostPrime_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
 'dirichletLNonvanishingRightOfHalf_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
 'all_even_one_plus_four_of_conditionalInputs'' depends on axioms: [propext, Classical.choice, Quot.sound]

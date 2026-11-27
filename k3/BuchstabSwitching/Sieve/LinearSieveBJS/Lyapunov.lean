@@ -67,7 +67,6 @@ theorem tauBJS_nonneg {c_seq : ℕ → ℝ} {ε : ℝ} (hε : 0 ≤ ε)
       simp only [show n + 2 - 1 = n + 1 by omega, show n + 2 - 2 = n by omega]
       positivity
     rw [tauBJS]
-    dsimp only
     split_ifs
     · exact le_max_of_le_right (le_max_of_le_right (le_max_of_le_right
         (le_max_of_le_right (le_max_of_le_right hxi3))))
@@ -624,7 +623,6 @@ theorem tauBJS_le_tauPrimeBJS {c_seq : ℕ → ℝ} {ε : ℝ} (hε0 : 0 < ε) (
     have hg3_le : gammaBJS 3 ≤ 4 * Real.exp 1 / 3 := by rw [gammaBJS_three]
     have hg_nn : ∀ s₀ : ℝ, 0 ≤ gammaBJS s₀ := fun s₀ => by unfold gammaBJS; split_ifs <;> positivity
     rw [tauBJS]
-    dsimp only
     split_ifs
     · refine max_le (hxi_le (by unfold kappa2; norm_num) (hg_nn _) le_rfl hg2_le)
         (max_le (hxi_le (by unfold kappa22; norm_num) (hg_nn _) hk22 hg22_le)

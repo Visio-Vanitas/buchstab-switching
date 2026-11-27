@@ -256,7 +256,7 @@ theorem selberg_optimal_upper_bound (I P : Finset ℕ) (a : ℕ → ℝ) (g : �
     rcases (mem_D_xi_iff P xi d).mp hdD with ⟨⟨S, hSP, rfl⟩, _⟩
     by_cases hS : S = ∅
     · subst hS; simp
-    · obtain ⟨p, hpS⟩ := Finset.ne_empty_iff_nonempty.mp hS
+    · obtain ⟨p, hpS⟩ := Finset.nonempty_iff_ne_empty.mpr hS
       have hpd : p ∣ ∏ q ∈ S, q := Finset.dvd_prod_of_mem _ hpS
       exact absurd (hpd.trans hdn) (hncop p (hSP hpS))
   have hcount_le : sieveCount I a P ≤
