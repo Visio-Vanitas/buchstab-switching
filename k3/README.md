@@ -8,14 +8,15 @@ representations across all even integers $N \ge 4$:
 > Assuming `DirichletLNonvanishingRightOfHalf` (generalized half-plane non-vanishing for
 > Dirichlet $L$-functions, matching `https://github.com/lsernau/grh-lean` at commit
 > `72fead102f663d5c7a407964a13dc0cf9d977207`, `grh-compact/src/Statements.lean`) together
-> with the six classical literature premises bundled in `External.ClassicalBasicLemmas`
-> (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`, `RobinOmegaBound`,
+> with the five classical literature premises bundled in `External.ClassicalBasicLemmas`
+> (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`,
 > `MertensPrimeSumPremise`, and unconditional BJS v6 Lemma 38 `EulerProductVPremise`), every
 > even integer $N \ge 4$ satisfies
 > $$N = p + m \qquad (p \text{ prime},\; 0 < m,\; \Omega(m) \le 3),$$
 > where $\Omega(m)$ counts the prime divisors of $m$ with multiplicity. All `127` finite-slab
-> sieve enclosures, `BuchstabSeries`, closed-interval `(H*)` on `Q0_100`, Lean `C_2 ≤ 494`, and
-> all `120` asymptotic ray strips are proved inside Lean 4 (`0 sorry`, `0` custom axioms).
+> sieve enclosures, `RobinOmegaBound` (`robinOmegaBound_holds`), `BuchstabSeries`,
+> closed-interval `(H*)` on `Q0_100`, Lean `C_2 ≤ 494`, and all `120` asymptotic ray strips are
+> proved inside Lean 4 (`0 sorry`, `0` custom axioms).
 
 For full mathematical derivations, closed-interval `(H*)` certification (`certify_closed_hstar_q0`),
 Brun block lower sieving (`brun_block_sieve.py`), the binary `Dyadic` proof-by-reflection
@@ -73,20 +74,21 @@ architecture, parameter meanings, and robustness margins, see
 
 ### Isolated External Bridges (`BuchstabSwitching/External/`)
 `External/Bridge.lean` reduces `ExternalPremises` (`externalPremises_of_classical`) to strictly
-**6 classical/computational premises** bundled in `ClassicalBasicLemmas` (`8` classical topic
+**5 classical/computational premises** bundled in `ClassicalBasicLemmas` (`8` classical topic
 folders, `2` proved sieve-enclosure bridges, and `Bridge.lean`; see
 [BuchstabSwitching/External/README.md](BuchstabSwitching/External/README.md))
 so contributors can discharge them individually without `axiom` declarations:
 - `External/FiniteVerification/SmallEven.lean`: `SmallEvenPremise` (`4 ≤ N < 4 * 10^18`).
 - `External/CharacterSums/DirichletGRH.lean`: `DirichletLNonvanishingRightOfHalf` and
   explicit AP prime-counting bound `JSLemma51Premise`.
-- `External/SchoenfeldRH/PrimeCountingRH.lean`, `External/RobinOmega/PrimeFactorCount.lean`,
-  `External/MertensSums/ReciprocalPrimeSums.lean`, `External/EulerProductV/ProductAsymptotic.lean`,
+- `External/SchoenfeldRH/PrimeCountingRH.lean`, `External/MertensSums/ReciprocalPrimeSums.lean`,
+  `External/EulerProductV/ProductAsymptotic.lean`,
   `External/NumericalConstants/ExplicitConstants.lean`:
-  Classical analytic prime-number bounds (`SchoenfeldPrimePremise`, `RobinOmegaBound`,
+  Classical analytic prime-number bounds (`SchoenfeldPrimePremise`,
   `MertensPrimeSumPremise`, unconditional BJS v6 Lemma 38 `EulerProductVPremise`) and explicit
-  numerical certificate constants (`CertifiedConstants`). (Note `External/BuchstabSeries/` is
-  already unconditionally proved via `buchstabSeriesPremise_proved`.)
+  numerical certificate constants (`CertifiedConstants`). (Note `External/RobinOmega/` and
+  `External/BuchstabSeries/` are already unconditionally proved via `robinOmegaBound_holds` and
+  `buchstabSeriesPremise_proved`.)
 - `External/MultiplicativeBounds/SlabSieveEnclosure.lean` & `SlabSieveEngineWiring.lean`:
   Proved finite-slab reduction `slabSieveEnclosurePremise_of_sieveBridge` instantiated across all
   `127/127` slabs (`allSlabs_bridges_inst`).

@@ -63,15 +63,10 @@ structure ExternalPremises : Prop where
   slab_enclosure : SlabSieveEnclosurePremise
   ray_enclosure : AsymptoticRayEnclosurePremise
 
-def RobinOmegaBound : Prop :=
-  ∀ N : ℕ, 3 ≤ N →
-    (N.primeFactors.card : ℝ) < (1.3841 : ℝ) * Real.log N / Real.log (Real.log N)
-
 structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
   small_even : SmallEvenPremise
   js_ap : JSLemma51Premise consts.li2
   schoenfeld : SchoenfeldPrimePremise consts.li2
-  robin : RobinOmegaBound
   mertens : MertensPrimeSumPremise consts.M0
   euler_v : EulerProductVPremise consts.U_c consts.eNegGamma
 

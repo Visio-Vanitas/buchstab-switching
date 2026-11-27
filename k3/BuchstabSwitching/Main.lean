@@ -75,7 +75,7 @@ theorem all_even_one_plus_three_of_premises
   refine ⟨p, m, hp, hm_pos, hpN.symm, ?_⟩
   simpa [ArithmeticFunction.cardFactors_apply, omegaMult] using hm
 
-/-- End-to-end conditional `1 + 3` theorem directly from the six classical premises in
+/-- End-to-end conditional `1 + 3` theorem directly from the five classical premises in
 `External.ClassicalBasicLemmas consts` plus GRH (`External.DirichletLNonvanishingRightOfHalf`). -/
 theorem all_even_one_plus_three_of_classical
     (consts : External.CertifiedConstants)

@@ -1,7 +1,7 @@
 # Blueprint for Discharging External Analytic Inputs
 
 This blueprint describes the modular architecture of `BuchstabSwitching` and provides a
-roadmap for proving the six classical literature assumptions in `External.ClassicalBasicLemmas`
+roadmap for proving the five remaining classical literature assumptions in `External.ClassicalBasicLemmas`
 inside Lean 4 / Mathlib so that `all_even_one_plus_three_of_classical` (and
 `even_eq_prime_add_omegaMult_le_three`) rests only on
 `External.DirichletLNonvanishingRightOfHalf` (pinned to
@@ -43,8 +43,9 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
    - Hybrid `Q₁ × P₂` Bonferroni identities and prime-omission monotonicity (`BonferroniHybrid`, `BonferroniEstimates`).
    - Brun combinatorial block lower sieve parity rule ($\chi^- \le \mathbf{1}$), remainder $E^-$, level bound $\prod z_i^{m_i - m_{i-1}}$, and prime-omission monotonicity (`BrunBlockSieve`).
    - Selberg $\Lambda^2$ quadratic upper sieve, diagonalization, `V_N(z) J_N(z, ξ) ≥ V_full(z) J_full(z, ξ)` coupling, disjoint two-prime inclusion-exclusion `J_full(z, ξ)`, odd squarefree bound $\sum_{d \le X, 2\nmid d} \mu^2(d) \le \frac{4}{\pi^2} X + \sqrt{X}$, and collision sum $\sum_{L \le X, 2\nmid L} \mu^2(L) 3^{\omega(L)} \le \frac{1}{16} X (\ln X + 6)^2$ (`SelbergLambdaSq`, `SelbergDiagonalization`, `OddSquarefreeBounds`).
-2. **Buchstab Delay-Differential Series (`External/BuchstabSeries/`)**:
+2. **Buchstab Delay-Differential Series & Robin `ω(N)` Bound (`External/BuchstabSeries/`, `External/RobinOmega/`)**:
    - Unconditional theorem `buchstabSeriesPremise_proved` establishing $F(s) = 1 + \sum_{n \text{ odd}} f_n(s)$ and $f(s) = 1 - \sum_{n \text{ even}} f_n(s)$.
+   - Unconditional theorem `robinOmegaBound_holds` establishing $\omega(N) < 1.3841 \ln N / \ln \ln N$ for all $N \ge 3$ via primorial reduction, Mod-30 Chebyshev + Abel summation ($p \ge 13000$), and Q64 `by decide` verification ($p < 13000$).
 3. **Regime 2 Finite-Slab Enclosure (`SlabSieveEnclosurePremise` via `SlabCertInst*`)**:
    - `slabSieveEnclosurePremise_of_sieveBridge` + `allSlabs_bridges_inst` verify all `127` contiguous slabs on $[4 \cdot 10^{18}, 10^{600})$ (`21` in `2a`, `40` in `2b`, `66` in `2c`, `6,448` slices total) via binary `Dyadic` proof-by-reflection (`m * 2^e / 2^8192`), depth-6 `OddPrimeTree` (`2,960` odd primes $< 27{,}000$), and non-deterministic algebraic/transcendental witnesses (`by decide`).
 4. **Regime 3 Asymptotic Ray Enclosure (`AsymptoticRayEnclosurePremise` via `RayCertInst*`)**:
@@ -52,10 +53,10 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
 
 ---
 
-## 2. Contributor Roadmap: Remaining 6 Classical Premises (`ClassicalBasicLemmas`)
+## 2. Contributor Roadmap: Remaining 5 Classical Premises (`ClassicalBasicLemmas`)
 
 `External.externalPremises_of_classical` reduces `ExternalPremises` to constructing a
-`CertifiedConstants` witness together with the six classical literature lemmas below:
+`CertifiedConstants` witness together with the five classical literature lemmas below:
 
 ### Track 1: Finite Binary Verification (`External/FiniteVerification/SmallEven.lean`)
 - **Target**: `SmallEvenPremise` (`4 ≤ N < 4 * 10^18`).
@@ -76,12 +77,10 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
   3. Schoenfeld explicit RH bound `|π(x) - li(x)| ≤ (√x ln x) / (8π)` for `x ≥ 2657`
      (*Math. Comp.* **30** (1976), Cor. 1) and unconditional Rosser–Schoenfeld fallback.
 
-### Track 3: Unconditional Prime-Factor & Mertens Bounds (`RobinOmega/` & `MertensSums/`)
-- **Targets**: `RobinOmegaBound` and `MertensPrimeSumPremise consts.M0`.
+### Track 3: Unconditional Mertens Reciprocal-Prime Bounds (`MertensSums/`)
+- **Target**: `MertensPrimeSumPremise consts.M0` (`RobinOmegaBound` is already discharged via `robinOmegaBound_holds`).
 - **Sub-lemmas**:
-  1. Robin's explicit prime-divisor bound `ω(N) ≤ 1.3841 ln N / ln ln N` for `N ≥ 3`
-     (*Acta Arith.* **42** (1983), Théorème 11).
-  2. Explicit Mertens reciprocal-prime bounds `∑_{p < x} 1/p = ln ln x + M₀ + O*(...)`
+  1. Explicit Mertens reciprocal-prime bounds `∑_{p < x} 1/p = ln ln x + M₀ + O*(...)`
      following Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 3.2) and
      Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Lemmas 16–17).
 
