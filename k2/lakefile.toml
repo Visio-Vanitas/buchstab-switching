@@ -1,0 +1,27 @@
+name = "BuchstabSwitchingK2"
+version = "0.1.0"
+keywords = ["math", "number-theory", "sieve-theory", "lean4"]
+defaultTargets = ["BuchstabSwitchingK2"]
+allowNonModules = true
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "fc4f59e577feb1a4956671bc04ac18aaaf8cd842"
+
+[[lean_lib]]
+name = "BuchstabSwitchingK2"
+allowNonModules = true
+
+[[lean_lib]]
+name = "BuchstabSwitching"
+allowNonModules = true
+
+[[lean_lib]]
+name = "Challenge"
+allowNonModules = true
