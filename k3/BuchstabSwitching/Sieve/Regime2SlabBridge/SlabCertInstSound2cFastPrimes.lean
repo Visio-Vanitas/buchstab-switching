@@ -4,6 +4,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstPrimeTree
 import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSound2abLower
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Odd-Prime Prefix Splitting & `smallOddPrimes40` Helpers for Regime `2c`
 
@@ -14,7 +16,7 @@ on top of the static segment tree `oddPrimeTree`.
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 lemma oddPrimesLt27000_pairwise_lt : oddPrimesLt27000.Pairwise (· < ·) := by
   have hp := primesLt27000_pairwise_lt
@@ -105,8 +107,7 @@ lemma smallOddPrimes40_take {i : ℕ} (hi : i ≤ smallOddPrimes40.length) :
 via a single leaf of `oddPrimeTree`. -/
 def smallOddEntries40 : List PrimeLeafEntry := (oddPrimeEntriesList 180).take 40
 
-lemma smallOddEntries40_primes : smallOddEntries40.map PrimeLeafEntry.p = smallOddPrimes40 := by
-  decide
+lemma smallOddEntries40_primes : smallOddEntries40.map PrimeLeafEntry.p = smallOddPrimes40 := by native_decide
 
 lemma smallOddEntries40_ok : ∀ e ∈ smallOddEntries40, checkPrimeLeafEntry e = true :=
   fun e he => (oddPrimeEntriesList_ok 180 e (List.mem_of_mem_take he)).1

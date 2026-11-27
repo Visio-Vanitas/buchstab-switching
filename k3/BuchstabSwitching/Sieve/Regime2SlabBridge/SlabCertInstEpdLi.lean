@@ -3,6 +3,8 @@ import BuchstabSwitching.Sieve.ShiftedPrimeRemainder.MainTermAndLiRatio
 import BuchstabSwitching.Sieve.ShiftedPrimeRemainder.SquaresAndMonotonicity
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified `epdNormFn` and `liRatioUb` Checkers (Binary Dyadic + `EpdWitness`)
 
@@ -12,7 +14,7 @@ Replaces `SciNat` 24-digit division loops with pure bit-shifted `Dyadic` constan
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 def dyZero : Dyadic := Dyadic.zero
 def dyOne : Dyadic := Dyadic.one
@@ -49,13 +51,13 @@ lemma dySeven_toReal : dySeven.toReal = 7 := by simpa [dySeven] using Dyadic.ofN
 lemma dyEight_toReal : dyEight.toReal = 8 := by simpa [dyEight] using Dyadic.ofNat_toReal 8
 lemma dySixteen_toReal : dySixteen.toReal = 16 := by simpa [dySixteen] using Dyadic.ofNat_toReal 16
 
-private lemma dyPiLo4_nat_ok : 57950446507558556401 * 10000 ≤ 31415 * q64Scale := by decide
-private lemma dy8PiLo4_nat_ok : 463603572060468451213 * 10000 ≤ 8 * 31415 * q64Scale := by decide
-private lemma dy16PiLo4_nat_ok : 927207144120936902426 * 10000 ≤ 16 * 31415 * q64Scale := by decide
-private lemma dy13841Ub_nat_ok : 13841 * q64Scale ≤ 25532138472421390392 * 10000 := by decide
-private lemma dyLi2Ub_nat_ok : 1045163780117493 * q64Scale ≤ 19279868766938236891 * 10 ^ 15 := by decide
-private lemma dy2964Ub_nat_ok : 2964 * q64Scale ≤ 54676149434476 * 10 ^ 9 := by decide
-private lemma dy6836Ub_nat_ok : 6836 * q64Scale ≤ 126101942487879 * 10 ^ 9 := by decide
+private lemma dyPiLo4_nat_ok : 57950446507558556401 * 10000 ≤ 31415 * q64Scale := by native_decide
+private lemma dy8PiLo4_nat_ok : 463603572060468451213 * 10000 ≤ 8 * 31415 * q64Scale := by native_decide
+private lemma dy16PiLo4_nat_ok : 927207144120936902426 * 10000 ≤ 16 * 31415 * q64Scale := by native_decide
+private lemma dy13841Ub_nat_ok : 13841 * q64Scale ≤ 25532138472421390392 * 10000 := by native_decide
+private lemma dyLi2Ub_nat_ok : 1045163780117493 * q64Scale ≤ 19279868766938236891 * 10 ^ 15 := by native_decide
+private lemma dy2964Ub_nat_ok : 2964 * q64Scale ≤ 54676149434476 * 10 ^ 9 := by native_decide
+private lemma dy6836Ub_nat_ok : 6836 * q64Scale ≤ 126101942487879 * 10 ^ 9 := by native_decide
 
 lemma dyPiLo4_lt_pi : dyPiLo4.toReal < Real.pi := by
   have h : dyPiLo4.toReal ≤ (3.1415 : ℝ) := by

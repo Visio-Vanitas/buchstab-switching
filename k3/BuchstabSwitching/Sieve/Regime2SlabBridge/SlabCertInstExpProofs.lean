@@ -2,6 +2,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSciProofs
 import BuchstabSwitching.External.NumericalConstants.ExplicitConstants
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
+set_option maxRecDepth 200000
+
 /-!
 # Division-Free Q64 `log`, `exp`, and Factorial Constants
 
@@ -11,7 +13,7 @@ Q64-Horner `expUbDyadic` / `expGeQ64`, `invFactUb`, and `sumPowDivFactUb`.
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 def ln2Lo64 : ℕ := 12786308645202649952
 def ln2Hi64 : ℕ := 12786308645202668399
@@ -43,7 +45,7 @@ def checkInv2OddPairs : ℕ → List (ℕ × ℕ) → Bool
     decide (2 * q64Scale ≤ cHi * (2 * j + 1)) &&
     checkInv2OddPairs (j + 1) rest
 
-lemma inv2OddPairs64_ok : checkInv2OddPairs 0 inv2OddPairs64 = true := by decide
+lemma inv2OddPairs64_ok : checkInv2OddPairs 0 inv2OddPairs64 = true := by native_decide
 
 def logLoopList64 (u2Lo u2Hi : ℕ) : List (ℕ × ℕ) → ℕ → ℕ → ℕ → ℕ → ℕ × ℕ
   | [], _, _, sLo, sHi => (sLo, sHi)
@@ -268,7 +270,7 @@ def log27000Lo : Dyadic := Dyadic.ofQ64 188223052931078346056
 def log27000Hi : Dyadic := Dyadic.ofQ64 188223052931078604594
 private def log27000W : LogWitness := ⟨14, 4513890722074972339⟩
 
-private lemma checkLog27000_ok : checkLogNat 27000 log27000W log27000Lo log27000Hi = true := by decide
+private lemma checkLog27000_ok : checkLogNat 27000 log27000W log27000Lo log27000Hi = true := by native_decide
 
 lemma log27000_bounds (consts : External.CertifiedConstants) :
     log27000Lo.toReal ≤ Real.log (27000 : ℝ) ∧ Real.log (27000 : ℝ) ≤ log27000Hi.toReal :=
@@ -284,7 +286,7 @@ private def checkInvSucc : ℕ → List ℕ → Bool
   | _, [] => true
   | j, c :: rest => decide (q64Scale ≤ c * (j + 1)) && checkInvSucc (j + 1) rest
 
-private lemma invSucc64Ub_ok : checkInvSucc 0 invSucc64Ub = true := by decide
+private lemma invSucc64Ub_ok : checkInvSucc 0 invSucc64Ub = true := by native_decide
 private lemma invSucc64Ub_len : invSucc64Ub.length = 12 := rfl
 
 private def expTaylorLoopQ64 (y64 : ℕ) : List ℕ → ℕ → ℕ → ℕ × ℕ
@@ -428,7 +430,7 @@ private def checkInv32Succ : ℕ → List ℕ → Bool
   | _, [] => true
   | j, c :: rest => decide (c * (32 * (j + 1)) ≤ q64Scale) && checkInv32Succ (j + 1) rest
 
-private lemma inv32Succ64Lb_ok : checkInv32Succ 0 inv32Succ64Lb = true := by decide
+private lemma inv32Succ64Lb_ok : checkInv32Succ 0 inv32Succ64Lb = true := by native_decide
 
 private def expGeLoopQ64 (x64 : ℕ) : List ℕ → ℕ → ℕ → ℕ
   | [], _, r => r
@@ -516,7 +518,7 @@ private def checkInvFact : ℕ → List ℕ → Bool
   | _, [] => true
   | j, c :: rest => decide (q64Scale ≤ c * j.factorial) && checkInvFact (j + 1) rest
 
-private lemma invFact64Ub_ok : checkInvFact 0 invFact64Ub = true := by decide
+private lemma invFact64Ub_ok : checkInvFact 0 invFact64Ub = true := by native_decide
 
 /-- Certified Q64 upper bound on `1 / j!` for `0 ≤ j < 16` (exact `decide` guarantee). -/
 def invFactUb (j : ℕ) : Dyadic := Dyadic.ofQ64 (invFact64Ub.getD j q64Scale)

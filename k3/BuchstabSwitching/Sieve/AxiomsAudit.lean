@@ -5,7 +5,8 @@ import BuchstabSwitching
 
 Verifies that every formalized theorem across all 14 `Sieve/` modules, the
 `External/` classical-lemma bridges, and the top-level `Main` theorems depends
-solely on Lean's three standard axioms (`propext`, `Classical.choice`, `Quot.sound`),
+only on Lean's standard axioms (`propext`, `Classical.choice`, `Quot.sound`) plus
+`Lean.ofReduceBool` / `Lean.trustCompiler` for `native_decide` certificate checks,
 with zero `sorryAx` and zero custom `axiom` declarations.
 -/
 

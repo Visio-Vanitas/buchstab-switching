@@ -5,6 +5,8 @@ import BuchstabSwitching.Sieve.OddSquarefreeBounds.ConstantBounds
 import BuchstabSwitching.Sieve.Regime3RayBridge.RayCertInstCJ
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Shared Regime `2c` `Dyadic` Helpers, `α₀` Bound, `J_odd`, & `jFullTerm1`
 
@@ -17,7 +19,7 @@ Provides:
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section ExtraDyadicHelpers
 
@@ -235,14 +237,14 @@ private lemma harmonic_eq_sum_range (n : ℕ) :
     rw [harmonic_succ, Rat.cast_add, Finset.sum_range_succ, ih, ← one_div]
     push_cast; rfl
 
-private lemma hc2c_0 : harmChunk2c 0 32 = 4058495195428 := by decide
-private lemma hc2c_1 : harmChunk2c 32 32 = 685395708257 := by decide
-private lemma hc2c_2 : harmChunk2c 64 32 = 402872243836 := by decide
-private lemma hc2c_3 : harmChunk2c 96 32 = 286383945022 := by decide
-private lemma hc2c_4 : harmChunk2c 128 32 = 222364132337 := by decide
-private lemma hc2c_5 : harmChunk2c 160 32 = 181801718088 := by decide
-private lemma hc2c_6 : harmChunk2c 192 32 = 153779255741 := by decide
-private lemma hc2c_7 : harmChunk2c 224 32 = 133252764007 := by decide
+private lemma hc2c_0 : harmChunk2c 0 32 = 4058495195428 := by native_decide
+private lemma hc2c_1 : harmChunk2c 32 32 = 685395708257 := by native_decide
+private lemma hc2c_2 : harmChunk2c 64 32 = 402872243836 := by native_decide
+private lemma hc2c_3 : harmChunk2c 96 32 = 286383945022 := by native_decide
+private lemma hc2c_4 : harmChunk2c 128 32 = 222364132337 := by native_decide
+private lemma hc2c_5 : harmChunk2c 160 32 = 181801718088 := by native_decide
+private lemma hc2c_6 : harmChunk2c 192 32 = 153779255741 := by native_decide
+private lemma hc2c_7 : harmChunk2c 224 32 = 133252764007 := by native_decide
 
 private lemma sum_Ico_split_256 :
     ∑ k ∈ Finset.Ico (0 : ℕ) 256, (1 : ℝ) / ((k : ℝ) + 1) =
@@ -307,11 +309,11 @@ private def a0LbDy : Dyadic := Dyadic.ofQ64 11717002900738832995
 def a0UbDy : Dyadic := Dyadic.ofQ64 11732129230879274828
 private def log10e12HiDy : Dyadic := Dyadic.ofQ64 509702391329038242312
 
-private lemma h0Lo_ok : 27932727089960614046 * 10 ^ 12 ≤ 1514236169719 * q64Scale := by decide
-private lemma h0Hi_ok : 1516136089708 * q64Scale ≤ 27967774427758222114 * 10 ^ 12 := by decide
-private lemma cjUb_ok : 8030531202875 * q64Scale ≤ 148137153875374043203 * 10 ^ 12 := by decide
-private lemma a0Lb_ok : 11717002900738832995 * 100000 ≤ 63518 * q64Scale := by decide
-private lemma a0Ub_ok : 636 * q64Scale ≤ 11732129230879274828 * 1000 := by decide
+private lemma h0Lo_ok : 27932727089960614046 * 10 ^ 12 ≤ 1514236169719 * q64Scale := by native_decide
+private lemma h0Hi_ok : 1516136089708 * q64Scale ≤ 27967774427758222114 * 10 ^ 12 := by native_decide
+private lemma cjUb_ok : 8030531202875 * q64Scale ≤ 148137153875374043203 * 10 ^ 12 := by native_decide
+private lemma a0Lb_ok : 11717002900738832995 * 100000 ≤ 63518 * q64Scale := by native_decide
+private lemma a0Ub_ok : 636 * q64Scale ≤ 11732129230879274828 * 1000 := by native_decide
 
 private lemma scaleS_eq_12 : (BuchstabSwitching.scaleS : ℝ) = (10 : ℝ) ^ 12 := by
   unfold BuchstabSwitching.scaleS; norm_num
@@ -361,7 +363,7 @@ lemma expNegUbDyadic_sound {t : Dyadic} {x : ℝ} (ht : t.toReal ≤ x) :
   set e64 := expGeQ64 t.toQ64Lb
   have he := expGeQ64_sound t.toReal_nonneg (Dyadic.toQ64Lb_le t)
   have he_pos_nat : 0 < e64 := by
-    have hq : 0 < q64Scale := by decide
+    have hq : 0 < q64Scale := by native_decide
     have hle : q64Scale ≤ e64 := by exact_mod_cast he.1
     omega
   have he_pos : (0 : ℝ) < (e64 : ℝ) := by exact_mod_cast he_pos_nat
@@ -461,7 +463,7 @@ def jsMertHiUbDyadic (logLo : Dyadic) : Dyadic :=
 
 private lemma log10_hi_ok :
     checkLogNat 10 ⟨3, 2049638230412172401⟩ Dyadic.zero (Dyadic.ofQ64 42475197918399907507) = true ∧
-    ((Dyadic.ofQ64 42475197918399907507).mulUb (Dyadic.ofNat 12)).blt log10e12HiDy = true := by decide
+    ((Dyadic.ofQ64 42475197918399907507).mulUb (Dyadic.ofNat 12)).blt log10e12HiDy = true := by native_decide
 
 private lemma exp_log10e12_gt (consts : External.CertifiedConstants) :
     (10 : ℝ) ^ 12 < Real.exp log10e12HiDy.toReal := by

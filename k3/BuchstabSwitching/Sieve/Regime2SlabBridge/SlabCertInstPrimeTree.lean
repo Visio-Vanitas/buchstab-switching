@@ -8,7 +8,7 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstPrimeTreeData
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 def checkPrimeLeafEntry (e : PrimeLeafEntry) : Bool :=
   decide (3 ≤ e.p) &&
@@ -74,10 +74,10 @@ def treeFlatten : OddPrimeTree → List PrimeLeafEntry
 
 set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 200000 in
-private lemma oddPrimeTree_ok : checkOddPrimeTree oddPrimeTree = true := by decide
+private lemma oddPrimeTree_ok : checkOddPrimeTree oddPrimeTree = true := by native_decide
 set_option maxHeartbeats 2000000 in
 set_option maxRecDepth 200000 in
-private lemma oddPrimeTree_primes_eq : (treeFlatten oddPrimeTree).map (·.p) = oddPrimesLt27000 := by decide
+private lemma oddPrimeTree_primes_eq : (treeFlatten oddPrimeTree).map (·.p) = oddPrimesLt27000 := by native_decide
 
 lemma checkPrimeLeafEntry_props {e : PrimeLeafEntry} (h : checkPrimeLeafEntry e = true) :
     3 ≤ e.p ∧

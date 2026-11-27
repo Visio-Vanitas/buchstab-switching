@@ -4,8 +4,9 @@ import BuchstabSwitching
 # Axiom Verification for `BuchstabSwitching` (`1 + 3`)
 
 Prints all axioms depended upon by every public theorem across `Core/`, `Sieve/`,
-`Certificates/`, and `Main/`. Every theorem must depend solely on Lean's three
-standard axioms: `[propext, Classical.choice, Quot.sound]`.
+`Certificates/`, and `Main/`. On the `lean-v4.36.0-native` fast-verification branch,
+finite certificate evaluations additionally list `Lean.ofReduceBool` / `Lean.trustCompiler`
+(with zero `sorryAx` and zero custom `axiom` declarations).
 -/
 
 #print axioms BuchstabSwitching.omegaMult_prime

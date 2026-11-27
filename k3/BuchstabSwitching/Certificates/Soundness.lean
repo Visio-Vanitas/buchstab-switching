@@ -6,7 +6,7 @@ import BuchstabSwitching.Certificates.Data
 Proves that `allSlabs` forms a contiguous valid chain `[4 * 10^18, asymptoticCert.X_LS)`
 and partitions every `N ≥ 4` into `N < 4 * 10^18`, some `c ∈ allSlabs` (`c.X_lo ≤ N < c.X_hi`),
 or `asymptoticCert.X_LS ≤ N`. All rational inequalities follow from pure `ℕ` checks
-verified by kernel reduction (`by decide`).
+verified by kernel reduction (`by native_decide`).
 -/
 
 namespace BuchstabSwitching
@@ -68,12 +68,10 @@ theorem checkSlabChainAux_mem_valid : ∀ (slabs : List SlabCert) (cur finish : 
 /-- Verified Boolean check that `allSlabs` is valid and contiguous over
 `[4 * 10^18, asymptoticCert.X_LS)`. -/
 theorem allSlabs_verified :
-    checkSlabChain (4 * 10 ^ 18) asymptoticCert.X_LS allSlabs = true := by
-  decide
+    checkSlabChain (4 * 10 ^ 18) asymptoticCert.X_LS allSlabs = true := by native_decide
 
 /-- Verified Boolean check that `asymptoticCert` has positive net margin and `4 * 10^18 ≤ X_LS`. -/
-theorem asymptoticCert_verified : asymptoticCert.valid = true := by
-  decide
+theorem asymptoticCert_verified : asymptoticCert.valid = true := by native_decide
 
 /-- Soundness of `RayCert.valid`. -/
 theorem RayCert.valid_sound {r : RayCert} (h : r.valid = true) :

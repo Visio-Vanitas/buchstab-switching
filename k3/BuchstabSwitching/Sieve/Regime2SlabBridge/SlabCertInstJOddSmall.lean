@@ -14,7 +14,7 @@ via the complete table of all `415` odd squarefree integers `1 ≤ d ≤ 1024`, 
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section OddSqf1024Table
 
@@ -151,15 +151,15 @@ private def checkSqfEntry (e : ℕ × List ℕ) : Bool :=
   decide (e.2.prod = e.1) && checkChainLt e.2 &&
   e.2.all (fun p => decide (3 ≤ p) && decide (p < 1024) && decide (p ∈ primesLt1024))
 
-private lemma oddSqfChunk0_ok : oddSqfChunk0.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk1_ok : oddSqfChunk1.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk2_ok : oddSqfChunk2.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk3_ok : oddSqfChunk3.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk4_ok : oddSqfChunk4.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk5_ok : oddSqfChunk5.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk6_ok : oddSqfChunk6.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk7_ok : oddSqfChunk7.all checkSqfEntry = true := by decide
-private lemma oddSqfChunk8_ok : oddSqfChunk8.all checkSqfEntry = true := by decide
+private lemma oddSqfChunk0_ok : oddSqfChunk0.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk1_ok : oddSqfChunk1.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk2_ok : oddSqfChunk2.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk3_ok : oddSqfChunk3.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk4_ok : oddSqfChunk4.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk5_ok : oddSqfChunk5.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk6_ok : oddSqfChunk6.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk7_ok : oddSqfChunk7.all checkSqfEntry = true := by native_decide
+private lemma oddSqfChunk8_ok : oddSqfChunk8.all checkSqfEntry = true := by native_decide
 
 private lemma oddSqfData_all_ok : oddSqf1024Data.all checkSqfEntry = true := by
   simp only [oddSqf1024Data, List.all_append, oddSqfChunk0_ok, oddSqfChunk1_ok, oddSqfChunk2_ok,
@@ -180,33 +180,33 @@ private lemma pairwise_step {xs ys : List ℕ} {a b : ℕ} (hab : a ≤ b)
     intro y hy
     exact decide_eq_true (hab.trans (decide_eq_true_eq.mp (List.all_eq_true.mp hyb y hy)))
 
-private lemma fst_lt_0 : checkChainLt (oddSqfChunk0.map Prod.fst) = true := by decide
-private lemma fst_lt_1 : checkChainLt (oddSqfChunk1.map Prod.fst) = true := by decide
-private lemma fst_lt_2 : checkChainLt (oddSqfChunk2.map Prod.fst) = true := by decide
-private lemma fst_lt_3 : checkChainLt (oddSqfChunk3.map Prod.fst) = true := by decide
-private lemma fst_lt_4 : checkChainLt (oddSqfChunk4.map Prod.fst) = true := by decide
-private lemma fst_lt_5 : checkChainLt (oddSqfChunk5.map Prod.fst) = true := by decide
-private lemma fst_lt_6 : checkChainLt (oddSqfChunk6.map Prod.fst) = true := by decide
-private lemma fst_lt_7 : checkChainLt (oddSqfChunk7.map Prod.fst) = true := by decide
-private lemma fst_lt_8 : checkChainLt (oddSqfChunk8.map Prod.fst) = true := by decide
+private lemma fst_lt_0 : checkChainLt (oddSqfChunk0.map Prod.fst) = true := by native_decide
+private lemma fst_lt_1 : checkChainLt (oddSqfChunk1.map Prod.fst) = true := by native_decide
+private lemma fst_lt_2 : checkChainLt (oddSqfChunk2.map Prod.fst) = true := by native_decide
+private lemma fst_lt_3 : checkChainLt (oddSqfChunk3.map Prod.fst) = true := by native_decide
+private lemma fst_lt_4 : checkChainLt (oddSqfChunk4.map Prod.fst) = true := by native_decide
+private lemma fst_lt_5 : checkChainLt (oddSqfChunk5.map Prod.fst) = true := by native_decide
+private lemma fst_lt_6 : checkChainLt (oddSqfChunk6.map Prod.fst) = true := by native_decide
+private lemma fst_lt_7 : checkChainLt (oddSqfChunk7.map Prod.fst) = true := by native_decide
+private lemma fst_lt_8 : checkChainLt (oddSqfChunk8.map Prod.fst) = true := by native_decide
 
-private lemma bnd_0l : (oddSqfChunk0.map Prod.fst).all (0 ≤ ·) = true := by decide
-private lemma bnd_0u : (oddSqfChunk0.map Prod.fst).all (· < 120) = true := by decide
-private lemma bnd_1l : (oddSqfChunk1.map Prod.fst).all (120 ≤ ·) = true := by decide
-private lemma bnd_1u : (oddSqfChunk1.map Prod.fst).all (· < 245) = true := by decide
-private lemma bnd_2l : (oddSqfChunk2.map Prod.fst).all (245 ≤ ·) = true := by decide
-private lemma bnd_2u : (oddSqfChunk2.map Prod.fst).all (· < 372) = true := by decide
-private lemma bnd_3l : (oddSqfChunk3.map Prod.fst).all (372 ≤ ·) = true := by decide
-private lemma bnd_3u : (oddSqfChunk3.map Prod.fst).all (· < 490) = true := by decide
-private lemma bnd_4l : (oddSqfChunk4.map Prod.fst).all (490 ≤ ·) = true := by decide
-private lemma bnd_4u : (oddSqfChunk4.map Prod.fst).all (· < 616) = true := by decide
-private lemma bnd_5l : (oddSqfChunk5.map Prod.fst).all (616 ≤ ·) = true := by decide
-private lemma bnd_5u : (oddSqfChunk5.map Prod.fst).all (· < 738) = true := by decide
-private lemma bnd_6l : (oddSqfChunk6.map Prod.fst).all (738 ≤ ·) = true := by decide
-private lemma bnd_6u : (oddSqfChunk6.map Prod.fst).all (· < 864) = true := by decide
-private lemma bnd_7l : (oddSqfChunk7.map Prod.fst).all (864 ≤ ·) = true := by decide
-private lemma bnd_7u : (oddSqfChunk7.map Prod.fst).all (· < 990) = true := by decide
-private lemma bnd_8l : (oddSqfChunk8.map Prod.fst).all (990 ≤ ·) = true := by decide
+private lemma bnd_0l : (oddSqfChunk0.map Prod.fst).all (0 ≤ ·) = true := by native_decide
+private lemma bnd_0u : (oddSqfChunk0.map Prod.fst).all (· < 120) = true := by native_decide
+private lemma bnd_1l : (oddSqfChunk1.map Prod.fst).all (120 ≤ ·) = true := by native_decide
+private lemma bnd_1u : (oddSqfChunk1.map Prod.fst).all (· < 245) = true := by native_decide
+private lemma bnd_2l : (oddSqfChunk2.map Prod.fst).all (245 ≤ ·) = true := by native_decide
+private lemma bnd_2u : (oddSqfChunk2.map Prod.fst).all (· < 372) = true := by native_decide
+private lemma bnd_3l : (oddSqfChunk3.map Prod.fst).all (372 ≤ ·) = true := by native_decide
+private lemma bnd_3u : (oddSqfChunk3.map Prod.fst).all (· < 490) = true := by native_decide
+private lemma bnd_4l : (oddSqfChunk4.map Prod.fst).all (490 ≤ ·) = true := by native_decide
+private lemma bnd_4u : (oddSqfChunk4.map Prod.fst).all (· < 616) = true := by native_decide
+private lemma bnd_5l : (oddSqfChunk5.map Prod.fst).all (616 ≤ ·) = true := by native_decide
+private lemma bnd_5u : (oddSqfChunk5.map Prod.fst).all (· < 738) = true := by native_decide
+private lemma bnd_6l : (oddSqfChunk6.map Prod.fst).all (738 ≤ ·) = true := by native_decide
+private lemma bnd_6u : (oddSqfChunk6.map Prod.fst).all (· < 864) = true := by native_decide
+private lemma bnd_7l : (oddSqfChunk7.map Prod.fst).all (864 ≤ ·) = true := by native_decide
+private lemma bnd_7u : (oddSqfChunk7.map Prod.fst).all (· < 990) = true := by native_decide
+private lemma bnd_8l : (oddSqfChunk8.map Prod.fst).all (990 ≤ ·) = true := by native_decide
 
 private lemma oddSqfData_fst_pairwise_lt : (oddSqf1024Data.map Prod.fst).Pairwise (· < ·) := by
   have p78 := pairwise_step (by norm_num) (checkChainLt_sound _ fst_lt_7) (checkChainLt_sound _ fst_lt_8) bnd_7l bnd_7u bnd_8l
@@ -226,23 +226,23 @@ private def covHalf (lo n : ℕ) (ch : List (ℕ × List ℕ)) : Bool :=
     let d := lo + 2 * j
     ch.any (fun e => e.1 == d) || smallSqPrimes.any (fun p => d % (p * p) == 0)
 
-private lemma covH0a : covHalf 1 30 oddSqfChunk0 = true := by decide
-private lemma covH0b : covHalf 61 30 oddSqfChunk0 = true := by decide
-private lemma covH1a : covHalf 121 31 oddSqfChunk1 = true := by decide
-private lemma covH1b : covHalf 183 31 oddSqfChunk1 = true := by decide
-private lemma covH2a : covHalf 245 32 oddSqfChunk2 = true := by decide
-private lemma covH2b : covHalf 309 32 oddSqfChunk2 = true := by decide
-private lemma covH3a : covHalf 373 29 oddSqfChunk3 = true := by decide
-private lemma covH3b : covHalf 431 30 oddSqfChunk3 = true := by decide
-private lemma covH4a : covHalf 491 31 oddSqfChunk4 = true := by decide
-private lemma covH4b : covHalf 553 32 oddSqfChunk4 = true := by decide
-private lemma covH5a : covHalf 617 30 oddSqfChunk5 = true := by decide
-private lemma covH5b : covHalf 677 31 oddSqfChunk5 = true := by decide
-private lemma covH6a : covHalf 739 31 oddSqfChunk6 = true := by decide
-private lemma covH6b : covHalf 801 32 oddSqfChunk6 = true := by decide
-private lemma covH7a : covHalf 865 31 oddSqfChunk7 = true := by decide
-private lemma covH7b : covHalf 927 32 oddSqfChunk7 = true := by decide
-private lemma covH8  : covHalf 991 17 oddSqfChunk8 = true := by decide
+private lemma covH0a : covHalf 1 30 oddSqfChunk0 = true := by native_decide
+private lemma covH0b : covHalf 61 30 oddSqfChunk0 = true := by native_decide
+private lemma covH1a : covHalf 121 31 oddSqfChunk1 = true := by native_decide
+private lemma covH1b : covHalf 183 31 oddSqfChunk1 = true := by native_decide
+private lemma covH2a : covHalf 245 32 oddSqfChunk2 = true := by native_decide
+private lemma covH2b : covHalf 309 32 oddSqfChunk2 = true := by native_decide
+private lemma covH3a : covHalf 373 29 oddSqfChunk3 = true := by native_decide
+private lemma covH3b : covHalf 431 30 oddSqfChunk3 = true := by native_decide
+private lemma covH4a : covHalf 491 31 oddSqfChunk4 = true := by native_decide
+private lemma covH4b : covHalf 553 32 oddSqfChunk4 = true := by native_decide
+private lemma covH5a : covHalf 617 30 oddSqfChunk5 = true := by native_decide
+private lemma covH5b : covHalf 677 31 oddSqfChunk5 = true := by native_decide
+private lemma covH6a : covHalf 739 31 oddSqfChunk6 = true := by native_decide
+private lemma covH6b : covHalf 801 32 oddSqfChunk6 = true := by native_decide
+private lemma covH7a : covHalf 865 31 oddSqfChunk7 = true := by native_decide
+private lemma covH7b : covHalf 927 32 oddSqfChunk7 = true := by native_decide
+private lemma covH8  : covHalf 991 17 oddSqfChunk8 = true := by native_decide
 
 private lemma smallSqPrimes_ge3 : ∀ p ∈ smallSqPrimes, 3 ≤ p := by
   intro p hp; simp only [smallSqPrimes, List.mem_cons, List.not_mem_nil, or_false] at hp; omega
@@ -435,7 +435,7 @@ private def minDyadic (a b : Dyadic) : Dyadic := if a.ble b then a else b
 private lemma minDyadic_sound {a b : Dyadic} {x : ℝ} (ha : x ≤ a.toReal) (hb : x ≤ b.toReal) :
     x ≤ (minDyadic a b).toReal := by unfold minDyadic; split_ifs; exacts [ha, hb]
 
-private lemma ln2Lo64_nat_ok : ln2Lo64 * 10 ^ 15 ≤ 693147180559945 * q64Scale := by decide
+private lemma ln2Lo64_nat_ok : ln2Lo64 * 10 ^ 15 ≤ 693147180559945 * q64Scale := by native_decide
 
 private lemma pow2_log_lb (consts : External.CertifiedConstants) (k : ℕ) :
     (Dyadic.ofQ64 (k * ln2Lo64)).toReal ≤ Real.log ((2 ^ k : ℕ) : ℝ) := by
@@ -483,7 +483,7 @@ set_option maxRecDepth 200000 in
 private lemma jOddStepTableFast_eq : jOddStepTableFast = jOddStepTable := by
   simp only [jOddStepTable, jOddStepUb_eq_chunks]; decide
 
-private lemma jOddStepK_ok : jOddStepK.all (fun k => decide (2 ^ k ≤ 1024)) = true := by decide
+private lemma jOddStepK_ok : jOddStepK.all (fun k => decide (2 ^ k ≤ 1024)) = true := by native_decide
 
 /-- Staircase minimum of `jOddStepUb (2^k)` over the first matching `logHi ≤ lmLo(2^k)` and `asymUb`. -/
 def jOddStepMin (logHi asymUb : Dyadic) : Dyadic :=

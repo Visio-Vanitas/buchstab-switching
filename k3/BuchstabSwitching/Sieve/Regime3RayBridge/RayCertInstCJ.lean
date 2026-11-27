@@ -1,6 +1,8 @@
 import BuchstabSwitching.Sieve.Regime3RayBridge.RayCertInstH0
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified Unconditional Upper Bound on `H_quarter` and `C_J`
 
@@ -10,7 +12,7 @@ via `M₀ = 400` truncation (`RayCertInstH0.oddPrimes400Data`) and odd-integer t
 
 namespace BuchstabSwitching
 
-noncomputable section
+section
 
 section RayCertCJ
 
@@ -24,10 +26,10 @@ private lemma prodHqIv_append (xs₁ xs₂ : List (ℕ × ℕ × ℕ)) (hi : ℕ
     prodHqIv (xs₁ ++ xs₂) hi = prodHqIv xs₂ (prodHqIv xs₁ hi) := by
   simp [prodHqIv, List.foldl_append]
 
-private lemma prodHq_c0 : prodHqIv oddPrimes400DataC0 scaleS = 5060109186177 := by decide
-private lemma prodHq_c1 : prodHqIv oddPrimes400DataC1 5060109186177 = 5191015527871 := by decide
-private lemma prodHq_c2 : prodHqIv oddPrimes400DataC2 5191015527871 = 5236661307771 := by decide
-private lemma prodHq_c3 : prodHqIv oddPrimes400DataC3 5236661307771 = 5257275723915 := by decide
+private lemma prodHq_c0 : prodHqIv oddPrimes400DataC0 scaleS = 5060109186177 := by native_decide
+private lemma prodHq_c1 : prodHqIv oddPrimes400DataC1 5060109186177 = 5191015527871 := by native_decide
+private lemma prodHq_c2 : prodHqIv oddPrimes400DataC2 5191015527871 = 5236661307771 := by native_decide
+private lemma prodHq_c3 : prodHqIv oddPrimes400DataC3 5236661307771 = 5257275723915 := by native_decide
 
 private lemma prodHqIv_sound (xs : List (ℕ × ℕ × ℕ))
     (hxs : ∀ x ∈ xs, 3 ≤ x.1 ∧ x.1 * 1000 ^ 4 ≤ x.2.1 ^ 4 ∧ x.1 * 1000 ^ 2 ≤ x.2.2 ^ 2) :
@@ -191,7 +193,7 @@ theorem H_quarter_le_cert :
     intro b hb
     simp only [S_range, Finset.mem_filter, Finset.mem_range, B_cubefree, Finset.mem_Icc] at hb ⊢
     rcases hb with ⟨hbM, hb_odd, hb_fac⟩
-    have hb0 : b ≠ 0 := by intro h0; subst h0; exact absurd hb_odd (by decide)
+    have hb0 : b ≠ 0 := by intro h0; subst h0; exact absurd hb_odd (by native_decide)
     have hb_pf : b.primeFactors ⊆ P := by
       intro p hp
       have hp_prime := Nat.prime_of_mem_primeFactors hp

@@ -1,6 +1,8 @@
 import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSound2cHelpers
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Kernel-Verified Regime `2c` `J_full` Lower Bound (`checkJFullLb2c`)
 
@@ -11,7 +13,7 @@ for `1 ≤ xiLb < z^3` (`3 ≤ z`) via `J_full_eq_J_odd_of_lt`, `J_full_mono_xi`
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section JFullDyadicCert
 

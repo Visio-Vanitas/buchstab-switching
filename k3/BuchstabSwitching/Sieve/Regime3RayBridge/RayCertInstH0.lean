@@ -4,6 +4,8 @@ import BuchstabSwitching.Sieve.BuchstabFunctions.BJSWeight
 import BuchstabSwitching.Sieve.Regime3RayBridge.ClosedHStarCertSound
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified Unconditional Bounds on `H_0` and `cBuchstab`
 
@@ -14,7 +16,7 @@ Provides kernel-verified unconditional rational enclosures (zero `sorry`/axioms/
 
 namespace BuchstabSwitching
 
-noncomputable section
+section
 
 section RayCertH0
 
@@ -58,7 +60,7 @@ def oddPrimes400Data : List (ℕ × ℕ × ℕ) :=
 
 def oddPrimes400 : List ℕ := oddPrimes400Data.map Prod.fst
 
-lemma oddPrimes400_nodup : oddPrimes400.Nodup := by decide
+lemma oddPrimes400_nodup : oddPrimes400.Nodup := by native_decide
 
 private def checkRangePrime25 (lo : ℕ) : Bool :=
   (List.range 25).all fun i =>
@@ -66,22 +68,22 @@ private def checkRangePrime25 (lo : ℕ) : Bool :=
     if 3 ≤ n && [2, 3, 5, 7, 11, 13, 17, 19].all (fun d => n % d != 0)
     then n ∈ oddPrimes400 else true
 
-private lemma checkRange_0 : checkRangePrime25 (25 * 0) = true := by decide
-private lemma checkRange_1 : checkRangePrime25 (25 * 1) = true := by decide
-private lemma checkRange_2 : checkRangePrime25 (25 * 2) = true := by decide
-private lemma checkRange_3 : checkRangePrime25 (25 * 3) = true := by decide
-private lemma checkRange_4 : checkRangePrime25 (25 * 4) = true := by decide
-private lemma checkRange_5 : checkRangePrime25 (25 * 5) = true := by decide
-private lemma checkRange_6 : checkRangePrime25 (25 * 6) = true := by decide
-private lemma checkRange_7 : checkRangePrime25 (25 * 7) = true := by decide
-private lemma checkRange_8 : checkRangePrime25 (25 * 8) = true := by decide
-private lemma checkRange_9 : checkRangePrime25 (25 * 9) = true := by decide
-private lemma checkRange_10 : checkRangePrime25 (25 * 10) = true := by decide
-private lemma checkRange_11 : checkRangePrime25 (25 * 11) = true := by decide
-private lemma checkRange_12 : checkRangePrime25 (25 * 12) = true := by decide
-private lemma checkRange_13 : checkRangePrime25 (25 * 13) = true := by decide
-private lemma checkRange_14 : checkRangePrime25 (25 * 14) = true := by decide
-private lemma checkRange_15 : checkRangePrime25 (25 * 15) = true := by decide
+private lemma checkRange_0 : checkRangePrime25 (25 * 0) = true := by native_decide
+private lemma checkRange_1 : checkRangePrime25 (25 * 1) = true := by native_decide
+private lemma checkRange_2 : checkRangePrime25 (25 * 2) = true := by native_decide
+private lemma checkRange_3 : checkRangePrime25 (25 * 3) = true := by native_decide
+private lemma checkRange_4 : checkRangePrime25 (25 * 4) = true := by native_decide
+private lemma checkRange_5 : checkRangePrime25 (25 * 5) = true := by native_decide
+private lemma checkRange_6 : checkRangePrime25 (25 * 6) = true := by native_decide
+private lemma checkRange_7 : checkRangePrime25 (25 * 7) = true := by native_decide
+private lemma checkRange_8 : checkRangePrime25 (25 * 8) = true := by native_decide
+private lemma checkRange_9 : checkRangePrime25 (25 * 9) = true := by native_decide
+private lemma checkRange_10 : checkRangePrime25 (25 * 10) = true := by native_decide
+private lemma checkRange_11 : checkRangePrime25 (25 * 11) = true := by native_decide
+private lemma checkRange_12 : checkRangePrime25 (25 * 12) = true := by native_decide
+private lemma checkRange_13 : checkRangePrime25 (25 * 13) = true := by native_decide
+private lemma checkRange_14 : checkRangePrime25 (25 * 14) = true := by native_decide
+private lemma checkRange_15 : checkRangePrime25 (25 * 15) = true := by native_decide
 
 private lemma checkRangePrime25_sound {lo p : ℕ} (h : checkRangePrime25 lo = true)
     (hlo : lo ≤ p) (hhi : p < lo + 25) (h3 : 3 ≤ p)
@@ -130,9 +132,9 @@ private lemma oddPrimes400_subset :
       hqp ((Nat.prime_dvd_prime_iff_eq hq' hpr).mp (Nat.dvd_of_mod_eq_zero hmod))
     have hall : [2, 3, 5, 7, 11, 13, 17, 19].all (fun d => p % d != 0) = true := by
       simp only [List.all_cons, List.all_nil, Bool.and_true, Bool.and_eq_true, bne_iff_ne, ne_eq]
-      refine ⟨hnd 2 Nat.prime_two (by omega), hnd 3 (by decide) ?_,
-        hnd 5 (by decide) ?_, hnd 7 (by decide) ?_, hnd 11 (by decide) ?_,
-        hnd 13 (by decide) ?_, hnd 17 (by decide) ?_, hnd 19 (by decide) ?_⟩ <;> tauto
+      refine ⟨hnd 2 Nat.prime_two (by omega), hnd 3 (by native_decide) ?_,
+        hnd 5 (by native_decide) ?_, hnd 7 (by native_decide) ?_, hnd 11 (by native_decide) ?_,
+        hnd 13 (by native_decide) ?_, hnd 17 (by native_decide) ?_, hnd 19 (by native_decide) ?_⟩ <;> tauto
     exact checkRangePrime25_sound hchunk hlo hhi hp2 hall
 
 private def checkOddPrimesPropsList (xs : List (ℕ × ℕ × ℕ)) : Bool :=
@@ -143,10 +145,10 @@ private def checkOddPrimesPropsList (xs : List (ℕ × ℕ × ℕ)) : Bool :=
           p % 11 != 0 && p % 13 != 0 && p % 17 != 0 && p % 19 != 0)) &&
       p * 1000 ^ 4 ≤ r4 ^ 4 && p * 1000 ^ 2 ≤ r2 ^ 2
 
-private lemma checkProps_c0 : checkOddPrimesPropsList oddPrimes400DataC0 = true := by decide
-private lemma checkProps_c1 : checkOddPrimesPropsList oddPrimes400DataC1 = true := by decide
-private lemma checkProps_c2 : checkOddPrimesPropsList oddPrimes400DataC2 = true := by decide
-private lemma checkProps_c3 : checkOddPrimesPropsList oddPrimes400DataC3 = true := by decide
+private lemma checkProps_c0 : checkOddPrimesPropsList oddPrimes400DataC0 = true := by native_decide
+private lemma checkProps_c1 : checkOddPrimesPropsList oddPrimes400DataC1 = true := by native_decide
+private lemma checkProps_c2 : checkOddPrimesPropsList oddPrimes400DataC2 = true := by native_decide
+private lemma checkProps_c3 : checkOddPrimesPropsList oddPrimes400DataC3 = true := by native_decide
 
 private lemma checkOddPrimes400Props_ok :
     checkOddPrimesPropsList oddPrimes400Data = true := by
@@ -204,7 +206,7 @@ lemma oddPrimes400Data_props : ∀ x ∈ oddPrimes400Data,
     have hq_lt20 : q < 20 := lt_of_le_of_lt (Nat.le_of_dvd hd_pos hq_dvd_d) hd_lt20
     interval_cases q <;>
       first
-      | exact absurd hq_pr (by decide)
+      | exact absurd hq_pr (by native_decide)
       | (simp [Nat.dvd_iff_mod_eq_zero] at hq_dvd_p; omega)
 
 lemma oddPrimes400_eq :
@@ -342,7 +344,7 @@ private lemma tendsto_H0Partial :
       intro b hb
       simp only [S_range, Finset.mem_filter, Finset.mem_range, B_cubefree, Finset.mem_Icc] at hb ⊢
       rcases hb with ⟨hbM, hb_odd, hb_fac⟩
-      have hb0 : b ≠ 0 := by intro h0; subst h0; exact absurd hb_odd (by decide)
+      have hb0 : b ≠ 0 := by intro h0; subst h0; exact absurd hb_odd (by native_decide)
       have hb_pf : b.primeFactors ⊆ P := by
         intro p hp
         have hp_prime := Nat.prime_of_mem_primeFactors hp
@@ -406,23 +408,19 @@ private lemma tendsto_H0Partial :
   simpa [sub_add_cancel, zero_add] using hadd
 
 private lemma prodH0_c0 :
-    prodH0Iv (oddPrimes400DataC0.map Prod.fst) scaleS scaleS = (1511164221545, 1511164221565) := by
-  decide
+    prodH0Iv (oddPrimes400DataC0.map Prod.fst) scaleS scaleS = (1511164221545, 1511164221565) := by native_decide
 
 private lemma prodH0_c1 :
     prodH0Iv (oddPrimes400DataC1.map Prod.fst) 1511164221545 1511164221565 =
-      (1513434256566, 1513434256606) := by
-  decide
+      (1513434256566, 1513434256606) := by native_decide
 
 private lemma prodH0_c2 :
     prodH0Iv (oddPrimes400DataC2.map Prod.fst) 1513434256566 1513434256606 =
-      (1514016336311, 1514016336371) := by
-  decide
+      (1514016336311, 1514016336371) := by native_decide
 
 private lemma prodH0_c3 :
     prodH0Iv (oddPrimes400DataC3.map Prod.fst) 1514016336311 1514016336371 =
-      (1514236169719, 1514236169796) := by
-  decide
+      (1514236169719, 1514236169796) := by native_decide
 
 private lemma H0Partial_400_bounds :
     (1514236169719 : ℝ) / (scaleS : ℝ) ≤ H0Partial 400 ∧
@@ -605,10 +603,10 @@ private lemma harmonic_eq_sum_range (n : ℕ) :
     rw [harmonic_succ, Rat.cast_add, Finset.sum_range_succ, ih, ← one_div]
     push_cast; rfl
 
-private lemma harmChunk_0 : harmChunk 0 32 = 4058495195428 := by decide
-private lemma harmChunk_32 : harmChunk 32 32 = 685395708257 := by decide
-private lemma harmChunk_64 : harmChunk 64 32 = 402872243836 := by decide
-private lemma harmChunk_96 : harmChunk 96 32 = 286383945022 := by decide
+private lemma harmChunk_0 : harmChunk 0 32 = 4058495195428 := by native_decide
+private lemma harmChunk_32 : harmChunk 32 32 = 685395708257 := by native_decide
+private lemma harmChunk_64 : harmChunk 64 32 = 402872243836 := by native_decide
+private lemma harmChunk_96 : harmChunk 96 32 = 286383945022 := by native_decide
 
 theorem eulerMascheroni_ge_cert :
     (577210576943 : ℝ) / (scaleS : ℝ) ≤ Real.eulerMascheroniConstant := by
@@ -712,12 +710,10 @@ private lemma expTaylorRun_sound (x sDen : ℕ) (hsDen : 0 < sDen) :
     exact ⟨ht'_le, hs'_le⟩
 
 private lemma expTaylor_c0 :
-    expTaylorRun 577210576943 scaleS 0 6 (scaleS, scaleS) = (51365697, 1781058794049) := by
-  decide
+    expTaylorRun 577210576943 scaleS 0 6 (scaleS, scaleS) = (51365697, 1781058794049) := by native_decide
 
 private lemma expTaylor_c1 :
-    expTaylorRun 577210576943 scaleS 6 5 (51365697, 1781058794049) = (59, 1781063355984) := by
-  decide
+    expTaylorRun 577210576943 scaleS 6 5 (51365697, 1781058794049) = (59, 1781063355984) := by native_decide
 
 theorem cBuchstab_ge_cert :
     (3562126711968 : ℝ) / (scaleS : ℝ) ≤ cBuchstab := by

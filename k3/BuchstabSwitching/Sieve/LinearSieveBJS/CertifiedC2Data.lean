@@ -313,18 +313,18 @@ def uTab10 : List ℕ :=
   52, 38, 27, 19, 14, 10, 7, 5, 4, 3, 2, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
 
-lemma buildRList_eq : buildRList (gridG * 12) = rTab := by decide
-lemma uInit_eq : uInit = uTab1 := by decide
-lemma uNext2_eq : uNext 2 uTab1 = uTab2 := by decide
-lemma uNext3_eq : uNext 3 uTab2 = uTab3 := by decide
-lemma uNext4_eq : uNext 4 uTab3 = uTab4 := by decide
-lemma uNext5_eq : uNext 5 uTab4 = uTab5 := by decide
-lemma uNext6_eq : uNext 6 uTab5 = uTab6 := by decide
-lemma uNext7_eq : uNext 7 uTab6 = uTab7 := by decide
-lemma uNext8_eq : uNext 8 uTab7 = uTab8 := by decide
-lemma uNext9_eq : uNext 9 uTab8 = uTab9 := by decide
+lemma buildRList_eq : buildRList (gridG * 12) = rTab := by native_decide
+lemma uInit_eq : uInit = uTab1 := by native_decide
+lemma uNext2_eq : uNext 2 uTab1 = uTab2 := by native_decide
+lemma uNext3_eq : uNext 3 uTab2 = uTab3 := by native_decide
+lemma uNext4_eq : uNext 4 uTab3 = uTab4 := by native_decide
+lemma uNext5_eq : uNext 5 uTab4 = uTab5 := by native_decide
+lemma uNext6_eq : uNext 6 uTab5 = uTab6 := by native_decide
+lemma uNext7_eq : uNext 7 uTab6 = uTab7 := by native_decide
+lemma uNext8_eq : uNext 8 uTab7 = uTab8 := by native_decide
+lemma uNext9_eq : uNext 9 uTab8 = uTab9 := by native_decide
 set_option maxRecDepth 1024 in
-lemma uNext10_eq : uNext 10 uTab9 = uTab10 := by decide
+lemma uNext10_eq : uNext 10 uTab9 = uTab10 := by native_decide
 
 def mCertTable : List ℕ :=
   [361716426818, 165927998678, 110600779825, 80134122278, 56104806384,
@@ -354,31 +354,31 @@ lemma mCertList_eq : mCertList = mCertTable := by
   rw [buildRList_eq, uInit_eq]
   have h10 : mCertGo rTab 1 9 uTab9 = [17018312835] := by
     dsimp only [mCertGo]; rw [uNext10_eq]
-    rw [show (if (9 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by decide, mCert_10_eq]
+    rw [show (if (9 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by native_decide, mCert_10_eq]
   have h9 : mCertGo rTab 2 8 uTab8 = 23960066005 :: mCertGo rTab 1 9 uTab9 := by
     dsimp only [mCertGo]; rw [uNext9_eq]
-    rw [show (if (8 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by decide, mCert_9_eq]
+    rw [show (if (8 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by native_decide, mCert_9_eq]
   have h8 : mCertGo rTab 3 7 uTab7 = 30617153906 :: mCertGo rTab 2 8 uTab8 := by
     dsimp only [mCertGo]; rw [uNext8_eq]
-    rw [show (if (7 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by decide, mCert_8_eq]
+    rw [show (if (7 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by native_decide, mCert_8_eq]
   have h7 : mCertGo rTab 4 6 uTab6 = 43240791903 :: mCertGo rTab 3 7 uTab7 := by
     dsimp only [mCertGo]; rw [uNext7_eq]
-    rw [show (if (6 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by decide, mCert_7_eq]
+    rw [show (if (6 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by native_decide, mCert_7_eq]
   have h6 : mCertGo rTab 5 5 uTab5 = 56104806384 :: mCertGo rTab 4 6 uTab6 := by
     dsimp only [mCertGo]; rw [uNext6_eq]
-    rw [show (if (5 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by decide, mCert_6_eq]
+    rw [show (if (5 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by native_decide, mCert_6_eq]
   have h5 : mCertGo rTab 6 4 uTab4 = 80134122278 :: mCertGo rTab 5 5 uTab5 := by
     dsimp only [mCertGo]; rw [uNext5_eq]
-    rw [show (if (4 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by decide, mCert_5_eq]
+    rw [show (if (4 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by native_decide, mCert_5_eq]
   have h4 : mCertGo rTab 7 3 uTab3 = 110600779825 :: mCertGo rTab 6 4 uTab4 := by
     dsimp only [mCertGo]; rw [uNext4_eq]
-    rw [show (if (3 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by decide, mCert_4_eq]
+    rw [show (if (3 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by native_decide, mCert_4_eq]
   have h3 : mCertGo rTab 8 2 uTab2 = 165927998678 :: mCertGo rTab 7 3 uTab3 := by
     dsimp only [mCertGo]; rw [uNext3_eq]
-    rw [show (if (2 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by decide, mCert_3_eq]
+    rw [show (if (2 + 1) % 2 = 0 then gridG + 1 else 1) = 1 by native_decide, mCert_3_eq]
   have h2 : mCertGo rTab 9 1 uTab1 = 361716426818 :: mCertGo rTab 8 2 uTab2 := by
     dsimp only [mCertGo]; rw [uNext2_eq]
-    rw [show (if (1 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by decide, mCert_2_eq]
+    rw [show (if (1 + 1) % 2 = 0 then gridG + 1 else 1) = gridG + 1 by native_decide, mCert_2_eq]
   rw [h2, h3, h4, h5, h6, h7, h8, h9, h10]
   rfl
 
@@ -667,8 +667,7 @@ lemma tauTab_total_check :
 
 lemma jPow300_check :
     18418926643 * (960700000 ^ 150) ^ 2 * scaleT ≤
-      3750000000 * (jUbNum - 982521028) * (982521027 ^ 150) ^ 2 := by
-  decide
+      3750000000 * (jUbNum - 982521028) * (982521027 ^ 150) ^ 2 := by native_decide
 end CertifiedC2Data
 
 end BuchstabSwitching

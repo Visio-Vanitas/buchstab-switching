@@ -4,6 +4,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.BonferroniHelpers
 import BuchstabSwitching.External.MultiplicativeBounds.SlabSieveEngineWiring
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Soundness of Regime `2c` Odd-Bonferroni Lower-Sieve Witness Verification (`Dyadic`)
 
@@ -13,7 +15,7 @@ Verifies `Lower2cWitness` with `isBrun = false` (`OddBonf`) for Regime `2c` slab
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section ClearedDenomHelpers2c
 

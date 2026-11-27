@@ -62,7 +62,7 @@ def stripsRData : List (ℕ × ℕ) :=
     (1386373, 1386374), (1369706, 1369707), (1353039, 1353040), (1336373, 1336374),
     (1319706, 1319707), (1303039, 1303040), (1286373, 1286374), (1269706, 1269707) ]
 
-lemma stripsRData_length : stripsRData.length = 120 := by decide
+lemma stripsRData_length : stripsRData.length = 120 := by native_decide
 
 def checkStripR (k : ℕ) (rLo rHi : ℕ) : Bool :=
   let uNum := 7500000000 + (k + 1) * 250000001
@@ -80,18 +80,18 @@ def checkStripsChunk (c : ℕ) : Bool :=
     let p := stripsRData.getD k (0, 0)
     checkStripR k p.1 p.2
 
-private lemma checkStripsChunk_0 : checkStripsChunk 0 = true := by decide
-private lemma checkStripsChunk_1 : checkStripsChunk 1 = true := by decide
-private lemma checkStripsChunk_2 : checkStripsChunk 2 = true := by decide
-private lemma checkStripsChunk_3 : checkStripsChunk 3 = true := by decide
-private lemma checkStripsChunk_4 : checkStripsChunk 4 = true := by decide
-private lemma checkStripsChunk_5 : checkStripsChunk 5 = true := by decide
-private lemma checkStripsChunk_6 : checkStripsChunk 6 = true := by decide
-private lemma checkStripsChunk_7 : checkStripsChunk 7 = true := by decide
-private lemma checkStripsChunk_8 : checkStripsChunk 8 = true := by decide
-private lemma checkStripsChunk_9 : checkStripsChunk 9 = true := by decide
-private lemma checkStripsChunk_10 : checkStripsChunk 10 = true := by decide
-private lemma checkStripsChunk_11 : checkStripsChunk 11 = true := by decide
+private lemma checkStripsChunk_0 : checkStripsChunk 0 = true := by native_decide
+private lemma checkStripsChunk_1 : checkStripsChunk 1 = true := by native_decide
+private lemma checkStripsChunk_2 : checkStripsChunk 2 = true := by native_decide
+private lemma checkStripsChunk_3 : checkStripsChunk 3 = true := by native_decide
+private lemma checkStripsChunk_4 : checkStripsChunk 4 = true := by native_decide
+private lemma checkStripsChunk_5 : checkStripsChunk 5 = true := by native_decide
+private lemma checkStripsChunk_6 : checkStripsChunk 6 = true := by native_decide
+private lemma checkStripsChunk_7 : checkStripsChunk 7 = true := by native_decide
+private lemma checkStripsChunk_8 : checkStripsChunk 8 = true := by native_decide
+private lemma checkStripsChunk_9 : checkStripsChunk 9 = true := by native_decide
+private lemma checkStripsChunk_10 : checkStripsChunk 10 = true := by native_decide
+private lemma checkStripsChunk_11 : checkStripsChunk 11 = true := by native_decide
 
 lemma stripsRData_check_ok :
     ((List.range 120).all fun k =>
@@ -228,31 +228,31 @@ def sumAqChunk (c : ℕ) : ℕ :=
 def checkChunkLogRatios (c : ℕ) : Bool :=
   (List.range 10).all fun i => checkStripLogRatios (10 * c + i)
 
-lemma checkChunkLogRatios_0 : checkChunkLogRatios 0 = true := by decide
-lemma checkChunkLogRatios_1 : checkChunkLogRatios 1 = true := by decide
-lemma checkChunkLogRatios_2 : checkChunkLogRatios 2 = true := by decide
-lemma checkChunkLogRatios_3 : checkChunkLogRatios 3 = true := by decide
-lemma checkChunkLogRatios_4 : checkChunkLogRatios 4 = true := by decide
-lemma checkChunkLogRatios_5 : checkChunkLogRatios 5 = true := by decide
-lemma checkChunkLogRatios_6 : checkChunkLogRatios 6 = true := by decide
-lemma checkChunkLogRatios_7 : checkChunkLogRatios 7 = true := by decide
-lemma checkChunkLogRatios_8 : checkChunkLogRatios 8 = true := by decide
-lemma checkChunkLogRatios_9 : checkChunkLogRatios 9 = true := by decide
-lemma checkChunkLogRatios_10 : checkChunkLogRatios 10 = true := by decide
-lemma checkChunkLogRatios_11 : checkChunkLogRatios 11 = true := by decide
+lemma checkChunkLogRatios_0 : checkChunkLogRatios 0 = true := by native_decide
+lemma checkChunkLogRatios_1 : checkChunkLogRatios 1 = true := by native_decide
+lemma checkChunkLogRatios_2 : checkChunkLogRatios 2 = true := by native_decide
+lemma checkChunkLogRatios_3 : checkChunkLogRatios 3 = true := by native_decide
+lemma checkChunkLogRatios_4 : checkChunkLogRatios 4 = true := by native_decide
+lemma checkChunkLogRatios_5 : checkChunkLogRatios 5 = true := by native_decide
+lemma checkChunkLogRatios_6 : checkChunkLogRatios 6 = true := by native_decide
+lemma checkChunkLogRatios_7 : checkChunkLogRatios 7 = true := by native_decide
+lemma checkChunkLogRatios_8 : checkChunkLogRatios 8 = true := by native_decide
+lemma checkChunkLogRatios_9 : checkChunkLogRatios 9 = true := by native_decide
+lemma checkChunkLogRatios_10 : checkChunkLogRatios 10 = true := by native_decide
+lemma checkChunkLogRatios_11 : checkChunkLogRatios 11 = true := by native_decide
 
-lemma sumAqChunk_0 : sumAqChunk 0 = 302573038027 := by decide
-lemma sumAqChunk_1 : sumAqChunk 1 = 234692467790 := by decide
-lemma sumAqChunk_2 : sumAqChunk 2 = 191778059976 := by decide
-lemma sumAqChunk_3 : sumAqChunk 3 = 162564255562 := by decide
-lemma sumAqChunk_4 : sumAqChunk 4 = 141722699575 := by decide
-lemma sumAqChunk_5 : sumAqChunk 5 = 126402160766 := by decide
-lemma sumAqChunk_6 : sumAqChunk 6 = 115003771477 := by decide
-lemma sumAqChunk_7 : sumAqChunk 7 = 106609058623 := by decide
-lemma sumAqChunk_8 : sumAqChunk 8 = 100697878839 := by decide
-lemma sumAqChunk_9 : sumAqChunk 9 = 96966316268 := by decide
-lemma sumAqChunk_10 : sumAqChunk 10 = 95341972284 := by decide
-lemma sumAqChunk_11 : sumAqChunk 11 = 96031420564 := by decide
+lemma sumAqChunk_0 : sumAqChunk 0 = 302573038027 := by native_decide
+lemma sumAqChunk_1 : sumAqChunk 1 = 234692467790 := by native_decide
+lemma sumAqChunk_2 : sumAqChunk 2 = 191778059976 := by native_decide
+lemma sumAqChunk_3 : sumAqChunk 3 = 162564255562 := by native_decide
+lemma sumAqChunk_4 : sumAqChunk 4 = 141722699575 := by native_decide
+lemma sumAqChunk_5 : sumAqChunk 5 = 126402160766 := by native_decide
+lemma sumAqChunk_6 : sumAqChunk 6 = 115003771477 := by native_decide
+lemma sumAqChunk_7 : sumAqChunk 7 = 106609058623 := by native_decide
+lemma sumAqChunk_8 : sumAqChunk 8 = 100697878839 := by native_decide
+lemma sumAqChunk_9 : sumAqChunk 9 = 96966316268 := by native_decide
+lemma sumAqChunk_10 : sumAqChunk 10 = 95341972284 := by native_decide
+lemma sumAqChunk_11 : sumAqChunk 11 = 96031420564 := by native_decide
 
 lemma checkAllLogRatios_ok :
     ∀ k : ℕ, k < 120 → checkStripLogRatios k = true := by

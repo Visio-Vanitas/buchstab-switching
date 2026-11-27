@@ -136,16 +136,16 @@ def s0Chunks : List (List ℕ) := s0Chain.map Prod.fst
 def s0List : List ℕ := s0Chunks.flatten
 def stFinal : ScanState := ⟨1832176521465, 1832176522576, 4907693467692, true⟩
 
-lemma scan_chain_ok : checkScanChain ⟨scaleS, scaleS, 0, true⟩ s0Chain = true := by decide
-lemma gaps_ok : checkGapsChunks 2 s0Chunks = true := by decide
-lemma q0_eq_toFinset : Q0_100 = q0List.toFinset := by decide
-lemma q0_nodup : q0List.Nodup := by decide
-lemma log8000_eval : logNatIv 8000 = (8987196747791, 8987196862357) := by decide
-lemma log_ln8000_eval : logRatIv 8987196862357 scaleS 3 = (2195800992889, 2195801102956) := by decide
-lemma sum_8000_eval : sumInvListLo (2 :: q0List) + sumInvChunksLo s0Chunks = 2458291737869 := by decide
+lemma scan_chain_ok : checkScanChain ⟨scaleS, scaleS, 0, true⟩ s0Chain = true := by native_decide
+lemma gaps_ok : checkGapsChunks 2 s0Chunks = true := by native_decide
+lemma q0_eq_toFinset : Q0_100 = q0List.toFinset := by native_decide
+lemma q0_nodup : q0List.Nodup := by native_decide
+lemma log8000_eval : logNatIv 8000 = (8987196747791, 8987196862357) := by native_decide
+lemma log_ln8000_eval : logRatIv 8987196862357 scaleS 3 = (2195800992889, 2195801102956) := by native_decide
+lemma sum_8000_eval : sumInvListLo (2 :: q0List) + sumInvChunksLo s0Chunks = 2458291737869 := by native_decide
 lemma small90_check :
     (List.range 90).all (fun q => q ∈ smallPrimes89 || q < 2 ||
-      [2, 3, 5, 7].any (fun d => d < q && q % d == 0)) = true := by decide
-lemma smallPrimes89_ge2 : ∀ d ∈ smallPrimes89, 2 ≤ d := by decide
+      [2, 3, 5, 7].any (fun d => d < q && q % d == 0)) = true := by native_decide
+lemma smallPrimes89_ge2 : ∀ d ∈ smallPrimes89, 2 ≤ d := by native_decide
 
 end BuchstabSwitching

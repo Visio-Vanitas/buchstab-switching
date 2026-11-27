@@ -17,11 +17,11 @@ def slabs2c2 : List BuchstabSwitching.SlabCert :=
 def pairs2c2 : List (BuchstabSwitching.SlabCert × Slab2cWitness) :=
   slabs2c2.zip witnesses2c2
 
-noncomputable def checkBatch2c2 (pairs : List (BuchstabSwitching.SlabCert × Slab2cWitness)) : Bool :=
+def checkBatch2c2 (pairs : List (BuchstabSwitching.SlabCert × Slab2cWitness)) : Bool :=
   pairs.all (fun p => decide (¬ p.1.X_hi ≤ 10 ^ 84) && checkSlab2cWitness p.1 p.2)
 
-private lemma slabs2c2_len : slabs2c2.length = 11 := by decide
-private lemma witnesses2c2_len : witnesses2c2.length = 11 := by decide
+private lemma slabs2c2_len : slabs2c2.length = 11 := by native_decide
+private lemma witnesses2c2_len : witnesses2c2.length = 11 := by native_decide
 private lemma slabs2c2_zip_len : slabs2c2.length = witnesses2c2.length := by
   rw [slabs2c2_len, witnesses2c2_len]
 private lemma pairs2c2_len : pairs2c2.length = 11 := by
@@ -45,17 +45,17 @@ private theorem bridge2c2_of_pair_ok (consts : External.CertifiedConstants)
   intro hGRH hCls hMert; split_ifs
   exact checkSlab2cWitness_sound consts hGRH hCls hMert hw
 
-private lemma b2c2_0 : checkBatch2c2 ((pairs2c2.drop 0).take 1) = true := by decide
-private lemma b2c2_1 : checkBatch2c2 ((pairs2c2.drop 1).take 1) = true := by decide
-private lemma b2c2_2 : checkBatch2c2 ((pairs2c2.drop 2).take 1) = true := by decide
-private lemma b2c2_3 : checkBatch2c2 ((pairs2c2.drop 3).take 1) = true := by decide
-private lemma b2c2_4 : checkBatch2c2 ((pairs2c2.drop 4).take 1) = true := by decide
-private lemma b2c2_5 : checkBatch2c2 ((pairs2c2.drop 5).take 1) = true := by decide
-private lemma b2c2_6 : checkBatch2c2 ((pairs2c2.drop 6).take 1) = true := by decide
-private lemma b2c2_7 : checkBatch2c2 ((pairs2c2.drop 7).take 1) = true := by decide
-private lemma b2c2_8 : checkBatch2c2 ((pairs2c2.drop 8).take 1) = true := by decide
-private lemma b2c2_9 : checkBatch2c2 ((pairs2c2.drop 9).take 1) = true := by decide
-private lemma b2c2_10 : checkBatch2c2 ((pairs2c2.drop 10).take 1) = true := by decide
+private lemma b2c2_0 : checkBatch2c2 ((pairs2c2.drop 0).take 1) = true := by native_decide
+private lemma b2c2_1 : checkBatch2c2 ((pairs2c2.drop 1).take 1) = true := by native_decide
+private lemma b2c2_2 : checkBatch2c2 ((pairs2c2.drop 2).take 1) = true := by native_decide
+private lemma b2c2_3 : checkBatch2c2 ((pairs2c2.drop 3).take 1) = true := by native_decide
+private lemma b2c2_4 : checkBatch2c2 ((pairs2c2.drop 4).take 1) = true := by native_decide
+private lemma b2c2_5 : checkBatch2c2 ((pairs2c2.drop 5).take 1) = true := by native_decide
+private lemma b2c2_6 : checkBatch2c2 ((pairs2c2.drop 6).take 1) = true := by native_decide
+private lemma b2c2_7 : checkBatch2c2 ((pairs2c2.drop 7).take 1) = true := by native_decide
+private lemma b2c2_8 : checkBatch2c2 ((pairs2c2.drop 8).take 1) = true := by native_decide
+private lemma b2c2_9 : checkBatch2c2 ((pairs2c2.drop 9).take 1) = true := by native_decide
+private lemma b2c2_10 : checkBatch2c2 ((pairs2c2.drop 10).take 1) = true := by native_decide
 
 private lemma checkBatch2c2_pairs2c2 : checkBatch2c2 pairs2c2 = true := by
   have h11 : checkBatch2c2 (pairs2c2.drop 11) = true := by

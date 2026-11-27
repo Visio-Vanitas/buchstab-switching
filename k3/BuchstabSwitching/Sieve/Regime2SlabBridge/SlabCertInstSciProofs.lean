@@ -1,6 +1,8 @@
 import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstDefs
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Binary Proof-by-Reflection Arithmetic and `sqrt` Soundness
 
@@ -10,7 +12,7 @@ square-root checkers (`checkSqrtLb`, `checkSqrtUb`), and Q64 multiplication help
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 /-! ## 1. `Dyadic` Bitshift, Comparison, Arithmetic, and `sqrt` Soundness -/
 
@@ -154,7 +156,7 @@ lemma ble_sound {a b : Dyadic} (h : a.ble b = true) : a.toReal ≤ b.toReal := b
 lemma blt_sound {a b : Dyadic} (h : a.blt b = true) : a.toReal < b.toReal := by
   unfold blt at h
   by_cases hb0 : (b.m == 0) = true
-  · simp only [hb0, ite_true] at h; exact absurd h (by decide)
+  · simp only [hb0, ite_true] at h; exact absurd h (by native_decide)
   · simp only [hb0, Bool.false_eq_true, ite_false] at h
     by_cases ha0 : (a.m == 0) = true
     · have hm : a.m = 0 := beq_iff_eq.mp ha0

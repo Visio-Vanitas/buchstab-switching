@@ -5,6 +5,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.BonferroniHelpers
 import BuchstabSwitching.External.MertensSums.ReciprocalPrimeSums
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified Analytic Range, Slice, Mertens Tail, and `vFullLb2c` Checkers (`Dyadic`)
 
@@ -15,7 +17,7 @@ segment-tree queries on `oddPrimeTree`.
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 private lemma exp_ten_lt_27000 : Real.exp 10 < (27000 : ℝ) := by
   have hpow := pow_lt_pow_left₀ Real.exp_one_lt_d9 (Real.exp_pos 1).le (by norm_num : 10 ≠ 0)

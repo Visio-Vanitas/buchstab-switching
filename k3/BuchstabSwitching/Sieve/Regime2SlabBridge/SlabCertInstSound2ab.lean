@@ -2,6 +2,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSound2abLower
 import BuchstabSwitching.Certificates.Soundness
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Soundness of `checkSlab2abWitness` for Regimes `2a` & `2b` (`61` Slabs, Binary `Dyadic`)
 
@@ -15,7 +17,7 @@ Implements:
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section SliceChainAndSums
 
@@ -489,7 +491,7 @@ theorem checkSquare2abWitness_sound (consts : External.CertifiedConstants)
     exact_mod_cast ((show (sq.qSq ^ 2) ^ 2 = sq.qSq ^ 4 by ring).symm ▸ hq4 : (sq.qSq ^ 2) ^ 2 ≤ c.X_lo)
   have hs_q2 : ∑ q ∈ (Finset.Ico c.z qEnd).filter Nat.Prime,
       (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)) ≤ sq.sQ2Ub.toReal := by
-    have hsplit := BuchstabSwitching.sum_inv_mul_pred_split_le c.z qEnd pExact hz2 (by decide)
+    have hsplit := BuchstabSwitching.sum_inv_mul_pred_split_le c.z qEnd pExact hz2 (by native_decide)
     have hex := sum_inv_mul_pred_le_exact (q0 := c.z) (q1 := min qEnd pExact) (min_le_right _ _)
     split_ifs at hs_chk with hlt
     · rcases (Bool.and_eq_true _ _).mp hs_chk with ⟨hinv_chk, hadd_chk⟩

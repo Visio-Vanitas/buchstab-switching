@@ -4,6 +4,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSound2ab
 import BuchstabSwitching.Certificates.Soundness
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Soundness of `checkSlab2cWitness` for Regime `2c` (`66` Slabs, Binary `Dyadic`)
 
@@ -14,7 +16,7 @@ Verifies `Slice2cWitness` (`Slice2cMode.evenBonf` for `zSub ≤ 27000` and `zSub
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section EvenBonfSlice2c
 
@@ -278,8 +280,8 @@ section SelbergSlice2c
 def dy78e2Ub : Dyadic := Dyadic.ofQ64 14388460377493450261
 def dy13e1Ub : Dyadic := Dyadic.ofQ64 23980767295822417101
 
-private lemma dy78e2_ok : 78 * q64Scale ≤ 14388460377493450261 * 100 := by decide
-private lemma dy13e1_ok : 13 * q64Scale ≤ 23980767295822417101 * 10 := by decide
+private lemma dy78e2_ok : 78 * q64Scale ≤ 14388460377493450261 * 100 := by native_decide
+private lemma dy13e1_ok : 13 * q64Scale ≤ 23980767295822417101 * 10 := by native_decide
 
 private lemma le_dy78e2Ub : (78 / 100 : ℝ) ≤ dy78e2Ub.toReal := by
   rw [dy78e2Ub, Dyadic.ofQ64_toReal, div_le_div_iff₀ (by norm_num) q64Scale_pos]
@@ -546,7 +548,7 @@ lemma checkSquare2cWitness_sound (consts : External.CertifiedConstants)
       sq.sQ2Ub.toReal := by
     by_cases hzp : c.z ≤ pExact
     · simp only [hzp, ↓reduceIte] at hsOk
-      have hsplit := BuchstabSwitching.sum_inv_mul_pred_split_le c.z qEnd pExact hz2 (by decide)
+      have hsplit := BuchstabSwitching.sum_inv_mul_pred_split_le c.z qEnd pExact hz2 (by native_decide)
       have hex := sum_inv_mul_pred_le_exact (q0 := c.z) (q1 := min qEnd pExact) (min_le_right _ _)
       split_ifs at hsOk with hlt
       · rcases (Bool.and_eq_true _ _).mp hsOk with ⟨hinv_chk, hadd_chk⟩

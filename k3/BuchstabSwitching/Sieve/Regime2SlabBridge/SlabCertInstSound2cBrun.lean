@@ -3,6 +3,8 @@ import BuchstabSwitching.Sieve.BrunBlockSieve.MainTermAndModulus
 import BuchstabSwitching.Sieve.BrunBlockSieve.CountAndSieveBound
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Soundness of Regime `2c` Brun-Block Lower-Sieve Witness Verification (`Dyadic`)
 
@@ -13,7 +15,7 @@ via `BrunStepWitness` records and combines `OddBonf` and `BrunBlock` into
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section BrunBlockLower2c
 

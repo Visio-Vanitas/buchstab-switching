@@ -5,6 +5,8 @@ import BuchstabSwitching.Sieve.Regime3RayBridge.StripAndErrorMonotonicity
 import BuchstabSwitching.Sieve.Regime3RayBridge.ClosedHStar
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified `X_LS = 10^600` Envelopes (`log_X_LS`, `logQ`, `rayDeltaV`, `rayLbA`, `rayErrorSumInt`)
 
@@ -14,7 +16,7 @@ Provides kernel-verified rational enclosures at `asymptoticCert.X_LS = 10^600`
 
 namespace BuchstabSwitching
 
-noncomputable section
+section
 
 section RayCertEnv
 
@@ -25,7 +27,7 @@ lemma log_X_LS_bounds :
       Real.log (asymptoticCert.X_LS : ℝ) ≤ (1381551121366200 : ℝ) / (scaleS : ℝ) := by
   have h10 := logRatIv_sound (num := 10) (den := 1) (k := 3)
     (by norm_num) (by norm_num) (by norm_num)
-  have hcheck : logRatIv 10 1 3 = (2302585092210, 2302585202277) := by decide
+  have hcheck : logRatIv 10 1 3 = (2302585092210, 2302585202277) := by native_decide
   rw [hcheck] at h10
   have hlogX : Real.log (asymptoticCert.X_LS : ℝ) = 600 * Real.log 10 := by
     rw [asymptoticCert_X_LS_cast, Real.log_pow, Real.log_pow]
@@ -54,8 +56,8 @@ lemma log_log_X_LS_bounds :
     (by norm_num) (by norm_num) (by norm_num)).1
   have hhi := (logRatIv_sound (num := 1381551122) (den := 1000000) (k := 10)
     (by norm_num) (by norm_num) (by norm_num)).2
-  have hc1 : (logRatIv 1381551055 1000000 10).1 = 7230962097282 := by decide
-  have hc2 : (logRatIv 1381551122 1000000 10).2 = 7230962259345 := by decide
+  have hc1 : (logRatIv 1381551055 1000000 10).1 = 7230962097282 := by native_decide
+  have hc2 : (logRatIv 1381551122 1000000 10).2 = 7230962259345 := by native_decide
   rw [hc1] at hlo
   rw [hc2] at hhi
   have hll_lo : Real.log ((1381551055 : ℝ) / 1000000) ≤ Real.log (Real.log (asymptoticCert.X_LS : ℝ)) :=
@@ -72,9 +74,9 @@ private def rayQ0List1 : List ℕ :=
 
 private def rayQ0List : List ℕ := rayQ0List0 ++ rayQ0List1
 
-private lemma rayQ0List_nodup : rayQ0List.Nodup := by decide
+private lemma rayQ0List_nodup : rayQ0List.Nodup := by native_decide
 
-private lemma rayQ0List_eq : Q0_100 = rayQ0List.toFinset := by decide
+private lemma rayQ0List_eq : Q0_100 = rayQ0List.toFinset := by native_decide
 
 private def logStep (acc : ℕ × ℕ) (p : ℕ) : ℕ × ℕ :=
   let iv := logNatIv p
@@ -101,8 +103,8 @@ private lemma sumLogNatIv_append (ps₁ ps₂ : List ℕ) :
   simp only [sumLogNatIv, List.foldl_append]
   exact sumLogNatIv_foldl ps₂ (sumLogNatIv ps₁).1 (sumLogNatIv ps₁).2
 
-private lemma sumLogNatIv_q0_c0 : sumLogNatIv rayQ0List0 = (48314901481809, 48314903249378) := by decide
-private lemma sumLogNatIv_q0_c1 : sumLogNatIv rayQ0List1 = (69300789434808, 69300791109814) := by decide
+private lemma sumLogNatIv_q0_c0 : sumLogNatIv rayQ0List0 = (48314901481809, 48314903249378) := by native_decide
+private lemma sumLogNatIv_q0_c1 : sumLogNatIv rayQ0List1 = (69300789434808, 69300791109814) := by native_decide
 
 private lemma sumLogNatIv_sound (ps : List ℕ) (hps : ∀ p ∈ ps, 2 ≤ p ∧ p ≤ 8000) :
     ∀ lo hi : ℕ,
@@ -335,7 +337,7 @@ lemma rayLbA_16_X_LS_ge_cert :
         (asymptoticCert.X_LS : ℝ)) ≤ (1755908311 : ℝ) / (scaleS : ℝ) := by
     have hm := Real.exp_le_exp.mpr (neg_le_neg hsa_ge)
     have he := expNegUb_sound (num := 6344769) (den := 1000000) (by norm_num)
-    have hcheck : expNegUb 6344769 1000000 = 1755908311 := by decide
+    have hcheck : expNegUb 6344769 1000000 = 1755908311 := by native_decide
     rw [hcheck] at he
     exact hm.trans he
   have hh_le : h_bjs (raySa 16 (5 / 2 : ℝ) (Real.log (∏ q ∈ Q0_100, (q : ℝ))) (asymptoticCert.X_LS : ℝ)) ≤
@@ -468,7 +470,7 @@ lemma rayErrorSumInt_16_X_LS_le_cert (consts : External.CertifiedConstants) :
       unfold rayBeta; norm_num
     have hlog_b := (logRatIv_sound (num := 50000001) (den := 10000000) (k := 2)
       (by norm_num) (by norm_num) (by norm_num)).2
-    have hcheck : (logRatIv 50000001 10000000 2).2 = 1609438041476 := by decide
+    have hcheck : (logRatIv 50000001 10000000 2).2 = 1609438041476 := by native_decide
     rw [hcheck] at hlog_b
     have hlog_beta : Real.log (rayBeta 16 * ((16 : ℕ) : ℝ)) ≤ (1609438041476 : ℝ) / (scaleS : ℝ) :=
       (Real.log_le_log (by unfold rayBeta; norm_num) hbeta_le).trans hlog_b

@@ -1,6 +1,8 @@
 import BuchstabSwitching.Sieve.Regime3RayBridge.ClosedHStarCertSound
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified Closed-Form Rational `log` and `exp` Evaluators (`10^12` Scale)
 
@@ -11,7 +13,7 @@ used to verify the `L = 120` Selberg upper-sieve strip grid and error bounds via
 
 namespace BuchstabSwitching
 
-noncomputable section
+section
 
 section RayCertLogExp
 

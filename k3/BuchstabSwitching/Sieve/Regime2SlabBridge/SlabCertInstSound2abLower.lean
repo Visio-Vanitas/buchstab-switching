@@ -3,6 +3,8 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.BonferroniHelpers
 import BuchstabSwitching.External.MultiplicativeBounds.SlabSieveEngineWiring
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Soundness Helpers & Lower-Sieve Witness Verification for Regimes `2a` & `2b` (`Dyadic` + Q64)
 
@@ -17,7 +19,7 @@ Provides:
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 section PrimeListSplitting
 

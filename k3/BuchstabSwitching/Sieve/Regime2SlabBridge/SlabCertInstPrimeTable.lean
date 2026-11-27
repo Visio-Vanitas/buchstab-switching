@@ -3,15 +3,17 @@ import BuchstabSwitching.Sieve.Regime2SlabBridge.Decomposition
 import Mathlib.Tactic
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Exact Prime Table `< 27000` and Static `OddPrimeTree` Evaluators
 
 Provides:
 1. `primesLt27000`: all `2,961` primes `< 27000`, verified complete and strictly increasing via
-   `primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by decide`;
+   `primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by native_decide`;
 2. `mem_primesLt27000_iff`, `primesLt27000_nodup`, and `oddPrimesBelow_eq_filter`;
 3. `oddPrimeTree` (`64`-leaf static binary segment tree over all `2,960` odd primes `3 ≤ p < 27000`)
-   certified once via `by decide`;
+   certified once via `by native_decide`;
 4. `O(log N)` interval evaluators (`exactInvSubOneSumUb`, `exactInvMulPredSumUb`,
    `exactInvPredSqSumUb`, `exactPrimeCount`, `exactProdOneSubInvPredLb`,
    `exactProdOneSubInvPredUb`), `vPrefix27000Lb`, `smallOddPrimes40`, and `oddPrimeEntriesList`.
@@ -19,7 +21,7 @@ Provides:
 
 namespace BuchstabSwitching.SieveInst
 
-noncomputable section
+section
 
 /-! ## 1. Exact Prime Table `< 27000` and Completeness Proof -/
 
@@ -202,13 +204,13 @@ def primeChunks : List (List ℕ) := [
 def primesLt27000 : List ℕ := primeChunks.flatten
 
 set_option maxHeartbeats 2000000 in
-lemma primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by decide
+lemma primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by native_decide
 
 private lemma small164_check :
     (List.range 164).all (fun q => q ∈ smallPrimes163 || q < 2 ||
-      [2, 3, 5, 7, 11].any (fun d => d < q && q % d == 0)) = true := by decide
+      [2, 3, 5, 7, 11].any (fun d => d < q && q % d == 0)) = true := by native_decide
 
-private lemma smallPrimes163_ge2 : ∀ d ∈ smallPrimes163, 2 ≤ d := by decide
+private lemma smallPrimes163_ge2 : ∀ d ∈ smallPrimes163, 2 ≤ d := by native_decide
 
 private lemma prime_of_not_hasSmallFactor163 {n : ℕ} (hn2 : 2 ≤ n) (hn : n < 27000)
     (hsf : hasSmallFactor163 n = false) : n.Prime := by

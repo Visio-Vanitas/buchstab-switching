@@ -3,6 +3,8 @@ import BuchstabSwitching.Sieve.BuchstabFunctions.DelayEquation
 import BuchstabSwitching.Sieve.BuchstabFunctions.Quadrature
 import Mathlib.Tactic
 
+set_option maxRecDepth 200000
+
 /-!
 # Certified Quadrature Lower Bound on `buchstabf cBuchstab 6`
 
@@ -13,7 +15,7 @@ second-derivative bounds from `Quadrature.lean` and `logRatIv` from `ClosedHStar
 
 namespace BuchstabSwitching
 
-noncomputable section
+section
 
 open MeasureTheory intervalIntegral Set
 
@@ -185,16 +187,16 @@ private lemma quadLoop_add (a b : ℕ) :
       List.foldl_cons, List.foldl_nil] at ih ⊢
     rw [ih]
 
-private lemma quad_c0 : quadLoopFrom 0 10 (0, 0, 0, 0) = (8800535785, 82873434905, 2750167432, 192852972) := by decide
-private lemma quad_c1 : quadLoopFrom 10 10 (8800535785, 82873434905, 2750167432, 192852972) = (31433975041, 140196765252, 9245286776, 1348173582) := by decide
-private lemma quad_c2 : quadLoopFrom 20 10 (31433975041, 140196765252, 9245286776, 1348173582) = (63746916984, 180770626305, 17707476940, 4021214735) := by decide
-private lemma quad_c3 : quadLoopFrom 30 10 (63746916984, 180770626305, 17707476940, 4021214735) = (102963779332, 209923803892, 27095731403, 8492319393) := by decide
-private lemma quad_c4 : quadLoopFrom 40 10 (102963779332, 209923803892, 27095731403, 8492319393) = (147163662464, 231049060100, 36790915616, 14879541082) := by decide
-private lemma quad_c5 : quadLoopFrom 50 10 (147163662464, 231049060100, 36790915616, 14879541082) = (194980230321, 246392925031, 46423864362, 23204192550) := by decide
-private lemma quad_c6 : quadLoopFrom 60 10 (194980230321, 246392925031, 46423864362, 23204192550) = (245419999229, 257490805026, 55777272552, 33430157213) := by decide
-private lemma quad_c7 : quadLoopFrom 70 10 (245419999229, 257490805026, 55777272552, 33430157213) = (297747561274, 265419845767, 64727730711, 45487978455) := by decide
-private lemma quad_c8 : quadLoopFrom 80 10 (297747561274, 265419845767, 64727730711, 45487978455) = (351410492908, 270952478132, 73210519355, 59289836813) := by decide
-private lemma quad_c9 : quadLoopFrom 90 10 (351410492908, 270952478132, 73210519355, 59289836813) = (405988786249, 274653072068, 81197757249, 74738934979) := by decide
+private lemma quad_c0 : quadLoopFrom 0 10 (0, 0, 0, 0) = (8800535785, 82873434905, 2750167432, 192852972) := by native_decide
+private lemma quad_c1 : quadLoopFrom 10 10 (8800535785, 82873434905, 2750167432, 192852972) = (31433975041, 140196765252, 9245286776, 1348173582) := by native_decide
+private lemma quad_c2 : quadLoopFrom 20 10 (31433975041, 140196765252, 9245286776, 1348173582) = (63746916984, 180770626305, 17707476940, 4021214735) := by native_decide
+private lemma quad_c3 : quadLoopFrom 30 10 (63746916984, 180770626305, 17707476940, 4021214735) = (102963779332, 209923803892, 27095731403, 8492319393) := by native_decide
+private lemma quad_c4 : quadLoopFrom 40 10 (102963779332, 209923803892, 27095731403, 8492319393) = (147163662464, 231049060100, 36790915616, 14879541082) := by native_decide
+private lemma quad_c5 : quadLoopFrom 50 10 (147163662464, 231049060100, 36790915616, 14879541082) = (194980230321, 246392925031, 46423864362, 23204192550) := by native_decide
+private lemma quad_c6 : quadLoopFrom 60 10 (194980230321, 246392925031, 46423864362, 23204192550) = (245419999229, 257490805026, 55777272552, 33430157213) := by native_decide
+private lemma quad_c7 : quadLoopFrom 70 10 (245419999229, 257490805026, 55777272552, 33430157213) = (297747561274, 265419845767, 64727730711, 45487978455) := by native_decide
+private lemma quad_c8 : quadLoopFrom 80 10 (297747561274, 265419845767, 64727730711, 45487978455) = (351410492908, 270952478132, 73210519355, 59289836813) := by native_decide
+private lemma quad_c9 : quadLoopFrom 90 10 (351410492908, 270952478132, 73210519355, 59289836813) = (405988786249, 274653072068, 81197757249, 74738934979) := by native_decide
 
 private lemma quadLoop_100_eq :
     (quadLoop 100).2.2.2 = 74738934979 := by
@@ -432,7 +434,7 @@ theorem buchstabf_six_ge_cert :
     linarith
   have hlog5 : (1609437911910 : ℝ) / (scaleS : ℝ) ≤ Real.log 5 := by
     have h5 := (logRatIv_sound (num := 5) (den := 1) (k := 2) (by norm_num) (by norm_num) (by norm_num)).1
-    have hcheck : (logRatIv 5 1 2).1 = 1609437911910 := by decide
+    have hcheck : (logRatIv 5 1 2).1 = 1609437911910 := by native_decide
     simpa [hcheck] using h5
   have hf6 := buchstabf_eq_on_4_6 cBuchstab (by norm_num : (4 : ℝ) ≤ 6) (le_refl 6)
   rw [show (6 : ℝ) - 1 = 5 by norm_num] at hf6
