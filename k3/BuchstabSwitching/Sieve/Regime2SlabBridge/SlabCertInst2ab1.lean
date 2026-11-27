@@ -52,27 +52,27 @@ private lemma step_batch2ab1 {k n : ℕ}
   rw [hsplit, List.all_append, h1, h2]
   rfl
 
-private lemma b2ab1_0 : checkBatch2ab1 ((pairs2ab1.drop 0).take 1) = true := rfl
-private lemma b2ab1_1 : checkBatch2ab1 ((pairs2ab1.drop 1).take 1) = true := rfl
-private lemma b2ab1_2 : checkBatch2ab1 ((pairs2ab1.drop 2).take 1) = true := rfl
-private lemma b2ab1_3 : checkBatch2ab1 ((pairs2ab1.drop 3).take 1) = true := rfl
-private lemma b2ab1_4 : checkBatch2ab1 ((pairs2ab1.drop 4).take 1) = true := rfl
-private lemma b2ab1_5 : checkBatch2ab1 ((pairs2ab1.drop 5).take 1) = true := rfl
-private lemma b2ab1_6 : checkBatch2ab1 ((pairs2ab1.drop 6).take 1) = true := rfl
-private lemma b2ab1_7 : checkBatch2ab1 ((pairs2ab1.drop 7).take 1) = true := rfl
-private lemma b2ab1_8 : checkBatch2ab1 ((pairs2ab1.drop 8).take 1) = true := rfl
-private lemma b2ab1_9 : checkBatch2ab1 ((pairs2ab1.drop 9).take 1) = true := rfl
-private lemma b2ab1_10 : checkBatch2ab1 ((pairs2ab1.drop 10).take 1) = true := rfl
-private lemma b2ab1_11 : checkBatch2ab1 ((pairs2ab1.drop 11).take 1) = true := rfl
-private lemma b2ab1_12 : checkBatch2ab1 ((pairs2ab1.drop 12).take 1) = true := rfl
-private lemma b2ab1_13 : checkBatch2ab1 ((pairs2ab1.drop 13).take 1) = true := rfl
-private lemma b2ab1_14 : checkBatch2ab1 ((pairs2ab1.drop 14).take 1) = true := rfl
-private lemma b2ab1_15 : checkBatch2ab1 ((pairs2ab1.drop 15).take 1) = true := rfl
-private lemma b2ab1_16 : checkBatch2ab1 ((pairs2ab1.drop 16).take 1) = true := rfl
-private lemma b2ab1_17 : checkBatch2ab1 ((pairs2ab1.drop 17).take 1) = true := rfl
-private lemma b2ab1_18 : checkBatch2ab1 ((pairs2ab1.drop 18).take 1) = true := rfl
-private lemma b2ab1_19 : checkBatch2ab1 ((pairs2ab1.drop 19).take 1) = true := rfl
-private lemma b2ab1_20 : checkBatch2ab1 ((pairs2ab1.drop 20).take 1) = true := rfl
+private lemma b2ab1_0 : checkBatch2ab1 ((pairs2ab1.drop 0).take 1) = true := by decide
+private lemma b2ab1_1 : checkBatch2ab1 ((pairs2ab1.drop 1).take 1) = true := by decide
+private lemma b2ab1_2 : checkBatch2ab1 ((pairs2ab1.drop 2).take 1) = true := by decide
+private lemma b2ab1_3 : checkBatch2ab1 ((pairs2ab1.drop 3).take 1) = true := by decide
+private lemma b2ab1_4 : checkBatch2ab1 ((pairs2ab1.drop 4).take 1) = true := by decide
+private lemma b2ab1_5 : checkBatch2ab1 ((pairs2ab1.drop 5).take 1) = true := by decide
+private lemma b2ab1_6 : checkBatch2ab1 ((pairs2ab1.drop 6).take 1) = true := by decide
+private lemma b2ab1_7 : checkBatch2ab1 ((pairs2ab1.drop 7).take 1) = true := by decide
+private lemma b2ab1_8 : checkBatch2ab1 ((pairs2ab1.drop 8).take 1) = true := by decide
+private lemma b2ab1_9 : checkBatch2ab1 ((pairs2ab1.drop 9).take 1) = true := by decide
+private lemma b2ab1_10 : checkBatch2ab1 ((pairs2ab1.drop 10).take 1) = true := by decide
+private lemma b2ab1_11 : checkBatch2ab1 ((pairs2ab1.drop 11).take 1) = true := by decide
+private lemma b2ab1_12 : checkBatch2ab1 ((pairs2ab1.drop 12).take 1) = true := by decide
+private lemma b2ab1_13 : checkBatch2ab1 ((pairs2ab1.drop 13).take 1) = true := by decide
+private lemma b2ab1_14 : checkBatch2ab1 ((pairs2ab1.drop 14).take 1) = true := by decide
+private lemma b2ab1_15 : checkBatch2ab1 ((pairs2ab1.drop 15).take 1) = true := by decide
+private lemma b2ab1_16 : checkBatch2ab1 ((pairs2ab1.drop 16).take 1) = true := by decide
+private lemma b2ab1_17 : checkBatch2ab1 ((pairs2ab1.drop 17).take 1) = true := by decide
+private lemma b2ab1_18 : checkBatch2ab1 ((pairs2ab1.drop 18).take 1) = true := by decide
+private lemma b2ab1_19 : checkBatch2ab1 ((pairs2ab1.drop 19).take 1) = true := by decide
+private lemma b2ab1_20 : checkBatch2ab1 ((pairs2ab1.drop 20).take 1) = true := by decide
 
 private lemma checkBatch2ab1_pairs2ab1 : checkBatch2ab1 pairs2ab1 = true := by
   have h21 : checkBatch2ab1 (pairs2ab1.drop 21) = true := by

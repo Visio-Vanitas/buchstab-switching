@@ -1,6 +1,5 @@
-import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstDefs
 import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstPrimeTable
-import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstSciProofs
+import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstExpProofs
 import BuchstabSwitching.Sieve.OddSquarefreeBounds.JOddConvolution
 import BuchstabSwitching.Sieve.OddSquarefreeBounds.ThreePowOmega
 import Mathlib.Tactic
@@ -316,15 +315,17 @@ end OddSqf1024Table
 
 section JOddStaircase
 
-/-- Staircase cutoffs `M ∈ {1, 2, 4, ..., 1024}`. -/
-def jOddStepM : List ℕ := [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+/-- Staircase exponents `k ∈ {0, 1, ..., 10}` (`M = 2^k ∈ {1, 2, 4, ..., 1024}`). -/
+def jOddStepK : List ℕ := [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-/-- Single odd-squarefree term upper bound `ceil(10^12 / ∏_{p ∈ ps} (p - 2))`. -/
-def jOddTermUb (ps : List ℕ) : ℕ := SciNat.ceilDiv (10 ^ 12) (ps.map (· - 2)).prod
+/-- Single odd-squarefree term Q64 upper bound `⌈2^64 / ∏_{p ∈ ps} (p - 2)⌉`. -/
+def jOddTermUb64 (ps : List ℕ) : ℕ :=
+  let den := (ps.map (· - 2)).prod
+  (q64Scale + den - 1) / den
 
-/-- Certified `10^12`-scaled sum `∑_{d ≤ M, d odd sqf} ceil(10^12 / ∏(p - 2))`. -/
-def jOddStepUb (M : ℕ) : SciNat :=
-  ⟨((oddSqf1024Data.filter (·.1 ≤ M)).map (fun e => jOddTermUb e.2)).sum, 12⟩
+/-- Certified Q64 `Dyadic` sum `∑_{d ≤ M, d odd sqf} ⌈2^64 / ∏(p - 2)⌉ / 2^64`. -/
+def jOddStepUb (M : ℕ) : Dyadic :=
+  Dyadic.ofQ64 (((oddSqf1024Data.filter (·.1 ≤ M)).map (fun e => jOddTermUb64 e.2)).sum)
 
 private lemma prod_map_inv_sub_two : ∀ (ps : List ℕ), (∀ p ∈ ps, 3 ≤ p) →
     (ps.map (fun p : ℕ => (1 : ℝ) / ((p : ℝ) - 2))).prod = 1 / (((ps.map (· - 2)).prod : ℕ) : ℝ)
@@ -344,7 +345,7 @@ private lemma prod_map_inv_sub_two : ∀ (ps : List ℕ), (∀ p ∈ ps, 3 ≤ p
     push_cast; field_simp
 
 private lemma entry_term_le {d : ℕ} {ps : List ℕ} (h : checkSqfEntry (d, ps) = true) :
-    ∏ p ∈ d.primeFactors, (1 / ((p : ℝ) - 2)) ≤ (jOddTermUb ps : ℝ) / (10 : ℝ) ^ 12 := by
+    ∏ p ∈ d.primeFactors, (1 / ((p : ℝ) - 2)) ≤ (jOddTermUb64 ps : ℝ) / (q64Scale : ℝ) := by
   simp only [checkSqfEntry, Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq] at h
   rcases h with ⟨⟨hprod, hlt⟩, hps⟩
   have hnd : ps.Nodup := (checkChainLt_sound ps hlt).imp fun h => h.ne
@@ -362,15 +363,19 @@ private lemma entry_term_le {d : ℕ} {ps : List ℕ} (h : checkSqfEntry (d, ps)
   set den := (ps.map (· - 2)).prod
   have hden_pos : 0 < den := List.prod_pos fun x hx => by
     rcases List.mem_map.mp hx with ⟨p, hp, rfl⟩; have := (hpr p hp).1; omega
-  have hc := SciProofs.ceilDiv_ge (n := 10 ^ 12) hden_pos
-  have hdiv : (1 : ℝ) / (den : ℝ) = ((10 ^ 12 : ℕ) : ℝ) / (den : ℝ) / (10 : ℝ) ^ 12 := by
-    push_cast; field_simp; norm_num
-  rw [hdiv]; exact div_le_div_of_nonneg_right hc (by positivity)
+  rw [div_le_div_iff₀ (by exact_mod_cast hden_pos) q64Scale_pos, one_mul]
+  have hmul : q64Scale ≤ jOddTermUb64 ps * den := by
+    unfold jOddTermUb64
+    change q64Scale ≤ ((q64Scale + den - 1) / den) * den
+    have hd := Nat.div_add_mod (q64Scale + den - 1) den
+    have hm := Nat.mod_lt (q64Scale + den - 1) hden_pos
+    rw [Nat.mul_comm] at hd; omega
+  exact_mod_cast hmul
 
 private lemma sum_toFinset_le_sum_ub : ∀ (L : List (ℕ × List ℕ)),
     (L.map Prod.fst).Nodup → (∀ e ∈ L, checkSqfEntry e = true) →
     ∑ d ∈ (L.map Prod.fst).toFinset, ∏ p ∈ d.primeFactors, ((1 : ℝ) / ((p : ℝ) - 2)) ≤
-      ((L.map (fun e => jOddTermUb e.2)).sum : ℝ) / (10 : ℝ) ^ 12
+      ((L.map (fun e => jOddTermUb64 e.2)).sum : ℝ) / (q64Scale : ℝ)
   | [] => fun _ _ => by simp
   | (d, ps) :: tl => fun hnd he => by
     simp only [List.map_cons, List.nodup_cons] at hnd
@@ -382,7 +387,8 @@ private lemma sum_toFinset_le_sum_ub : ∀ (L : List (ℕ × List ℕ)),
 
 theorem jOddStepUb_sound {M : ℕ} (hM : M ≤ 1024) {X : ℝ} (hXM : X ≤ (M : ℝ)) :
     BuchstabSwitching.J_odd X ≤ (jOddStepUb M).toReal := by
-  unfold BuchstabSwitching.J_odd jOddStepUb SciNat.toReal
+  unfold BuchstabSwitching.J_odd jOddStepUb
+  rw [Dyadic.ofQ64_toReal]
   set S := (Finset.Icc 1 (Nat.floor X)).filter (fun d => Odd d ∧ Squarefree d)
   set L := oddSqf1024Data.filter (·.1 ≤ M)
   have hsub : S ⊆ (L.map Prod.fst).toFinset := by
@@ -392,7 +398,7 @@ theorem jOddStepUb_sound {M : ℕ} (hM : M ≤ 1024) {X : ℝ} (hXM : X ≤ (M :
       have hfl : Nat.floor X ≤ M := by
         by_cases hX0 : 0 ≤ X
         · exact_mod_cast (Nat.floor_le hX0).trans hXM
-        · push Not at hX0; rw [Nat.floor_of_nonpos hX0.le]; exact Nat.zero_le M
+        · rw [Nat.floor_of_nonpos (le_of_not_ge hX0)]; exact Nat.zero_le M
       exact hd.1.2.trans hfl
     have hmem := odd_sqf_mem_data hd.1.1 (hdM.trans hM) hd.2.1 hd.2.2
     rcases List.mem_map.mp hmem with ⟨e, he, rfl⟩
@@ -424,50 +430,90 @@ theorem jOddStepUb_sound {M : ℕ} (hM : M ≤ 1024) {X : ℝ} (hXM : X ≤ (M :
   simpa using sum_toFinset_le_sum_ub L hnd fun e he =>
     List.all_eq_true.mp oddSqfData_all_ok e (List.mem_of_mem_filter he)
 
-private def minSci (a b : SciNat) : SciNat := if a.ble b then a else b
+private def minDyadic (a b : Dyadic) : Dyadic := if a.ble b then a else b
 
-private lemma minSci_sound {a b : SciNat} {x : ℝ} (ha : x ≤ a.toReal) (hb : x ≤ b.toReal) :
-    x ≤ (minSci a b).toReal := by unfold minSci; split_ifs; exacts [ha, hb]
+private lemma minDyadic_sound {a b : Dyadic} {x : ℝ} (ha : x ≤ a.toReal) (hb : x ≤ b.toReal) :
+    x ≤ (minDyadic a b).toReal := by unfold minDyadic; split_ifs; exacts [ha, hb]
 
-/-- Precomputed `(M, lmLo, stepUb)` table for the 11 staircase cutoffs `M ∈ jOddStepM`. -/
-def jOddStepTable : List (ℕ × SciNat × SciNat) :=
-  jOddStepM.map fun M => (M, (ratLogBounds M 1).2.1, jOddStepUb M)
+private lemma ln2Lo64_nat_ok : ln2Lo64 * 10 ^ 15 ≤ 693147180559945 * q64Scale := by decide
 
-private lemma jOddStepTable_ok :
-    jOddStepM.all (fun M => decide (0 < M) && decide (M ≤ 1024) && (ratLogBounds M 1).1) = true := by decide
+private lemma pow2_log_lb (consts : External.CertifiedConstants) (k : ℕ) :
+    (Dyadic.ofQ64 (k * ln2Lo64)).toReal ≤ Real.log ((2 ^ k : ℕ) : ℝ) := by
+  have hln2 : (ln2Lo64 : ℝ) / (q64Scale : ℝ) ≤ Real.log 2 := by
+    have h1 : (ln2Lo64 : ℝ) / (q64Scale : ℝ) ≤ (0.693147180559945 : ℝ) := by
+      rw [show (0.693147180559945 : ℝ) = (693147180559945 : ℝ) / (10 ^ 15 : ℝ) by norm_num,
+        div_le_div_iff₀ q64Scale_pos (by norm_num)]
+      exact_mod_cast ln2Lo64_nat_ok
+    exact h1.trans consts.ln2_bounds.1
+  rw [Dyadic.ofQ64_toReal, Nat.cast_mul, mul_div_assoc, Nat.cast_pow, Nat.cast_ofNat, Real.log_pow]
+  exact mul_le_mul_of_nonneg_left hln2 (Nat.cast_nonneg k)
 
-/-- Staircase minimum of `jOddStepUb M` over the first matching `logHi ≤ lmLo(M)` and `asymUb`. -/
-def jOddStepMin (logHi asymUb : SciNat) : SciNat :=
-  let rec go : List (ℕ × SciNat × SciNat) → SciNat
+/-- Precomputed `(2^k, lmLo, stepUb)` table for the 11 staircase cutoffs `2^k ∈ {1, ..., 1024}`. -/
+def jOddStepTable : List (ℕ × Dyadic × Dyadic) :=
+  jOddStepK.map fun k => (2 ^ k, Dyadic.ofQ64 (k * ln2Lo64), jOddStepUb (2 ^ k))
+
+/-- Literal-folded copy of `jOddStepTable` avoiding repeated 415-entry filter/div in the kernel. -/
+def jOddStepTableFast : List (ℕ × Dyadic × Dyadic) := [
+  (1, Dyadic.ofQ64 0, Dyadic.ofQ64 18446744073709551616),
+  (2, Dyadic.ofQ64 12786308645202649952, Dyadic.ofQ64 18446744073709551616),
+  (4, Dyadic.ofQ64 25572617290405299904, Dyadic.ofQ64 36893488147419103232),
+  (8, Dyadic.ofQ64 38358925935607949856, Dyadic.ofQ64 46731751653397530762),
+  (16, Dyadic.ofQ64 51145234580810599808, Dyadic.ofQ64 56607281309019815972),
+  (32, Dyadic.ofQ64 63931543226013249760, Dyadic.ofQ64 64809239405744627418),
+  (64, Dyadic.ofQ64 76717851871215899712, Dyadic.ofQ64 75621611716796046550),
+  (128, Dyadic.ofQ64 89504160516418549664, Dyadic.ofQ64 85379149797613331761),
+  (256, Dyadic.ofQ64 102290469161621199616, Dyadic.ofQ64 95395656791707058146),
+  (512, Dyadic.ofQ64 115076777806823849568, Dyadic.ofQ64 104989327878886119960),
+  (1024, Dyadic.ofQ64 127863086452026499520, Dyadic.ofQ64 114545877051222834619)
+]
+
+private def chunkStepSum (L : List (ℕ × List ℕ)) (M : ℕ) : ℕ :=
+  ((L.filter (·.1 ≤ M)).map (fun e => jOddTermUb64 e.2)).sum
+
+private lemma jOddStepUb_eq_chunks (M : ℕ) :
+    jOddStepUb M = Dyadic.ofQ64 (chunkStepSum oddSqfChunk0 M + chunkStepSum oddSqfChunk1 M +
+      chunkStepSum oddSqfChunk2 M + chunkStepSum oddSqfChunk3 M + chunkStepSum oddSqfChunk4 M +
+      chunkStepSum oddSqfChunk5 M + chunkStepSum oddSqfChunk6 M + chunkStepSum oddSqfChunk7 M +
+      chunkStepSum oddSqfChunk8 M) := by
+  simp only [jOddStepUb, chunkStepSum, oddSqf1024Data, List.filter_append, List.map_append,
+    List.sum_append, Nat.add_assoc]
+
+set_option maxRecDepth 200000 in
+private lemma jOddStepTableFast_eq : jOddStepTableFast = jOddStepTable := by
+  simp only [jOddStepTable, jOddStepUb_eq_chunks]; decide
+
+private lemma jOddStepK_ok : jOddStepK.all (fun k => decide (2 ^ k ≤ 1024)) = true := by decide
+
+/-- Staircase minimum of `jOddStepUb (2^k)` over the first matching `logHi ≤ lmLo(2^k)` and `asymUb`. -/
+def jOddStepMin (logHi asymUb : Dyadic) : Dyadic :=
+  let rec go : List (ℕ × Dyadic × Dyadic) → Dyadic
     | [] => asymUb
-    | (_, lmLo, stepUb) :: rest => if logHi.ble lmLo then minSci stepUb asymUb else go rest
-  go jOddStepTable
+    | (_, lmLo, stepUb) :: rest => if logHi.ble lmLo then minDyadic stepUb asymUb else go rest
+  go jOddStepTableFast
 
-theorem jOddStepMin_sound (consts : External.CertifiedConstants) {logHi asymUb : SciNat} {X : ℝ}
+theorem jOddStepMin_sound (consts : External.CertifiedConstants) {logHi asymUb : Dyadic} {X : ℝ}
     (hX1 : 1 ≤ X) (hhi : Real.log X ≤ logHi.toReal) (hasym : BuchstabSwitching.J_odd X ≤ asymUb.toReal) :
     BuchstabSwitching.J_odd X ≤ (jOddStepMin logHi asymUb).toReal := by
   have hXpos : 0 < X := by linarith
-  have hgo : ∀ (L : List ℕ), (∀ M ∈ L, 0 < M ∧ M ≤ 1024 ∧ (ratLogBounds M 1).1 = true) →
+  have hgo : ∀ (L : List ℕ), (∀ k ∈ L, 2 ^ k ≤ 1024) →
       BuchstabSwitching.J_odd X ≤
-        (jOddStepMin.go logHi asymUb (L.map fun M => (M, (ratLogBounds M 1).2.1, jOddStepUb M))).toReal := by
+        (jOddStepMin.go logHi asymUb
+          (L.map fun k => (2 ^ k, Dyadic.ofQ64 (k * ln2Lo64), jOddStepUb (2 ^ k)))).toReal := by
     intro L hL; induction L with
     | nil => simpa [jOddStepMin.go] using hasym
-    | cons M rest ih =>
-      have hM := hL M List.mem_cons_self
+    | cons k rest ih =>
+      have hk := hL k List.mem_cons_self
       simp only [List.map_cons, jOddStepMin.go]
       split_ifs with hble
-      · have hlogM : Real.log X ≤ Real.log (M : ℝ) := by
-          have hr := (ratLogBounds_sound consts hM.2.2).1; rw [Nat.cast_one, div_one] at hr
-          exact hhi.trans ((SciProofs.ble_sound hble).trans hr)
-        have hXM : X ≤ (M : ℝ) := by
-          have hMp : (0 : ℝ) < (M : ℝ) := by exact_mod_cast hM.1
+      · have hlogM : Real.log X ≤ Real.log ((2 ^ k : ℕ) : ℝ) :=
+          hhi.trans ((Dyadic.ble_sound hble).trans (pow2_log_lb consts k))
+        have hXM : X ≤ ((2 ^ k : ℕ) : ℝ) := by
+          have hMp : (0 : ℝ) < ((2 ^ k : ℕ) : ℝ) := by exact_mod_cast (Nat.two_pow_pos k)
           rwa [← Real.exp_log hXpos, ← Real.exp_log hMp, Real.exp_le_exp]
-        exact minSci_sound (jOddStepUb_sound hM.2.1 hXM) hasym
+        exact minDyadic_sound (jOddStepUb_sound hk hXM) hasym
       · exact ih fun m hm => hL m (List.mem_cons_of_mem _ hm)
-  unfold jOddStepMin jOddStepTable
-  exact hgo jOddStepM fun M hM => by
-    have h := List.all_eq_true.mp jOddStepTable_ok M hM
-    simp only [Bool.and_eq_true, decide_eq_true_eq] at h; exact ⟨h.1.1, h.1.2, h.2⟩
+  unfold jOddStepMin; rw [jOddStepTableFast_eq]; unfold jOddStepTable
+  exact hgo jOddStepK fun k hk => decide_eq_true_eq.mp (List.all_eq_true.mp jOddStepK_ok k hk)
 
 end JOddStaircase
 

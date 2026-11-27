@@ -1,165 +1,27 @@
 import BuchstabSwitching.Sieve.Regime2SlabBridge.SlabCertInstDefs
 import BuchstabSwitching.Sieve.Regime2SlabBridge.Decomposition
 import Mathlib.Tactic
+import Mathlib.Tactic
 
 /-!
-# Exact Prime Table `< 27000` and Certified Exact Sums / Euler Products
+# Exact Prime Table `< 27000` and Static `OddPrimeTree` Evaluators
 
 Provides:
 1. `primesLt27000`: all `2,961` primes `< 27000`, verified complete and strictly increasing via
    `primesLt27000_chain_ok : checkPrimesChunks 1 primeChunks = true := by decide`;
 2. `mem_primesLt27000_iff`, `primesLt27000_nodup`, and `oddPrimesBelow_eq_filter`;
-3. `SciNat` outward-rounded interval lemmas (`subLb_le`, `divUb_le`, `divLb_le`, `trimUb_le`,
-   `trimLb_le`);
-4. Exact interval evaluators (`exactInvSubOneSumUb`, `exactInvMulPredSumUb`,
+3. `oddPrimeTree` (`64`-leaf static binary segment tree over all `2,960` odd primes `3 ≤ p < 27000`)
+   certified once via `by decide`;
+4. `O(log N)` interval evaluators (`exactInvSubOneSumUb`, `exactInvMulPredSumUb`,
    `exactInvPredSqSumUb`, `exactPrimeCount`, `exactProdOneSubInvPredLb`,
-   `exactProdOneSubInvPredUb`) and their soundness theorems over `[q0, q1) ⊆ [0, 27000)`.
+   `exactProdOneSubInvPredUb`), `vPrefix27000Lb`, `smallOddPrimes40`, and `oddPrimeEntriesList`.
 -/
 
 namespace BuchstabSwitching.SieveInst
 
 noncomputable section
 
-/-! ## 1. `SciNat` Outward-Rounded Interval Soundness -/
-
-namespace SciNat
-
-private lemma ofNat_toReal_pt (n : ℕ) : (ofNat n).toReal = (n : ℝ) := by
-  simp [ofNat, toReal]
-
-private lemma mul_toReal_pt (a b : SciNat) : (a.mul b).toReal = a.toReal * b.toReal := by
-  simp only [mul, toReal, Nat.cast_mul, pow_add]; ring
-
-private lemma pow10_split_pt {e₁ e₂ : ℕ} (h : e₁ ≤ e₂) :
-    (10 : ℝ) ^ e₂ = (10 : ℝ) ^ e₁ * (10 : ℝ) ^ (e₂ - e₁) := by
-  rw [← pow_add, Nat.add_sub_of_le h]
-
-private lemma add_toReal_pt (a b : SciNat) : (a.add b).toReal = a.toReal + b.toReal := by
-  unfold add toReal
-  split_ifs with he
-  · have ha : (0 : ℝ) < (10 : ℝ) ^ a.e := by positivity
-    have hd : (0 : ℝ) < (10 : ℝ) ^ (b.e - a.e) := by positivity
-    push_cast; rw [pow10_split_pt he]; field_simp [ha.ne', hd.ne']
-  · have he' : b.e ≤ a.e := le_of_not_ge he
-    have hb : (0 : ℝ) < (10 : ℝ) ^ b.e := by positivity
-    have hd : (0 : ℝ) < (10 : ℝ) ^ (a.e - b.e) := by positivity
-    push_cast; rw [pow10_split_pt he']; field_simp [hb.ne', hd.ne']
-
-private lemma ceilDiv_ge_pt {n d : ℕ} (hd : 0 < d) :
-    (n : ℝ) / (d : ℝ) ≤ (ceilDiv n d : ℝ) := by
-  rw [div_le_iff₀ (by exact_mod_cast hd)]
-  have hnat : n ≤ ceilDiv n d * d := by
-    by_cases hn : n = 0
-    · subst hn; simp
-    · unfold ceilDiv
-      simp only [hd.ne', ↓reduceIte]
-      have h1 := Nat.div_add_mod (n + d - 1) d
-      have h2 := Nat.mod_lt (n + d - 1) hd
-      have hcomm : d * ((n + d - 1) / d) = (n + d - 1) / d * d := Nat.mul_comm _ _
-      omega
-  exact_mod_cast hnat
-
-private lemma floorDiv_le_pt {n d : ℕ} (hd : 0 < d) :
-    ((n / d : ℕ) : ℝ) ≤ (n : ℝ) / (d : ℝ) := by
-  rw [le_div_iff₀ (by exact_mod_cast hd)]
-  exact_mod_cast Nat.div_mul_le_self n d
-
-lemma subLb_eq {a b : SciNat} (h : b.toReal ≤ a.toReal) :
-    (a.subLb b).toReal = a.toReal - b.toReal := by
-  unfold subLb
-  unfold toReal at h ⊢
-  split_ifs with he
-  · have hpow := pow10_split_pt he
-    have ha : (0 : ℝ) < (10 : ℝ) ^ a.e := by positivity
-    have hd : (0 : ℝ) < (10 : ℝ) ^ (b.e - a.e) := by positivity
-    have hm : b.m ≤ a.m * 10 ^ (b.e - a.e) := by
-      rw [div_le_div_iff₀ (by positivity) (by positivity), hpow] at h
-      have h1 : (b.m : ℝ) * (10 : ℝ) ^ a.e ≤
-          ((a.m : ℝ) * (10 : ℝ) ^ (b.e - a.e)) * (10 : ℝ) ^ a.e := by
-        linarith
-      exact_mod_cast le_of_mul_le_mul_right h1 ha
-    rw [Nat.cast_sub hm, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat, sub_div, hpow]
-    field_simp [ha.ne', hd.ne']
-  · have he' : b.e ≤ a.e := le_of_not_ge he
-    have hpow := pow10_split_pt he'
-    have hb : (0 : ℝ) < (10 : ℝ) ^ b.e := by positivity
-    have hd : (0 : ℝ) < (10 : ℝ) ^ (a.e - b.e) := by positivity
-    have hm : b.m * 10 ^ (a.e - b.e) ≤ a.m := by
-      rw [div_le_div_iff₀ (by positivity) (by positivity), hpow] at h
-      have h1 : ((b.m : ℝ) * (10 : ℝ) ^ (a.e - b.e)) * (10 : ℝ) ^ b.e ≤
-          (a.m : ℝ) * (10 : ℝ) ^ b.e := by
-        linarith
-      exact_mod_cast le_of_mul_le_mul_right h1 hb
-    rw [Nat.cast_sub hm, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat, sub_div, hpow]
-    field_simp [hb.ne', hd.ne']
-
-lemma subLb_le {a b : SciNat} (h : b.toReal ≤ a.toReal) :
-    (a.subLb b).toReal ≤ a.toReal - b.toReal :=
-  (subLb_eq h).le
-
-lemma divUb_le (a b : SciNat) (prec : ℕ := 24) :
-    a.toReal / b.toReal ≤ (a.divUb b prec).toReal := by
-  unfold divUb toReal
-  split_ifs with hb
-  · simp [hb]
-  · have hb_pos : 0 < b.m := Nat.pos_of_ne_zero hb
-    have hceil := ceilDiv_ge_pt (n := a.m * 10 ^ (b.e + prec)) hb_pos
-    have hpow : (0 : ℝ) < (10 : ℝ) ^ (a.e + prec) := by positivity
-    refine le_trans ?_ (div_le_div_of_nonneg_right hceil hpow.le)
-    apply le_of_eq
-    push_cast
-    field_simp [(by positivity : (10 : ℝ) ^ a.e ≠ 0), (by positivity : (10 : ℝ) ^ b.e ≠ 0),
-      (by positivity : (10 : ℝ) ^ prec ≠ 0), (by exact_mod_cast hb : (b.m : ℝ) ≠ 0)]
-    rw [pow_add, pow_add]; ring
-
-lemma divLb_le (a b : SciNat) (prec : ℕ := 24) :
-    (a.divLb b prec).toReal ≤ a.toReal / b.toReal := by
-  unfold divLb toReal
-  split_ifs with hb
-  · simp [hb]
-  · have hb_pos : 0 < b.m := Nat.pos_of_ne_zero hb
-    have hfl := floorDiv_le_pt (n := a.m * 10 ^ (b.e + prec)) hb_pos
-    have hpow : (0 : ℝ) < (10 : ℝ) ^ (a.e + prec) := by positivity
-    refine le_trans (div_le_div_of_nonneg_right hfl hpow.le) ?_
-    apply le_of_eq
-    push_cast
-    field_simp [(by positivity : (10 : ℝ) ^ a.e ≠ 0), (by positivity : (10 : ℝ) ^ b.e ≠ 0),
-      (by positivity : (10 : ℝ) ^ prec ≠ 0), (by exact_mod_cast hb : (b.m : ℝ) ≠ 0)]
-    rw [pow_add, pow_add]; ring
-
-lemma trimUb_le (a : SciNat) (maxExp : ℕ := 30) :
-    a.toReal ≤ (a.trimUb maxExp).toReal := by
-  unfold trimUb toReal
-  split_ifs with he
-  · exact le_rfl
-  · have he' : maxExp ≤ a.e := le_of_not_ge he
-    have hd_pos : 0 < 10 ^ (a.e - maxExp) := by positivity
-    have hceil := ceilDiv_ge_pt (n := a.m) hd_pos
-    have hpow : (0 : ℝ) < (10 : ℝ) ^ maxExp := by positivity
-    refine le_trans ?_ (div_le_div_of_nonneg_right hceil hpow.le)
-    apply le_of_eq
-    rw [pow10_split_pt he', Nat.cast_pow, Nat.cast_ofNat]
-    field_simp [(by positivity : (10 : ℝ) ^ maxExp ≠ 0),
-      (by positivity : (10 : ℝ) ^ (a.e - maxExp) ≠ 0)]
-
-lemma trimLb_le (a : SciNat) (maxExp : ℕ := 30) :
-    (a.trimLb maxExp).toReal ≤ a.toReal := by
-  unfold trimLb toReal
-  split_ifs with he
-  · exact le_rfl
-  · have he' : maxExp ≤ a.e := le_of_not_ge he
-    have hd_pos : 0 < 10 ^ (a.e - maxExp) := by positivity
-    have hfl := floorDiv_le_pt (n := a.m) hd_pos
-    have hpow : (0 : ℝ) < (10 : ℝ) ^ maxExp := by positivity
-    refine le_trans (div_le_div_of_nonneg_right hfl hpow.le) ?_
-    apply le_of_eq
-    rw [pow10_split_pt he', Nat.cast_pow, Nat.cast_ofNat]
-    field_simp [(by positivity : (10 : ℝ) ^ maxExp ≠ 0),
-      (by positivity : (10 : ℝ) ^ (a.e - maxExp) ≠ 0)]
-
-end SciNat
-
-/-! ## 2. Exact Prime Table `< 27000` and Completeness Proof -/
+/-! ## 1. Exact Prime Table `< 27000` and Completeness Proof -/
 
 private def smallPrimes163 : List ℕ :=
   [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
@@ -482,268 +344,38 @@ theorem oddPrimesBelow_eq_filter {z : ℕ} (hz : z ≤ 27000) :
   · rintro ⟨⟨_, hp_pr⟩, ⟨hp3, hpz⟩⟩
     exact ⟨hpz, hp_pr, by omega⟩
 
-/-! ## 3. Exact Prime Sums, Counts, and Euler Products on `[q0, q1) ⊆ [0, 27000)` -/
+/-! ## 2. Verified Static `OddPrimeTree` & `O(log N)` Range Queries -/
 
-private lemma filter_ico_primes_eq {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) :
-    (Finset.Ico q0 q1).filter Nat.Prime =
-      (primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)).toFinset := by
-  ext q
-  simp only [Finset.mem_filter, Finset.mem_Ico, List.mem_toFinset, List.mem_filter,
-    decide_eq_true_eq, mem_primesLt27000_iff]
+def oddPrimesLt27000 : List ℕ := primesLt27000.drop 1
+
+def smallOddPrimes40 : List ℕ :=
+  [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
+   79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179]
+
+lemma smallOddPrimes40_eq_take : oddPrimesLt27000.take 40 = smallOddPrimes40 := rfl
+
+lemma oddPrimesLt27000_cons : primesLt27000 = 2 :: oddPrimesLt27000 := rfl
+
+lemma mem_oddPrimesLt27000_iff {p : ℕ} : p ∈ oddPrimesLt27000 ↔ p < 27000 ∧ p.Prime ∧ 3 ≤ p := by
+  have hmem := @mem_primesLt27000_iff p
+  rw [oddPrimesLt27000_cons, List.mem_cons] at hmem
   constructor
-  · rintro ⟨⟨hq0, hq1'⟩, hpr⟩
-    exact ⟨⟨lt_of_lt_of_le hq1' hq1, hpr⟩, ⟨hq0, hq1'⟩⟩
-  · rintro ⟨⟨_, hpr⟩, ⟨hq0, hq1'⟩⟩
-    exact ⟨⟨hq0, hq1'⟩, hpr⟩
+  · intro hp
+    have h1 := hmem.mp (Or.inr hp)
+    have hne : p ≠ 2 := fun h2 => by
+      have hnd := primesLt27000_nodup
+      rw [oddPrimesLt27000_cons, List.nodup_cons] at hnd
+      exact hnd.1 (h2 ▸ hp)
+    exact ⟨h1.1, h1.2, lt_of_le_of_ne h1.2.two_le hne.symm⟩
+  · rintro ⟨hp27, hpr, hp3⟩
+    rcases hmem.mpr ⟨hp27, hpr⟩ with rfl | hp
+    · omega
+    · exact hp
 
-private lemma foldl_add_le (ps : List ℕ) (f : ℕ → ℝ) (term : ℕ → SciNat)
-    (hterm : ∀ q ∈ ps, f q ≤ (term q).toReal) :
-    ∀ acc : SciNat, acc.toReal + (ps.map f).sum ≤
-      (ps.foldl (fun a q => a.add (term q)) acc).toReal := by
-  induction ps with
-  | nil => intro acc; simp
-  | cons p tl ih =>
-    intro acc
-    have hp := hterm p List.mem_cons_self
-    have htl : ∀ q ∈ tl, f q ≤ (term q).toReal := fun q hq => hterm q (List.mem_cons_of_mem p hq)
-    have hrec := ih htl (acc.add (term p))
-    rw [List.foldl_cons, List.map_cons, List.sum_cons]
-    rw [SciNat.add_toReal_pt] at hrec
-    linarith
-
-private lemma foldl_mul_trimLb_le (ps : List ℕ) (f : ℕ → ℝ) (term : ℕ → SciNat) (prec : ℕ)
-    (hf : ∀ q ∈ ps, 0 ≤ f q) (hterm : ∀ q ∈ ps, (term q).toReal ≤ f q) :
-    ∀ acc : SciNat, (ps.foldl (fun a q => (a.mul (term q)).trimLb prec) acc).toReal ≤
-      acc.toReal * (ps.map f).prod := by
-  induction ps with
-  | nil => intro acc; simp
-  | cons p tl ih =>
-    intro acc
-    have htl_nn : ∀ q ∈ tl, 0 ≤ f q := fun q hq => hf q (List.mem_cons_of_mem p hq)
-    have hp_le : (term p).toReal ≤ f p := hterm p List.mem_cons_self
-    have htl_le : ∀ q ∈ tl, (term q).toReal ≤ f q := fun q hq => hterm q (List.mem_cons_of_mem p hq)
-    have hrec := ih htl_nn htl_le ((acc.mul (term p)).trimLb prec)
-    have hstep : ((acc.mul (term p)).trimLb prec).toReal ≤ acc.toReal * f p := by
-      calc ((acc.mul (term p)).trimLb prec).toReal
-          ≤ (acc.mul (term p)).toReal := SciNat.trimLb_le _ prec
-        _ = acc.toReal * (term p).toReal := SciNat.mul_toReal_pt _ _
-        _ ≤ acc.toReal * f p := mul_le_mul_of_nonneg_left hp_le acc.toReal_nonneg
-    have hprod_nn : 0 ≤ (tl.map f).prod := List.prod_nonneg (by
-      intro x hx
-      rcases List.mem_map.mp hx with ⟨q, hq, rfl⟩
-      exact htl_nn q hq)
-    rw [List.foldl_cons, List.map_cons, List.prod_cons]
-    calc (tl.foldl (fun a q => (a.mul (term q)).trimLb prec) ((acc.mul (term p)).trimLb prec)).toReal
-        ≤ ((acc.mul (term p)).trimLb prec).toReal * (tl.map f).prod := hrec
-      _ ≤ (acc.toReal * f p) * (tl.map f).prod := mul_le_mul_of_nonneg_right hstep hprod_nn
-      _ = acc.toReal * (f p * (tl.map f).prod) := by ring
-
-private lemma prod_le_foldl_mul_trimUb (ps : List ℕ) (f : ℕ → ℝ) (term : ℕ → SciNat) (prec : ℕ)
-    (hf : ∀ q ∈ ps, 0 ≤ f q) (hterm : ∀ q ∈ ps, f q ≤ (term q).toReal) :
-    ∀ acc : SciNat, acc.toReal * (ps.map f).prod ≤
-      (ps.foldl (fun a q => (a.mul (term q)).trimUb prec) acc).toReal := by
-  induction ps with
-  | nil => intro acc; simp
-  | cons p tl ih =>
-    intro acc
-    have htl_nn : ∀ q ∈ tl, 0 ≤ f q := fun q hq => hf q (List.mem_cons_of_mem p hq)
-    have hp_le : f p ≤ (term p).toReal := hterm p List.mem_cons_self
-    have htl_le : ∀ q ∈ tl, f q ≤ (term q).toReal := fun q hq => hterm q (List.mem_cons_of_mem p hq)
-    have hrec := ih htl_nn htl_le ((acc.mul (term p)).trimUb prec)
-    have hstep : acc.toReal * f p ≤ ((acc.mul (term p)).trimUb prec).toReal := by
-      calc acc.toReal * f p
-          ≤ acc.toReal * (term p).toReal := mul_le_mul_of_nonneg_left hp_le acc.toReal_nonneg
-        _ = (acc.mul (term p)).toReal := (SciNat.mul_toReal_pt _ _).symm
-        _ ≤ ((acc.mul (term p)).trimUb prec).toReal := SciNat.trimUb_le _ prec
-    have hprod_nn : 0 ≤ (tl.map f).prod := List.prod_nonneg (by
-      intro x hx
-      rcases List.mem_map.mp hx with ⟨q, hq, rfl⟩
-      exact htl_nn q hq)
-    rw [List.foldl_cons, List.map_cons, List.prod_cons]
-    calc acc.toReal * (f p * (tl.map f).prod)
-        = (acc.toReal * f p) * (tl.map f).prod := by ring
-      _ ≤ ((acc.mul (term p)).trimUb prec).toReal * (tl.map f).prod :=
-          mul_le_mul_of_nonneg_right hstep hprod_nn
-      _ ≤ (tl.foldl (fun a q => (a.mul (term q)).trimUb prec) ((acc.mul (term p)).trimUb prec)).toReal :=
-          hrec
-
-private lemma foldl_filter_flatten {α β : Type} (f : β → α → β) (p : α → Bool) :
-    ∀ (cs : List (List α)) (b : β),
-      cs.foldl (fun acc c => (c.filter p).foldl f acc) b = (cs.flatten.filter p).foldl f b
-  | [], _ => rfl
-  | c :: cs, b => by
-    simp only [List.foldl_cons, List.flatten_cons, List.filter_append, List.foldl_append]
-    exact foldl_filter_flatten f p cs _
-
-private lemma count_filter_flatten {α : Type} (p : α → Bool) :
-    ∀ (cs : List (List α)) (b : ℕ),
-      cs.foldl (fun acc c => acc + (c.filter p).length) b = b + (cs.flatten.filter p).length
-  | [], _ => by simp
-  | c :: cs, b => by
-    simp only [List.foldl_cons, List.flatten_cons, List.filter_append, List.length_append]
-    rw [count_filter_flatten p cs]; omega
-
-private lemma foldl_filter_primesLt27000_eq {β : Type} (f : β → ℕ → β) (p : ℕ → Bool) (b : β) :
-    (primesLt27000.filter p).foldl f b = primeChunks.foldl (fun acc c => (c.filter p).foldl f acc) b := by
-  rw [primesLt27000]
-  exact (foldl_filter_flatten f p primeChunks b).symm
-
-/-- Outward upper bound on `∑_{q ∈ Ico q0 q1, q prime} 1 / (q - 1)` for `q1 ≤ 27000`. -/
-def exactInvSubOneSumUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
-  primeChunks.foldl (fun acc c => (c.filter (fun q => q0 ≤ q ∧ q < q1)).foldl
-    (fun a q => a.add (SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q - 1)) prec)) acc) ⟨0, prec⟩
-
-theorem sum_inv_sub_one_le_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
-    ∑ q ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 : ℝ) / ((q : ℝ) - 1) ≤
-      (exactInvSubOneSumUb q0 q1 prec).toReal := by
-  set ps := primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)
-  rw [filter_ico_primes_eq hq1, List.sum_toFinset _ (primesLt27000_nodup.filter _)]
-  have hfold := foldl_add_le ps (fun q => (1 : ℝ) / ((q : ℝ) - 1))
-    (fun q => SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q - 1)) prec) (fun q hq => by
-      have hpr := (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hq)).2
-      have hdiv := SciNat.divUb_le (SciNat.ofNat 1) (SciNat.ofNat (q - 1)) prec
-      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, Nat.cast_sub hpr.one_lt.le] at hdiv
-      simpa using hdiv) ⟨0, prec⟩
-  have hzero : (⟨0, prec⟩ : SciNat).toReal = 0 := by simp [SciNat.toReal]
-  rw [hzero, zero_add] at hfold
-  dsimp only [ps] at hfold
-  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
-
-/-- Outward upper bound on `∑_{q ∈ Ico q0 q1, q prime} 1 / (q * (q - 1))` for `q1 ≤ 27000`. -/
-def exactInvMulPredSumUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
-  primeChunks.foldl (fun acc c => (c.filter (fun q => q0 ≤ q ∧ q < q1)).foldl
-    (fun a q => a.add (SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q * (q - 1))) prec)) acc) ⟨0, prec⟩
-
-theorem sum_inv_mul_pred_le_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
-    ∑ q ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)) ≤
-      (exactInvMulPredSumUb q0 q1 prec).toReal := by
-  set ps := primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)
-  rw [filter_ico_primes_eq hq1, List.sum_toFinset _ (primesLt27000_nodup.filter _)]
-  have hfold := foldl_add_le ps (fun q => (1 : ℝ) / ((q : ℝ) * ((q : ℝ) - 1)))
-    (fun q => SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat (q * (q - 1))) prec) (fun q hq => by
-      have hpr := (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hq)).2
-      have hdiv := SciNat.divUb_le (SciNat.ofNat 1) (SciNat.ofNat (q * (q - 1))) prec
-      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, Nat.cast_mul, Nat.cast_sub hpr.one_lt.le] at hdiv
-      simpa using hdiv) ⟨0, prec⟩
-  have hzero : (⟨0, prec⟩ : SciNat).toReal = 0 := by simp [SciNat.toReal]
-  rw [hzero, zero_add] at hfold
-  dsimp only [ps] at hfold
-  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
-
-/-- Outward upper bound on `∑_{q ∈ Ico q0 q1, q prime} 1 / (q - 1)^2` for `q1 ≤ 27000`. -/
-def exactInvPredSqSumUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
-  primeChunks.foldl (fun acc c => (c.filter (fun q => q0 ≤ q ∧ q < q1)).foldl
-    (fun a q => a.add (SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat ((q - 1) ^ 2)) prec)) acc) ⟨0, prec⟩
-
-theorem sum_inv_pred_sq_le_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
-    ∑ q ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 : ℝ) / ((q : ℝ) - 1) ^ 2 ≤
-      (exactInvPredSqSumUb q0 q1 prec).toReal := by
-  set ps := primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)
-  rw [filter_ico_primes_eq hq1, List.sum_toFinset _ (primesLt27000_nodup.filter _)]
-  have hfold := foldl_add_le ps (fun q => (1 : ℝ) / ((q : ℝ) - 1) ^ 2)
-    (fun q => SciNat.divUb (SciNat.ofNat 1) (SciNat.ofNat ((q - 1) ^ 2)) prec) (fun q hq => by
-      have hpr := (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hq)).2
-      have hdiv := SciNat.divUb_le (SciNat.ofNat 1) (SciNat.ofNat ((q - 1) ^ 2)) prec
-      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, Nat.cast_pow, Nat.cast_sub hpr.one_lt.le] at hdiv
-      simpa using hdiv) ⟨0, prec⟩
-  have hzero : (⟨0, prec⟩ : SciNat).toReal = 0 := by simp [SciNat.toReal]
-  rw [hzero, zero_add] at hfold
-  dsimp only [ps] at hfold
-  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
-
-/-- Exact count of primes in `[q0, q1)` for `q1 ≤ 27000`. -/
-def exactPrimeCount (q0 q1 : ℕ) : ℕ :=
-  primeChunks.foldl (fun acc c => acc + (c.filter (fun q => q0 ≤ q ∧ q < q1)).length) 0
-
-theorem card_ico_primes_eq_exact {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) :
-    ((Finset.Ico q0 q1).filter Nat.Prime).card = exactPrimeCount q0 q1 := by
-  rw [filter_ico_primes_eq hq1, List.toFinset_card_of_nodup (primesLt27000_nodup.filter _)]
-  have heq : exactPrimeCount q0 q1 = (primesLt27000.filter (fun q => q0 ≤ q ∧ q < q1)).length := by
-    simpa [exactPrimeCount, primesLt27000] using
-      count_filter_flatten (fun q => decide (q0 ≤ q ∧ q < q1)) primeChunks 0
-  exact heq.symm
-
-private lemma one_sub_inv_pred_props {p : ℕ} (hp : p.Prime) :
-    0 ≤ (1 : ℝ) - 1 / ((p : ℝ) - 1) ∧
-      (1 : ℝ) - 1 / ((p : ℝ) - 1) = ((p - 2 : ℕ) : ℝ) / ((p - 1 : ℕ) : ℝ) := by
-  have hp2 : 2 ≤ p := hp.two_le; have hp1 : 1 ≤ p := by omega
-  have hp2r : (2 : ℝ) ≤ (p : ℝ) := by exact_mod_cast hp2
-  have hden : (p : ℝ) - 1 ≠ 0 := by linarith
-  refine ⟨?_, ?_⟩
-  · have : 1 / ((p : ℝ) - 1) ≤ 1 := by rw [div_le_one (by linarith)]; linarith
-    linarith
-  · rw [Nat.cast_sub hp2, Nat.cast_sub hp1]; push_cast; field_simp [hden]; ring
-
-/-- Outward lower bound on `∏_{p ∈ Ico q0 q1, p prime} (1 - 1 / (p - 1))` for `q1 ≤ 27000`. -/
-def exactProdOneSubInvPredLb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
-  primeChunks.foldl (fun acc c => (c.filter (fun p => q0 ≤ p ∧ p < q1)).foldl
-    (fun a p => (a.mul (SciNat.divLb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec)).trimLb prec)
-    acc) ⟨1, 0⟩
-
-/-- Outward upper bound on `∏_{p ∈ Ico q0 q1, p prime} (1 - 1 / (p - 1))` for `q1 ≤ 27000`. -/
-def exactProdOneSubInvPredUb (q0 q1 : ℕ) (prec : ℕ := 24) : SciNat :=
-  primeChunks.foldl (fun acc c => (c.filter (fun p => q0 ≤ p ∧ p < q1)).foldl
-    (fun a p => (a.mul (SciNat.divUb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec)).trimUb prec)
-    acc) ⟨1, 0⟩
-
-theorem exactProdOneSubInvPredLb_le {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
-    (exactProdOneSubInvPredLb q0 q1 prec).toReal ≤
-      ∏ p ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) := by
-  set ps := primesLt27000.filter (fun p => q0 ≤ p ∧ p < q1)
-  have hnd : ps.Nodup := primesLt27000_nodup.filter _
-  rw [filter_ico_primes_eq hq1, List.prod_toFinset _ hnd]
-  have hfold := foldl_mul_trimLb_le ps (fun p => (1 : ℝ) - 1 / ((p : ℝ) - 1))
-    (fun p => SciNat.divLb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec) prec
-    (fun p hp => (one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2).1)
-    (fun p hp => by
-      have hprop := one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2
-      have hdiv := SciNat.divLb_le (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec
-      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, ← hprop.2] at hdiv; exact hdiv) ⟨1, 0⟩
-  have hone : (⟨1, 0⟩ : SciNat).toReal = 1 := by simp [SciNat.toReal]
-  rw [hone, one_mul] at hfold
-  dsimp only [ps] at hfold
-  exact (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _)).symm.trans_le hfold
-
-theorem le_exactProdOneSubInvPredUb {q0 q1 : ℕ} (hq1 : q1 ≤ 27000) (prec : ℕ := 24) :
-    ∏ p ∈ (Finset.Ico q0 q1).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) ≤
-      (exactProdOneSubInvPredUb q0 q1 prec).toReal := by
-  set ps := primesLt27000.filter (fun p => q0 ≤ p ∧ p < q1)
-  have hnd : ps.Nodup := primesLt27000_nodup.filter _
-  rw [filter_ico_primes_eq hq1, List.prod_toFinset _ hnd]
-  have hfold := prod_le_foldl_mul_trimUb ps (fun p => (1 : ℝ) - 1 / ((p : ℝ) - 1))
-    (fun p => SciNat.divUb (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec) prec
-    (fun p hp => (one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2).1)
-    (fun p hp => by
-      have hprop := one_sub_inv_pred_props (mem_primesLt27000_iff.mp (List.mem_of_mem_filter hp)).2
-      have hdiv := SciNat.divUb_le (SciNat.ofNat (p - 2)) (SciNat.ofNat (p - 1)) prec
-      rw [SciNat.ofNat_toReal_pt, SciNat.ofNat_toReal_pt, ← hprop.2] at hdiv; exact hdiv) ⟨1, 0⟩
-  have hone : (⟨1, 0⟩ : SciNat).toReal = 1 := by simp [SciNat.toReal]
-  rw [hone, one_mul] at hfold
-  dsimp only [ps] at hfold
-  exact hfold.trans_eq (congrArg SciNat.toReal (foldl_filter_primesLt27000_eq _ _ _))
-
-theorem VN_two_eq_prod_Ico (z : ℕ) :
-    External.VN 2 z = ∏ p ∈ (Finset.Ico 3 z).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) := by
-  unfold External.VN
-  congr 1
-  ext p
-  simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_Ico]
-  constructor
-  · rintro ⟨hpz, hp_pr, hp2⟩
-    have hne : p ≠ 2 := fun h => hp2 (h ▸ dvd_rfl)
-    exact ⟨⟨lt_of_le_of_ne hp_pr.two_le hne.symm, hpz⟩, hp_pr⟩
-  · rintro ⟨⟨hp3, hpz⟩, hp_pr⟩
-    exact ⟨hpz, hp_pr, fun h => by have := Nat.le_of_dvd (by norm_num) h; omega⟩
-
-theorem exactProdOneSubInvPredLb_le_VN_two {z : ℕ} (hz : z ≤ 27000) (prec : ℕ := 24) :
-    (exactProdOneSubInvPredLb 3 z prec).toReal ≤ External.VN 2 z := by
-  rw [VN_two_eq_prod_Ico]
-  exact exactProdOneSubInvPredLb_le hz prec
-
-theorem VN_two_le_exactProdOneSubInvPredUb {z : ℕ} (hz : z ≤ 27000) (prec : ℕ := 24) :
-    External.VN 2 z ≤ (exactProdOneSubInvPredUb 3 z prec).toReal := by
-  rw [VN_two_eq_prod_Ico]
-  exact le_exactProdOneSubInvPredUb hz prec
+lemma oddPrimesLt27000_nodup : oddPrimesLt27000.Nodup := by
+  have hnd := primesLt27000_nodup
+  rw [oddPrimesLt27000_cons, List.nodup_cons] at hnd
+  exact hnd.2
 
 end
 

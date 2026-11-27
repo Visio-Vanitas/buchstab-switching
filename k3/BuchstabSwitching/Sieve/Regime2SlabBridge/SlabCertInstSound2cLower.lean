@@ -5,345 +5,262 @@ import BuchstabSwitching.External.MultiplicativeBounds.SlabSieveEngineWiring
 import Mathlib.Tactic
 
 /-!
-# Soundness of Regime `2c` Odd-Bonferroni Lower-Sieve Witness Verification
+# Soundness of Regime `2c` Odd-Bonferroni Lower-Sieve Witness Verification (`Dyadic`)
 
 Verifies `Lower2cWitness` with `isBrun = false` (`OddBonf`) for Regime `2c` slabs
-(`10^84 ≤ c.X_lo < 10^600`) and exports shared `2c` tail/exponent/remainder helpers.
+(`10^84 ≤ c.X_lo < 10^600`) using cleared denominators and `MertensTailWitness`.
 -/
 
 namespace BuchstabSwitching.SieveInst
 
 noncomputable section
 
-private abbrev sn (m e : ℕ) : SciNat := ⟨m, e⟩
+section ClearedDenomHelpers2c
 
-section TailAndExpHelpers
-
-/-- Ceiling integer of a `SciNat`. -/
-def sciCeilNat (x : SciNat) : ℕ := SciNat.ceilDiv x.m (10 ^ x.e)
-
-private def piLo4L : SciNat := (sn 31415 4)
-
-private def mertensAnalyticBounds2c (a b : ℕ) (aLogLo aLogHi bLogLo bLogHi : SciNat) :
-    Bool × SciNat × ℕ :=
-  let ratioUb := divUbSig bLogHi aLogLo 24
-  let (okLL, _, llRatioUb) := ratLogBounds ratioUb.m (10 ^ ratioUb.e)
-  let (okSa, _, aSqrtUb) := sqrtSciBounds a 18
-  let (okSb2, _, bSqrtUb) := sqrtSciBounds b 18
-  let (okSb, bSqrtLb, _) := sqrtSciBounds b 12
-  let okBase := decide (27000 ≤ a) && decide (a < b) && (sn 3 0).blt aLogLo &&
-    aLogLo.ble aLogHi && bLogLo.ble bLogHi && (sn 3 0).blt bLogLo &&
-    (sn 1 0).ble ratioUb && okLL && okSa && okSb2
-  if !okBase then (false, (sn 0 0), 0)
-  else
-    let loErrUb := divUbSig (sn 2964 9) aLogLo 24
-    let (okHi, hiErrUb) :=
-      if 10 ^ 12 < b then (true, divUbSig (sn 6836 9) bLogLo 24)
-      else (okSb && decide (0 < bSqrtLb.m), divUbSig (sn 2 0) (bSqrtLb.mul bLogLo) 24)
-    let sqUb := llRatioUb.add (hiErrUb.add (loErrUb.add (divUbSig (sn 1 0) (SciNat.ofNat (a - 1)) 24)))
-    let piDiffUb := (divUbSig (SciNat.ofNat (b - a)) aLogLo 24).add
-      ((divUbSig ((bSqrtUb.mul bLogHi).add (aSqrtUb.mul aLogHi)) ((sn 8 0).mul piLo4L) 24).add (sn 1 0))
-    let piSingleUb := (divUbSig (SciNat.ofNat b) (bLogLo.subLb (sn 2 0)) 24).add
-      ((sn 1045163780117493 15).add (divUbSig (bSqrtUb.mul bLogHi) ((sn 8 0).mul piLo4L) 24))
-    (okHi, sqUb, min (sciCeilNat piDiffUb) (sciCeilNat piSingleUb))
-
-/-- Compute `(ok, s1Ub, s2Ub, piUb)` over `[u, v)` using chunk-skipping exact sums and analytic tails. -/
-def computeMertensTail2c (u v : ℕ) (uLogLo uLogHi vLogLo vLogHi : SciNat) :
-    Bool × SciNat × SciNat × ℕ :=
-  if v ≤ u then (true, (sn 0 0), (sn 0 0), 0)
-  else if v ≤ 27000 then
-    let (s1, s2, cnt) := fastExactMertens2c u v
-    (true, s1, s2, cnt)
-  else if 27000 ≤ u then
-    let (ok, s1, piN) := mertensAnalyticBounds2c u v uLogLo uLogHi vLogLo vLogHi
-    let s2 := divUbSig (sn 1 0) (SciNat.ofNat (u - 2)) 24
-    (ok && checkMertensTailSums u v uLogLo uLogHi vLogLo vLogHi s1 s2 (SciNat.ofNat piN), s1, s2, piN)
-  else
-    let (s1Ex, s2Ex, cntEx) := fastExactMertens2c u 27000
-    let (ok, s1An, piAn) := mertensAnalyticBounds2c 27000 v log27000Lo log27000Hi vLogLo vLogHi
-    let s2An := divUbSig (sn 1 0) (SciNat.ofNat 26998) 24
-    (ok && checkMertensTailSums 27000 v log27000Lo log27000Hi vLogLo vLogHi s1An s2An (SciNat.ofNat piAn),
-      s1Ex.add s1An, s2Ex.add s2An, cntEx + piAn)
-
-lemma computeMertensTail2c_sound (consts : External.CertifiedConstants)
-    (hGRH : External.DirichletLNonvanishingRightOfHalf)
-    (hCls : BuchstabSwitching.ClassicalPrimePremises consts.li2)
-    (hMert : External.MertensPrimeSumPremise consts.M0)
-    {u v : ℕ} {uLogLo uLogHi vLogLo vLogHi : SciNat}
-    (hLogU : 27000 ≤ u → uLogLo.toReal ≤ Real.log (u : ℝ) ∧ Real.log (u : ℝ) ≤ uLogHi.toReal)
-    (hLogV : 27000 < v → vLogLo.toReal ≤ Real.log (v : ℝ) ∧ Real.log (v : ℝ) ≤ vLogHi.toReal)
-    (h : (computeMertensTail2c u v uLogLo uLogHi vLogLo vLogHi).1 = true) :
-    ∑ p ∈ (Finset.Ico u v).filter Nat.Prime, BuchstabSwitching.gTot p ≤
-        (computeMertensTail2c u v uLogLo uLogHi vLogLo vLogHi).2.1.toReal ∧
-      ∑ p ∈ (Finset.Ico u v).filter Nat.Prime, (BuchstabSwitching.gTot p) ^ 2 ≤
-        (computeMertensTail2c u v uLogLo uLogHi vLogLo vLogHi).2.2.1.toReal ∧
-      (((Finset.Ico u v).filter Nat.Prime).card : ℝ) ≤
-        ((computeMertensTail2c u v uLogLo uLogHi vLogLo vLogHi).2.2.2 : ℝ) := by
-  by_cases h1 : v ≤ u
-  · unfold computeMertensTail2c; simp only [h1, ↓reduceIte, Finset.Ico_eq_empty_of_le h1,
-      Finset.filter_empty, Finset.sum_empty, Finset.card_empty, SciNat.toReal]; norm_num
-  · by_cases h2 : v ≤ 27000
-    · unfold computeMertensTail2c; simp only [h1, h2, ↓reduceIte]
-      exact fastExactMertens2c_sound h2
-    · by_cases h3 : 27000 ≤ u
-      · unfold computeMertensTail2c at h ⊢; simp only [h1, h2, h3, ↓reduceIte, Bool.and_eq_true] at h ⊢
-        simpa [SciProofs.ofNat_toReal] using checkMertensTailSums_sound consts hGRH hCls hMert hLogU hLogV h.2
-      · unfold computeMertensTail2c at h ⊢; simp only [h1, h2, h3, ↓reduceIte, Bool.and_eq_true] at h ⊢
-        have hex := fastExactMertens2c_sound (u := u) (v := 27000) le_rfl
-        have han := checkMertensTailSums_sound consts hGRH hCls hMert (fun _ => log27000_bounds consts) hLogV h.2
-        rw [SciProofs.ofNat_toReal] at han
-        have hsplit : (Finset.Ico u v).filter Nat.Prime =
-            (Finset.Ico u 27000).filter Nat.Prime ∪ (Finset.Ico 27000 v).filter Nat.Prime := by
-          ext p; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_Ico]
-          exact ⟨fun ⟨⟨ha, hb⟩, hp⟩ => if hp27 : p < 27000 then Or.inl ⟨⟨ha, hp27⟩, hp⟩ else Or.inr ⟨⟨by omega, hb⟩, hp⟩,
-            by rintro (⟨⟨ha, hb⟩, hp⟩ | ⟨⟨ha, hb⟩, hp⟩) <;> exact ⟨⟨by omega, by omega⟩, hp⟩⟩
-        have hdisj : Disjoint ((Finset.Ico u 27000).filter Nat.Prime) ((Finset.Ico 27000 v).filter Nat.Prime) :=
-          Finset.disjoint_left.mpr fun p ha hb => by
-            have := (Finset.mem_Ico.mp (Finset.mem_filter.mp ha).1).2
-            have := (Finset.mem_Ico.mp (Finset.mem_filter.mp hb).1).1; omega
-        rw [hsplit, Finset.sum_union hdisj, Finset.sum_union hdisj, Finset.card_union_of_disjoint hdisj,
-          Nat.cast_add, Nat.cast_add, SciProofs.add_toReal, SciProofs.add_toReal]
-        exact ⟨add_le_add hex.1 han.1, add_le_add hex.2.1 han.2.1, add_le_add hex.2.2 han.2.2⟩
-
-/-- Compute and check a positive lower bound on `V2 gTot ((Ico u v).filter Prime)` (`3 ≤ u`). -/
-def v2TailLb2c (u v : ℕ) (uLogLo uLogHi vLogLo vLogHi : SciNat) : Bool × SciNat :=
-  if v ≤ u then (true, (sn 1 0))
-  else if v ≤ 27000 then let lb := fastV2LbExact2c u v; (decide (0 < lb.m), lb)
-  else if 27000 ≤ u then
-    let mt := computeMertensTail2c u v uLogLo uLogHi vLogLo vLogHi
-    let ex := expUbBounds (mt.2.1.add ((divUbSig (SciNat.ofNat (u - 1)) (SciNat.ofNat (2 * (u - 2))) 24).mul mt.2.2.1))
-    let lb := divLbSig (sn 1 0) ex.2 24; (decide (3 ≤ u) && mt.1 && ex.1 && decide (0 < lb.m), lb)
-  else
-    let mt := computeMertensTail2c 27000 v log27000Lo log27000Hi vLogLo vLogHi
-    let ex := expUbBounds (mt.2.1.add ((divUbSig (sn 26999 0) (sn 53996 0) 24).mul mt.2.2.1))
-    let lb := ((fastV2LbExact2c u 27000).mul (divLbSig (sn 1 0) ex.2 24)).trimLb 24
-    (decide (3 ≤ u) && mt.1 && ex.1 && decide (0 < lb.m), lb)
-
-private lemma v2TailAnalyticPiece (consts : External.CertifiedConstants)
-    (hGRH : External.DirichletLNonvanishingRightOfHalf)
-    (hCls : BuchstabSwitching.ClassicalPrimePremises consts.li2)
-    (hMert : External.MertensPrimeSumPremise consts.M0)
-    {a b : ℕ} {aLogLo aLogHi bLogLo bLogHi : SciNat}
-    (ha3 : 3 ≤ a) (hm : (computeMertensTail2c a b aLogLo aLogHi bLogLo bLogHi).1 = true)
-    (haL : aLogLo.toReal ≤ Real.log (a : ℝ) ∧ Real.log (a : ℝ) ≤ aLogHi.toReal)
-    (hbL : 27000 < b → bLogLo.toReal ≤ Real.log (b : ℝ) ∧ Real.log (b : ℝ) ≤ bLogHi.toReal) :
-    let mt := computeMertensTail2c a b aLogLo aLogHi bLogLo bLogHi
-    let arg := mt.2.1.add ((divUbSig (SciNat.ofNat (a - 1)) (SciNat.ofNat (2 * (a - 2))) 24).mul mt.2.2.1)
-    (expUbBounds arg).1 = true →
-    (divLbSig (sn 1 0) (expUbBounds arg).2 24).toReal ≤
-      BuchstabSwitching.V2 BuchstabSwitching.gTot ((Finset.Ico a b).filter Nat.Prime) := by
-  intro mt arg he1
-  have hms := computeMertensTail2c_sound consts hGRH hCls hMert (fun _ => haL) hbL hm
-  have hbonf := BuchstabSwitching.analytic_bonf_V2_lb ha3
-    (fun p hp => ⟨(Finset.mem_filter.mp hp).2, (Finset.mem_Ico.mp (Finset.mem_filter.mp hp).1).1⟩) hms.1 hms.2.1
-  have ha3r : (3 : ℝ) ≤ (a : ℝ) := by exact_mod_cast ha3
-  have hc2_le : 1 / (2 * (1 - 1 / ((a : ℝ) - 1))) ≤
-      (divUbSig (SciNat.ofNat (a - 1)) (SciNat.ofNat (2 * (a - 2))) 24).toReal := by
-    have h1m : 1 - 1 / ((a : ℝ) - 1) = ((a : ℝ) - 2) / ((a : ℝ) - 1) := by
-      have : (a : ℝ) - 1 ≠ 0 := by linarith
-      field_simp; ring
-    have heq : 1 / (2 * (1 - 1 / ((a : ℝ) - 1))) = ((a : ℝ) - 1) / (2 * ((a : ℝ) - 2)) := by
-      have : (a : ℝ) - 1 ≠ 0 := by linarith
-      have : (a : ℝ) - 2 ≠ 0 := by linarith
-      rw [h1m]; field_simp
-    have hd := divUbSig_le (SciNat.ofNat (a - 1)) (SciNat.ofNat (2 * (a - 2))) 24
-    rw [SciProofs.ofNat_toReal, SciProofs.ofNat_toReal, Nat.cast_sub (by omega : 1 ≤ a),
-      Nat.cast_mul, Nat.cast_sub (by omega : 2 ≤ a)] at hd
-    push_cast at hd
-    exact heq.symm ▸ hd
-  have harg_le : -(arg.toReal) ≤ -(mt.2.1.toReal + 1 / (2 * (1 - 1 / ((a : ℝ) - 1))) * mt.2.2.1.toReal) := by
-    dsimp only [arg]; rw [SciProofs.add_toReal, SciProofs.mul_toReal]
-    linarith [mul_le_mul_of_nonneg_right hc2_le (SciNat.toReal_nonneg mt.2.2.1)]
-  have hinv : 1 / (expUbBounds arg).2.toReal ≤ Real.exp (-arg.toReal) := by
-    rw [Real.exp_neg, one_div]; exact inv_anti₀ (Real.exp_pos _) (expUbBounds_sound he1).1
-  have hdiv := divLbSig_le (sn 1 0) (expUbBounds arg).2 24
-  rw [show (sn 1 0).toReal = 1 by simp [SciNat.toReal]] at hdiv
-  exact hdiv.trans (hinv.trans ((Real.exp_le_exp.mpr harg_le).trans hbonf))
-
-lemma v2TailLb2c_sound (consts : External.CertifiedConstants)
-    (hGRH : External.DirichletLNonvanishingRightOfHalf)
-    (hCls : BuchstabSwitching.ClassicalPrimePremises consts.li2)
-    (hMert : External.MertensPrimeSumPremise consts.M0)
-    {u v : ℕ} {uLogLo uLogHi vLogLo vLogHi : SciNat}
-    (hLogU : 27000 ≤ u → uLogLo.toReal ≤ Real.log (u : ℝ) ∧ Real.log (u : ℝ) ≤ uLogHi.toReal)
-    (hLogV : 27000 < v → vLogLo.toReal ≤ Real.log (v : ℝ) ∧ Real.log (v : ℝ) ≤ vLogHi.toReal)
-    (h : (v2TailLb2c u v uLogLo uLogHi vLogLo vLogHi).1 = true) :
-    0 < (v2TailLb2c u v uLogLo uLogHi vLogLo vLogHi).2.toReal ∧
-      (v2TailLb2c u v uLogLo uLogHi vLogLo vLogHi).2.toReal ≤
-        BuchstabSwitching.V2 BuchstabSwitching.gTot ((Finset.Ico u v).filter Nat.Prime) := by
-  by_cases h1 : v ≤ u
-  · unfold v2TailLb2c at h ⊢; simp only [h1, ↓reduceIte] at h ⊢
-    simp [Finset.Ico_eq_empty_of_le h1, SciNat.toReal]
-  · by_cases h2 : v ≤ 27000
-    · unfold v2TailLb2c at h ⊢; simp only [h1, h2, ↓reduceIte, decide_eq_true_eq] at h ⊢
-      have hprod : BuchstabSwitching.V2 BuchstabSwitching.gTot ((Finset.Ico u v).filter Nat.Prime) =
-          ∏ p ∈ (Finset.Ico u v).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) := by
-        unfold BuchstabSwitching.V2
-        refine Finset.prod_congr rfl fun p hp => ?_
-        rw [BuchstabSwitching.gTot_prime (Finset.mem_filter.mp hp).2]
-      rw [hprod]
-      exact ⟨by unfold SciNat.toReal; exact div_pos (by exact_mod_cast h) (by positivity),
-        fastV2LbExact2c_sound h2⟩
-    · by_cases h3 : 27000 ≤ u
-      · unfold v2TailLb2c at h ⊢
-        simp only [h1, h2, h3, ↓reduceIte, Bool.and_eq_true, decide_eq_true_eq] at h ⊢
-        exact ⟨by unfold SciNat.toReal; exact div_pos (by exact_mod_cast h.2) (by positivity),
-          v2TailAnalyticPiece consts hGRH hCls hMert h.1.1.1 h.1.1.2 (hLogU h3) hLogV h.1.2⟩
-      · unfold v2TailLb2c at h ⊢
-        simp only [h1, h2, h3, ↓reduceIte, Bool.and_eq_true, decide_eq_true_eq] at h ⊢
-        have han := v2TailAnalyticPiece consts hGRH hCls hMert (by norm_num) h.1.1.2
-          (log27000_bounds consts) hLogV
-        have harg : (computeMertensTail2c 27000 v log27000Lo log27000Hi vLogLo vLogHi).2.1.add
-            ((divUbSig (SciNat.ofNat (27000 - 1)) (SciNat.ofNat (2 * (27000 - 2))) 24).mul
-              (computeMertensTail2c 27000 v log27000Lo log27000Hi vLogLo vLogHi).2.2.1) =
-            (computeMertensTail2c 27000 v log27000Lo log27000Hi vLogLo vLogHi).2.1.add
-            ((divUbSig (sn 26999 0) (sn 53996 0) 24).mul
-              (computeMertensTail2c 27000 v log27000Lo log27000Hi vLogLo vLogHi).2.2.1) := by
-          congr 2
-        have han' := han (harg ▸ h.1.2)
-        have hex_le := fastV2LbExact2c_sound (u := u) (v := 27000) le_rfl
-        have hsplit : (Finset.Ico u v).filter Nat.Prime =
-            (Finset.Ico u 27000).filter Nat.Prime ∪ (Finset.Ico 27000 v).filter Nat.Prime := by
-          ext p; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_Ico]
-          exact ⟨fun ⟨⟨hpu, hpv⟩, hpr⟩ => if hp27 : p < 27000 then Or.inl ⟨⟨hpu, hp27⟩, hpr⟩
-              else Or.inr ⟨⟨by omega, hpv⟩, hpr⟩,
-            by rintro (⟨⟨hpu, hp27⟩, hpr⟩ | ⟨⟨hp27, hpv⟩, hpr⟩) <;> exact ⟨⟨by omega, by omega⟩, hpr⟩⟩
-        have hdisj : Disjoint ((Finset.Ico u 27000).filter Nat.Prime)
-            ((Finset.Ico 27000 v).filter Nat.Prime) := Finset.disjoint_left.mpr fun p ha1 ha2 => by
-          have a1 := (Finset.mem_Ico.mp (Finset.mem_filter.mp ha1).1).2
-          have a2 := (Finset.mem_Ico.mp (Finset.mem_filter.mp ha2).1).1; omega
-        refine ⟨by unfold SciNat.toReal; exact div_pos (by exact_mod_cast h.2) (by positivity),
-          (SciProofs.trimLb_le _ 24).trans ?_⟩
-        unfold BuchstabSwitching.V2
-        rw [SciProofs.mul_toReal, hsplit, Finset.prod_union hdisj]
-        have hprod1 : ∏ p ∈ (Finset.Ico u 27000).filter Nat.Prime, (1 - BuchstabSwitching.gTot p) =
-            ∏ p ∈ (Finset.Ico u 27000).filter Nat.Prime, (1 - 1 / ((p : ℝ) - 1)) :=
-          Finset.prod_congr rfl fun p hp => by rw [BuchstabSwitching.gTot_prime (Finset.mem_filter.mp hp).2]
-        rw [hprod1]
-        exact mul_le_mul hex_le (harg ▸ han') (SciNat.toReal_nonneg _) ((SciNat.toReal_nonneg _).trans hex_le)
-
-/-- Outward upper bound on `∑ j ∈ Finset.range (k + 1), x^j / j!`. -/
-def sumPowDivFactUb (x : SciNat) : ℕ → SciNat
-  | 0 => (sn 1 0)
-  | k + 1 => (sumPowDivFactUb x k).add
-      (divUbSig (sciPowUb x (k + 1)) (SciNat.ofNat (Nat.factorial (k + 1))) 24)
-
-lemma sumPowDivFactUb_sound (x : SciNat) (k : ℕ) :
-    ∑ j ∈ Finset.range (k + 1), x.toReal ^ j / (Nat.factorial j : ℝ) ≤
-      (sumPowDivFactUb x k).toReal := by
-  induction k with
-  | zero => simp [sumPowDivFactUb, SciNat.toReal]
-  | succ k ih =>
-    rw [Finset.sum_range_succ, sumPowDivFactUb, SciProofs.add_toReal]
-    have hdiv := divUbSig_le (sciPowUb x (k + 1)) (SciNat.ofNat (Nat.factorial (k + 1))) 24
-    rw [SciProofs.ofNat_toReal] at hdiv
-    exact add_le_add ih ((div_le_div_of_nonneg_right (sciPowUb_sound x (k + 1)) (Nat.cast_nonneg _)).trans hdiv)
-
-lemma remNorm_le_of_ble {x y : ℝ} {nx epdUb vFullLb ub : SciNat}
+/-- Division-free verification of `x * y / vFullLb ≤ ub` via `(nx.mulUb epdUb).ble (ub.mulLb vFullLb)`. -/
+lemma remNorm_le_of_ble {x y : ℝ} {nx epdUb vFullLb ub : Dyadic}
     (hx0 : 0 ≤ x) (hx : x ≤ nx.toReal) (hy : y ≤ epdUb.toReal) (hv : 0 < vFullLb.toReal)
-    (hble : (divUbSig (nx.mul epdUb) vFullLb 24).ble ub = true) :
+    (hble : (nx.mulUb epdUb).ble (ub.mulLb vFullLb) = true) :
     x * y / vFullLb.toReal ≤ ub.toReal := by
-  have hnum : x * y ≤ (nx.mul epdUb).toReal := by
-    rw [SciProofs.mul_toReal]
-    exact (mul_le_mul_of_nonneg_left hy hx0).trans (mul_le_mul_of_nonneg_right hx (SciNat.toReal_nonneg _))
-  exact ((div_le_div_of_nonneg_right hnum hv.le).trans (divUbSig_le _ _ 24)).trans (SciProofs.ble_sound hble)
+  have hnum : x * y ≤ (nx.mulUb epdUb).toReal :=
+    ((mul_le_mul_of_nonneg_left hy hx0).trans
+      (mul_le_mul_of_nonneg_right hx epdUb.toReal_nonneg)).trans (Dyadic.le_mulUb _ _)
+  have hmul : (ub.mulLb vFullLb).toReal ≤ ub.toReal * vFullLb.toReal := Dyadic.mulLb_le _ _
+  exact (div_le_iff₀ hv).mpr (hnum.trans ((Dyadic.ble_sound hble).trans hmul))
 
-lemma ratLb_of_sub_ble {err lb : SciNat} {errReal : ℝ}
-    (herr1 : err.ble (sn 1 0) = true) (hrat : lb.ble ((sn 1 0).subLb err) = true)
-    (herr_le : errReal ≤ err.toReal) : lb.toReal ≤ 1 - errReal := by
-  have hsub := SciProofs.subLb_le (a := (sn 1 0)) (b := err)
-    (by simpa [SciNat.toReal] using SciProofs.ble_sound herr1)
-  rw [show (sn 1 0).toReal = 1 by simp [SciNat.toReal]] at hsub; linarith [SciProofs.ble_sound hrat]
+/-- Division-free verification of `lb ≤ 1 - errReal` via `(lb.add err).ble dyOne`. -/
+lemma ratLb_of_add_ble {err lb : Dyadic} {errReal : ℝ}
+    (hble : (lb.add err).ble dyOne = true) (herr : errReal ≤ err.toReal) :
+    lb.toReal ≤ 1 - errReal := by
+  have h := (Dyadic.ble_sound hble).trans_eq dyOne_toReal
+  rw [Dyadic.add_toReal] at h
+  linarith
 
-end TailAndExpHelpers
+end ClearedDenomHelpers2c
 
 section OddBonfLower2c
 
-/-- Computable checker for `Lower2cWitness` with `isBrun = false`. -/
-def checkOddBonfLower2c (c : BuchstabSwitching.SlabCert) (epdUb vFullLb : SciNat)
-    (lo : Lower2cWitness) : Bool :=
-  if h : lo.a < smallOddPrimes2c.length then
-    let pMin := smallOddPrimes2c[lo.a]
-    let (okM, s1, _, piN) := computeMertensTail2c pMin c.z (sn 0 0) (sn 0 0) lo.zLogLb lo.zLogUb
-    let (okV, gLb) := v2TailLb2c pMin c.z (sn 0 0) (sn 0 0) lo.zLogLb lo.zLogUb
-    let errTerm := divUbSig (sciPowUb lo.s1Ub (2 * lo.mOdd + 2))
-      ((SciNat.ofNat (Nat.factorial (2 * lo.mOdd + 2))).mul lo.gLb) 24
-    let ndUb := (SciNat.ofNat (2 ^ lo.a)).mul (sumPowDivFactUb lo.piZUb (2 * lo.mOdd + 1))
-    decide (pMin < c.z) && (if 27000 < c.z then checkLogNat c.z lo.zLogLb lo.zLogUb else true) &&
-    decide ((smallOddPrimes2c.take lo.a).prod * c.z ^ (2 * lo.mOdd + 1) ≤ lo.dMax) &&
-    decide (lo.dMax ^ 2 ≤ c.X_lo) && okM && s1.ble lo.s1Ub && (SciNat.ofNat piN).ble lo.piZUb &&
-    ndUb.ble (SciNat.ofNat lo.nD) && okV && decide (0 < lo.gLb.m) && lo.gLb.ble gLb &&
-    errTerm.ble (sn 1 0) && lo.ratLb.ble ((sn 1 0).subLb errTerm) &&
-    (divUbSig ((SciNat.ofNat lo.nD).mul epdUb) vFullLb 24).ble lo.remANormUb
+/-- Computable binary witness checker for `Lower2cWitness` with `isBrun = false`. -/
+def checkOddBonfLower2c (c : BuchstabSwitching.SlabCert)
+    (zLogLb zLogUb epdUb vFullLb : Dyadic) (lo : Lower2cWitness) : Bool :=
+  if h : lo.a < smallOddPrimes40.length then
+    let pMin := smallOddPrimes40[lo.a]
+    let k := 2 * lo.mOdd + 1
+    let ndUb := (sumPowDivFactUb lo.piZUb k).mulPow2 lo.a
+    let errDen := (Dyadic.ofNat (Nat.factorial (k + 1))).mulLb lo.gLb
+    decide (k < 16) &&
+    decide (pMin < c.z) &&
+    decide ((smallOddPrimes40.take lo.a).prod * c.z ^ k ≤ lo.dMax) &&
+    decide (lo.dMax ^ 2 ≤ c.X_lo) &&
+    checkMertensTailWithLogs pMin c.z dyZero dyZero zLogLb zLogUb lo.tail &&
+    lo.tail.s1Ub.ble lo.s1Ub &&
+    (Dyadic.ofNat lo.tail.piUb).ble lo.piZUb &&
+    ndUb.ble (Dyadic.ofNat lo.nD) &&
+    decide (0 < lo.gLb.m) &&
+    lo.gLb.ble lo.tail.gLb &&
+    (lo.s1Ub.powUb (k + 1)).ble (lo.errUb.mulLb errDen) &&
+    (lo.ratLb.add lo.errUb).ble dyOne &&
+    ((Dyadic.ofNat lo.nD).mulUb epdUb).ble (lo.remANormUb.mulLb vFullLb)
   else false
 
 lemma oddBonfLower2c_sound (consts : External.CertifiedConstants)
     (hGRH : External.DirichletLNonvanishingRightOfHalf)
     (hCls : BuchstabSwitching.ClassicalPrimePremises consts.li2)
     (hMert : External.MertensPrimeSumPremise consts.M0)
-    {c : BuchstabSwitching.SlabCert} {epdUb vFullLb : SciNat} {lo : Lower2cWitness}
+    {c : BuchstabSwitching.SlabCert} {zLogLb zLogUb epdUb vFullLb : Dyadic} {lo : Lower2cWitness}
+    (hzLog : 27000 < c.z → zLogLb.toReal ≤ Real.log (c.z : ℝ) ∧ Real.log (c.z : ℝ) ≤ zLogUb.toReal)
     (hepd : BuchstabSwitching.epdNormFn (c.X_lo : ℝ) consts.li2 (c.X_lo : ℝ) ≤ epdUb.toReal)
-    (hv_pos : 0 < vFullLb.toReal) (h : checkOddBonfLower2c c epdUb vFullLb lo = true) :
+    (hv_pos : 0 < vFullLb.toReal)
+    (h : checkOddBonfLower2c c zLogLb zLogUb epdUb vFullLb lo = true) :
     ∃ s : External.OddBonfLowerSpec c (c.X_lo : ℝ),
       lo.ratLb.toReal ≤ s.rat_lb ∧
       s.n_d * BuchstabSwitching.epdNormFn (c.X_lo : ℝ) consts.li2 (c.X_lo : ℝ) / vFullLb.toReal ≤
         lo.remANormUb.toReal := by
-  by_cases ha_sm : lo.a < smallOddPrimes2c.length
-  · have ha : lo.a < oddPrimesLt27000.length := lt_of_lt_of_le ha_sm smallOddPrimes2c_len_le
-    unfold checkOddBonfLower2c at h; simp only [ha_sm, ↓reduceDIte] at h
-    rw [smallOddPrimes2c_getElem ha_sm, smallOddPrimes2c_take ha_sm.le] at h
-    simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-    rcases h with ⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨hpz, hlogZ⟩, hd_le⟩, hd_sq⟩, hokM⟩, hs1⟩, hpi⟩, hnd⟩,
-      hokV⟩, hg_pos⟩, hg_le⟩, herr1⟩, hrat⟩, hrem⟩
+  by_cases ha_sm : lo.a < smallOddPrimes40.length
+  · have ha : lo.a < oddPrimesLt27000.length := lt_of_lt_of_le ha_sm smallOddPrimes40_len_le
+    unfold checkOddBonfLower2c at h
+    simp only [ha_sm, ↓reduceDIte] at h
+    rw [smallOddPrimes40_getElem ha_sm, smallOddPrimes40_take ha_sm.le] at h
+    rcases (Bool.and_eq_true _ _).mp h with ⟨h1_12, hrem⟩
+    rcases (Bool.and_eq_true _ _).mp h1_12 with ⟨h1_11, hrat⟩
+    rcases (Bool.and_eq_true _ _).mp h1_11 with ⟨h1_10, herr_ble⟩
+    rcases (Bool.and_eq_true _ _).mp h1_10 with ⟨h1_9, hg_le⟩
+    rcases (Bool.and_eq_true _ _).mp h1_9 with ⟨h1_8, hg_pos_b⟩
+    rcases (Bool.and_eq_true _ _).mp h1_8 with ⟨h1_7, hnd⟩
+    rcases (Bool.and_eq_true _ _).mp h1_7 with ⟨h1_6, hpi⟩
+    rcases (Bool.and_eq_true _ _).mp h1_6 with ⟨h1_5, hs1⟩
+    rcases (Bool.and_eq_true _ _).mp h1_5 with ⟨h1_4, htail⟩
+    rcases (Bool.and_eq_true _ _).mp h1_4 with ⟨h1_3, hd_sq_b⟩
+    rcases (Bool.and_eq_true _ _).mp h1_3 with ⟨h1_2, hd_le_b⟩
+    rcases (Bool.and_eq_true _ _).mp h1_2 with ⟨hk16_b, hpz_b⟩
+    have hk16 : 2 * lo.mOdd + 1 < 16 := decide_eq_true_eq.mp hk16_b
+    have hpz : oddPrimesLt27000[lo.a] < c.z := decide_eq_true_eq.mp hpz_b
+    have hd_le : (oddPrimesLt27000.take lo.a).prod * c.z ^ (2 * lo.mOdd + 1) ≤ lo.dMax :=
+      decide_eq_true_eq.mp hd_le_b
+    have hd_sq : lo.dMax ^ 2 ≤ c.X_lo := decide_eq_true_eq.mp hd_sq_b
+    have hg_pos : 0 < lo.gLb.m := decide_eq_true_eq.mp hg_pos_b
     set pMin := oddPrimesLt27000[lo.a]
+    have hpMin_mem := mem_oddPrimesLt27000_iff.mp (List.getElem_mem ha)
     have hpa_lt : (if lo.a = 0 then 2 else oddPrimesLt27000[lo.a - 1]'(by omega)) < pMin := by
       split_ifs with ha0
-      · exact lt_of_lt_of_le (by norm_num) (mem_oddPrimesLt27000_iff.mp (List.getElem_mem ha)).1
-      · exact (List.pairwise_iff_getElem.mp oddPrimesLt27000_pairwise_lt) (lo.a - 1) lo.a (by omega) ha (by omega)
+      · exact lt_of_lt_of_le (by norm_num) hpMin_mem.2.2
+      · exact (List.pairwise_iff_getElem.mp oddPrimesLt27000_pairwise_lt)
+          (lo.a - 1) lo.a (by omega) ha (by omega)
     have hsplit := oddPrimesLt27000_split_props ha hpz.le hpa_lt le_rfl
     set Q₁ : Finset ℕ := (oddPrimesLt27000.take lo.a).toFinset
     set P₂ : Finset ℕ := (Finset.Ico pMin c.z).filter Nat.Prime
-    have hLogZ : 27000 < c.z → lo.zLogLb.toReal ≤ Real.log (c.z : ℝ) ∧ Real.log (c.z : ℝ) ≤ lo.zLogUb.toReal :=
-      fun hz27 => checkLogNat_sound consts (by simpa [hz27] using hlogZ)
-    have hpMin_lt : pMin < 27000 := (mem_oddPrimesLt27000_iff.mp (List.getElem_mem ha)).2.1
-    have hm := computeMertensTail2c_sound consts hGRH hCls hMert (fun _ => by omega) hLogZ hokM
-    have hv := v2TailLb2c_sound consts hGRH hCls hMert (fun _ => by omega) hLogZ hokV
+    have hm := checkMertensTailWithLogs_sound consts hGRH hCls hMert
+      (fun h27 => absurd h27 (by linarith [hpMin_mem.1])) hzLog htail
     have hnd_real : ((BuchstabSwitching.bonfDivisors Q₁ P₂ (2 * lo.mOdd + 1)).card : ℝ) ≤ (lo.nD : ℝ) := by
       have hcard := BuchstabSwitching.card_bonfDivisors_le_factorial_sum hsplit.1
         (fun p hp => (hsplit.2.2.2.1 p hp).1) (fun p hp => (hsplit.2.2.2.2 p hp).1) (2 * lo.mOdd + 1)
-        (hm.2.2.trans (by simpa [SciProofs.ofNat_toReal] using SciProofs.ble_sound hpi))
+        (hm.2.2.1.trans (by simpa [Dyadic.ofNat_toReal] using Dyadic.ble_sound hpi))
       rw [hsplit.2.2.1] at hcard
-      have hble := SciProofs.ble_sound hnd; rw [SciProofs.mul_toReal, SciProofs.ofNat_toReal, SciProofs.ofNat_toReal] at hble
-      have h1 := mul_le_mul_of_nonneg_left (sumPowDivFactUb_sound lo.piZUb (2 * lo.mOdd + 1)) (by positivity : (0 : ℝ) ≤ (2 : ℝ) ^ lo.a)
-      push_cast at hble; linarith
+      have hble := Dyadic.ble_sound hnd
+      rw [Dyadic.mulPow2_toReal, Dyadic.ofNat_toReal] at hble
+      have h1 := mul_le_mul_of_nonneg_right
+        (sumPowDivFactUb_sound lo.piZUb hk16) (by positivity : (0 : ℝ) ≤ (2 : ℝ) ^ lo.a)
+      linarith
     have hd_max_le : ∀ d ∈ BuchstabSwitching.bonfDivisors Q₁ P₂ (2 * lo.mOdd + 1), (d : ℝ) ≤ (lo.dMax : ℝ) := by
       intro d hd
       have hbd := BuchstabSwitching.bonfDivisors_le_prod_mul_pow_of_pos (by omega : 1 ≤ c.z)
-        (fun p hp => (hsplit.2.2.2.1 p hp).1.pos) (fun p hp => (Finset.mem_Ico.mp (Finset.mem_filter.mp hp).1).2.le) hd
+        (fun p hp => (hsplit.2.2.2.1 p hp).1.pos)
+        (fun p hp => (Finset.mem_Ico.mp (Finset.mem_filter.mp hp).1).2.le) hd
       have hqprod : ∏ p ∈ Q₁, p = (oddPrimesLt27000.take lo.a).prod := by
         simpa using List.prod_toFinset (fun x : ℕ => x) oddPrimesLt27000_nodup.take
       exact_mod_cast (hqprod ▸ hbd).trans hd_le
-    have hg_pos_r : 0 < lo.gLb.toReal := by unfold SciNat.toReal; exact div_pos (by exact_mod_cast hg_pos) (by positivity)
+    have hg_pos_r : 0 < lo.gLb.toReal := Dyadic.toReal_pos_of_m hg_pos
+    have hv_tail := hm.2.2.2 hpMin_mem.2.2
     have hrat_bonf := BuchstabSwitching.analytic_bonf_RTrunc_odd_lb
-      (fun p hp => ⟨(hsplit.2.2.2.2 p hp).1, (mem_oddPrimesLt27000_iff.mp (List.getElem_mem ha)).1.trans (hsplit.2.2.2.2 p hp).2.2⟩)
-      lo.mOdd hg_pos_r ((SciProofs.ble_sound hg_le).trans hv.2) (hm.1.trans (SciProofs.ble_sound hs1))
-    have hden_pos : 0 < ((SciNat.ofNat (Nat.factorial (2 * lo.mOdd + 2))).mul lo.gLb).toReal := by
-      rw [SciProofs.mul_toReal, SciProofs.ofNat_toReal]; exact mul_pos (Nat.cast_pos.mpr (Nat.factorial_pos _)) hg_pos_r
-    have herr_le : lo.s1Ub.toReal ^ (2 * lo.mOdd + 2) / ((Nat.factorial (2 * lo.mOdd + 2) : ℝ) * lo.gLb.toReal) ≤
-        (divUbSig (sciPowUb lo.s1Ub (2 * lo.mOdd + 2)) ((SciNat.ofNat (Nat.factorial (2 * lo.mOdd + 2))).mul lo.gLb) 24).toReal := by
-      have h1 : lo.s1Ub.toReal ^ (2 * lo.mOdd + 2) / ((Nat.factorial (2 * lo.mOdd + 2) : ℝ) * lo.gLb.toReal) ≤
-          (sciPowUb lo.s1Ub (2 * lo.mOdd + 2)).toReal / ((SciNat.ofNat (Nat.factorial (2 * lo.mOdd + 2))).mul lo.gLb).toReal := by
-        rw [SciProofs.mul_toReal, SciProofs.ofNat_toReal]
-        exact div_le_div_of_nonneg_right (sciPowUb_sound lo.s1Ub (2 * lo.mOdd + 2))
-          (by rw [← SciProofs.ofNat_toReal, ← SciProofs.mul_toReal]; exact hden_pos.le)
-      exact h1.trans (divUbSig_le _ _ 24)
+      (fun p hp => ⟨(hsplit.2.2.2.2 p hp).1, by have := hpMin_mem.2.2; have := (hsplit.2.2.2.2 p hp).2.2; omega⟩)
+      lo.mOdd hg_pos_r ((Dyadic.ble_sound hg_le).trans hv_tail)
+      (hm.1.trans (Dyadic.ble_sound hs1))
+    have hk_eq : (2 * lo.mOdd + 1) + 1 = 2 * lo.mOdd + 2 := by omega
+    have hden_le : ((Dyadic.ofNat (Nat.factorial (2 * lo.mOdd + 2))).mulLb lo.gLb).toReal ≤
+        (Nat.factorial (2 * lo.mOdd + 2) : ℝ) * lo.gLb.toReal :=
+      (Dyadic.mulLb_le _ _).trans (by rw [Dyadic.ofNat_toReal])
+    have herr_le : lo.s1Ub.toReal ^ (2 * lo.mOdd + 2) /
+        ((Nat.factorial (2 * lo.mOdd + 2) : ℝ) * lo.gLb.toReal) ≤ lo.errUb.toReal := by
+      rw [hk_eq] at herr_ble
+      exact Dyadic.div_le_of_ble_mulLb (Dyadic.powUb_sound lo.s1Ub (2 * lo.mOdd + 2))
+        (mul_pos (Nat.cast_pos.mpr (Nat.factorial_pos _)) hg_pos_r) hden_le herr_ble
     exact ⟨⟨Q₁, P₂, hsplit.1, hsplit.2.1, lo.mOdd, lo.dMax, hd_max_le,
       Real.le_sqrt_of_sq_le (by exact_mod_cast hd_sq), lo.nD, lo.ratLb.toReal, hnd_real,
-      (ratLb_of_sub_ble herr1 hrat herr_le).trans hrat_bonf⟩, le_rfl,
-      remNorm_le_of_ble (Nat.cast_nonneg _) (by rw [SciProofs.ofNat_toReal]) hepd hv_pos hrem⟩
+      (ratLb_of_add_ble hrat herr_le).trans hrat_bonf⟩, le_rfl,
+      remNorm_le_of_ble (Nat.cast_nonneg _) (by rw [Dyadic.ofNat_toReal]) hepd hv_pos hrem⟩
   · unfold checkOddBonfLower2c at h; simp only [ha_sm, ↓reduceDIte] at h; simp at h
 
 end OddBonfLower2c
+
+section SliceChainAndCommonHelpers2c
+
+def bptsOfSlices2c (z : ℕ) (slices : List Slice2cWitness) (i : Fin (slices.length + 1)) : ℕ :=
+  if h0 : i.1 = 0 then z else (slices[i.1 - 1]'(by omega)).q1
+
+def checkSliceChain2c (cur y : ℕ) : List Slice2cWitness → Bool
+  | [] => decide (cur = y)
+  | sl :: rest => decide (sl.q0 = cur) && decide (sl.q0 ≤ sl.q1) && checkSliceChain2c sl.q1 y rest
+
+lemma bptsOfSlices2c_zero (z : ℕ) (slices : List Slice2cWitness) :
+    bptsOfSlices2c z slices 0 = z := by simp [bptsOfSlices2c]
+
+private lemma bptsOfSlices2c_cons_succ (z : ℕ) (sl : Slice2cWitness)
+    (rest : List Slice2cWitness) (i : Fin (rest.length + 1)) :
+    bptsOfSlices2c z (sl :: rest) i.succ = bptsOfSlices2c sl.q1 rest i := by
+  rcases i with ⟨n, _⟩; cases n <;> simp [bptsOfSlices2c]
+
+lemma checkSliceChain2c_last : ∀ (slices : List Slice2cWitness) (cur y : ℕ),
+    checkSliceChain2c cur y slices = true →
+    bptsOfSlices2c cur slices ⟨slices.length, Nat.lt_succ_self _⟩ = y
+  | [], cur, y, h => by simp only [checkSliceChain2c, decide_eq_true_eq] at h; simpa [bptsOfSlices2c] using h
+  | sl :: rest, cur, y, h => by
+    simp only [checkSliceChain2c, Bool.and_eq_true, decide_eq_true_eq] at h
+    have hsucc : (⟨(sl :: rest).length, Nat.lt_succ_self _⟩ : Fin ((sl :: rest).length + 1)) =
+        (⟨rest.length, Nat.lt_succ_self _⟩ : Fin (rest.length + 1)).succ := by ext; simp
+    rw [hsucc, bptsOfSlices2c_cons_succ]; exact checkSliceChain2c_last rest sl.q1 y h.2
+
+lemma checkSliceChain2c_castSucc : ∀ (slices : List Slice2cWitness) (cur y : ℕ),
+    checkSliceChain2c cur y slices = true →
+    ∀ i : Fin slices.length, bptsOfSlices2c cur slices i.castSucc = slices[i].q0
+  | [], _, _, _, i => i.elim0
+  | sl :: _, cur, _, h, ⟨0, _⟩ => by
+    simp only [checkSliceChain2c, Bool.and_eq_true, decide_eq_true_eq] at h; simp [bptsOfSlices2c, h.1.1]
+  | sl :: rest, _, y, h, ⟨j + 1, hj⟩ => by
+    simp only [checkSliceChain2c, Bool.and_eq_true, decide_eq_true_eq] at h
+    have heq : (⟨j + 1, hj⟩ : Fin (sl :: rest).length).castSucc =
+        (⟨j, Nat.succ_lt_succ_iff.mp hj⟩ : Fin rest.length).castSucc.succ := by ext; simp
+    rw [heq, bptsOfSlices2c_cons_succ]
+    exact checkSliceChain2c_castSucc rest sl.q1 y h.2 ⟨j, Nat.succ_lt_succ_iff.mp hj⟩
+
+lemma bptsOfSlices2c_succ (z : ℕ) (slices : List Slice2cWitness) (i : Fin slices.length) :
+    bptsOfSlices2c z slices i.succ = slices[i].q1 := by simp [bptsOfSlices2c]
+
+private lemma checkSliceChain2c_le : ∀ (slices : List Slice2cWitness) (cur y : ℕ),
+    checkSliceChain2c cur y slices = true → cur ≤ y
+  | [], cur, y, h => by simp only [checkSliceChain2c, decide_eq_true_eq] at h; omega
+  | sl :: rest, cur, y, h => by
+    simp only [checkSliceChain2c, Bool.and_eq_true, decide_eq_true_eq] at h
+    have := checkSliceChain2c_le rest sl.q1 y h.2; omega
+
+lemma checkSliceChain2c_bounds : ∀ (slices : List Slice2cWitness) (cur y : ℕ),
+    checkSliceChain2c cur y slices = true →
+    ∀ i : Fin slices.length, cur ≤ slices[i].q0 ∧ slices[i].q0 ≤ slices[i].q1 ∧ slices[i].q1 ≤ y
+  | [], _, _, _, i => i.elim0
+  | sl :: rest, cur, y, h, ⟨0, _⟩ => by
+    simp only [checkSliceChain2c, Bool.and_eq_true, decide_eq_true_eq] at h
+    exact ⟨h.1.1.ge, h.1.2, checkSliceChain2c_le rest sl.q1 y h.2⟩
+  | sl :: rest, _, y, h, ⟨j + 1, hj⟩ => by
+    simp only [checkSliceChain2c, Bool.and_eq_true, decide_eq_true_eq] at h
+    have hrec := checkSliceChain2c_bounds rest sl.q1 y h.2 ⟨j, Nat.succ_lt_succ_iff.mp hj⟩
+    simp only [Fin.getElem_fin, List.getElem_cons_succ] at hrec ⊢
+    exact ⟨by omega, hrec.2.1, hrec.2.2⟩
+
+def sumDyadicList2c (f : Slice2cWitness → Dyadic) (slices : List Slice2cWitness) : Dyadic :=
+  slices.foldl (fun s sl => s.add (f sl)) dyZero
+
+private lemma sum_fin_le_sumDyadicList2cAux (f : Slice2cWitness → Dyadic) :
+    ∀ (slices : List Slice2cWitness) (acc : Dyadic) (g : Fin slices.length → ℝ),
+      (∀ i : Fin slices.length, g i ≤ (f slices[i]).toReal) →
+      acc.toReal + ∑ i : Fin slices.length, g i ≤ (slices.foldl (fun s sl => s.add (f sl)) acc).toReal
+  | [], _, _, _ => by simp
+  | sl :: rest, acc, g, hg => by
+    have hrec := sum_fin_le_sumDyadicList2cAux f rest (acc.add (f sl)) (fun i => g i.succ) (fun i => hg i.succ)
+    have hsum : ∑ i : Fin (sl :: rest).length, g i = g 0 + ∑ i : Fin rest.length, g i.succ := Fin.sum_univ_succ g
+    rw [hsum]
+    have h0 : g 0 ≤ (f sl).toReal := hg 0
+    have hacc := Dyadic.add_toReal acc (f sl)
+    simp only [List.foldl_cons] at hrec ⊢; linarith
+
+lemma sum_fin_le_sumDyadicList2c (f : Slice2cWitness → Dyadic) (slices : List Slice2cWitness)
+    (g : Fin slices.length → ℝ) (hg : ∀ i : Fin slices.length, g i ≤ (f slices[i]).toReal) :
+    ∑ i : Fin slices.length, g i ≤ (sumDyadicList2c f slices).toReal := by
+  simpa [sumDyadicList2c, dyZero_toReal] using sum_fin_le_sumDyadicList2cAux f slices dyZero g hg
+
+lemma sum_bonfDivisors_gTot_eq {Q₁ P₂ : Finset ℕ}
+    (hdisj : Disjoint Q₁ P₂) (hQ₁ : ∀ p ∈ Q₁, p.Prime ∧ 2 < p) (hP₂ : ∀ p ∈ P₂, p.Prime ∧ 2 < p)
+    (k : ℕ) :
+    ∑ d ∈ BuchstabSwitching.bonfDivisors Q₁ P₂ k, BuchstabSwitching.gTot d =
+      (∏ p ∈ Q₁, (p : ℝ) / ((p : ℝ) - 1)) *
+        ∑ j ∈ Finset.range (k + 1), BuchstabSwitching.elemSym BuchstabSwitching.gTot P₂ j := by
+  rw [BuchstabSwitching.sum_bonfDivisors_density Q₁ P₂ BuchstabSwitching.gTot k hdisj
+    (fun p hp => (hQ₁ p hp).1) (fun p hp => (hP₂ p hp).1)
+    (fun S₁ hS₁ Q₂ hQ₂ => BuchstabSwitching.gTot_prod_disjoint_primes (hdisj.mono hS₁ hQ₂)
+      (fun p hp => (hQ₁ p (hS₁ hp)).1) (fun p hp => (hP₂ p (hQ₂ hp)).1))]
+  congr 1; refine Finset.prod_congr rfl fun p hp => ?_
+  rw [BuchstabSwitching.gTot_prime (hQ₁ p hp).1]
+  have hp3 : (3 : ℝ) ≤ (p : ℝ) := by exact_mod_cast (hQ₁ p hp).2
+  field_simp [(by linarith : (p : ℝ) - 1 ≠ 0)]; ring
+
+lemma q_mul_dMax_sqrt {c : BuchstabSwitching.SlabCert} {q0 q1 dMax : ℕ}
+    (h : ((q1 - 1) * dMax) ^ 2 ≤ c.X_lo) :
+    ∀ q ∈ (Finset.Ico (max c.z q0) (min c.y q1)).filter Nat.Prime,
+      (q : ℝ) * (dMax : ℝ) ≤ Real.sqrt (c.X_lo : ℝ) := by
+  intro q hq
+  have hq_lt : q < q1 := lt_of_lt_of_le (Finset.mem_Ico.mp (Finset.mem_filter.mp hq).1).2 (min_le_right _ _)
+  rw [← Nat.cast_mul, Real.le_sqrt (Nat.cast_nonneg _) (Nat.cast_nonneg _)]
+  exact_mod_cast (Nat.pow_le_pow_left (Nat.mul_le_mul_right dMax (by omega)) 2).trans h
+
+end SliceChainAndCommonHelpers2c
 
 end
 
