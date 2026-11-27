@@ -31,6 +31,8 @@ bridges**, and the top-level bundle `Bridge.lean`:
 | `LinearSieve/AsymptoticRayEnclosure.lean` | `AsymptoticRayEnclosurePremise` plus `asymptoticRayEnclosurePremise_of_sieveBridge` for `N ≥ asymptoticCert.X_LS` (`10^600`), consuming unconditional BJS v6 Lemma 38 (`EulerProductVPremise`) and discharging `BuchstabSeriesPremise` (`buchstabSeriesPremise_proved`), closed-interval `(H*)` over `Q0_100` (`closedHStarCond_Q0_100`), and the `L = 120` ray strips (`RayCertInst`, `ray_cert_data_inst`) internally with `certifiedDecaySeq` (`C_2 ≤ 494`) | `Sieve/Regime3RayBridge.lean` (`regime3_ray_switchingBalance_lb_of_analytic`), `Sieve/Regime3RayBridge/RayCertInst.lean`, `Sieve/LinearSieveBJS/CertifiedC2.lean`; Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6` [BJS v6], Thm. 6 & Lemma 38) |
 | `Bridge.lean` | Bundles `SmallEvenPremise`, `SlabSieveEnclosurePremise`, and `AsymptoticRayEnclosurePremise` into `ExternalPremises`, and reduces `ExternalPremises` via `ClassicalBasicLemmas`, `robinOmegaBound_holds`, and `externalPremises_of_classical` to the 5 classical premises (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`, `MertensPrimeSumPremise`, and unconditional BJS v6 Lemma 38 `EulerProductVPremise`) | Top-level interface consumed by `BuchstabSwitching/Main.lean`; `RobinOmegaBound` (`robinOmegaBound_holds`), Regime 2 (`127/127` slabs, `SlabCertInst`), and Regime 3 (`L = 120` ray strips, `RayCertInst`) are kernel-instantiated in Lean |
 
-Contributors wishing to eliminate an assumption can prove the corresponding `Prop` inside
-its own subfolder and substitute the proof term into `ExternalPremises` (or via bridges such as
-`slabSieveEnclosurePremise_of_sieveBridge`) without touching `Core/`, `Sieve/`, or `Certificates/`.
+Contributors wishing to discharge one of the 4 remaining analytic assumptions (`JSLemma51Premise`,
+`SchoenfeldPrimePremise`, `MertensPrimeSumPremise`, `EulerProductVPremise`, plus a concrete
+`CertifiedConstants` witness; `SmallEvenPremise` on `4 ≤ N < 4 * 10^18` is retained as an external
+computational premise) should open PRs targeting **`on-dev`** inside the corresponding subfolder
+without touching `Core/`, `Sieve/`, or `Certificates/` (see `k3/CONTRIBUTING.md`).

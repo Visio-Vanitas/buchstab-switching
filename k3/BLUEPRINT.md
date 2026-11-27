@@ -53,18 +53,19 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
 
 ---
 
-## 2. Contributor Roadmap: Remaining 5 Classical Premises (`ClassicalBasicLemmas`)
+## 2. Contributor Roadmap on `on-dev`: 4 Remaining Analytic Lemmas (+ `CertifiedConstants`)
 
-`External.externalPremises_of_classical` reduces `ExternalPremises` to constructing a
-`CertifiedConstants` witness together with the five classical literature lemmas below:
+`External.externalPremises_of_classical` reduces `ExternalPremises` to `SmallEvenPremise`
+(retained as an external computational premise) plus constructing a `CertifiedConstants` witness
+and proving the **four remaining classical analytic lemmas** below on the **`on-dev`** branch:
 
-### Track 1: Finite Binary Verification (`External/FiniteVerification/SmallEven.lean`)
-- **Target**: `SmallEvenPremise` (`4 ≤ N < 4 * 10^18`).
-- **Strategy**: Verified certificate replay (e.g., segmented prime-gap tables or bounded
-  bitmask verification up to `4 * 10^18`, following Oliveira e Silva, Herzog & Pardi,
-  *Math. Comp.* **83** (2014), 2033–2060).
+### Retained External Computational Input (Out of Scope for `on-dev` PRs)
+- **`SmallEvenPremise` (`External/FiniteVerification/SmallEven.lean`)**: Binary prime
+  representations on the finite initial range `4 ≤ N < 4 * 10^18` (Oliveira e Silva, Herzog &
+  Pardi, *Math. Comp.* **83** (2014), 2033–2060). Retained as an external finite-verification
+  premise rather than re-tabulated inside Lean.
 
-### Track 2: Explicit GRH / RH Prime-Counting (`CharacterSums/DirichletGRH.lean` & `SchoenfeldRH/PrimeCountingRH.lean`)
+### Track 1 (Open PR Target): Explicit GRH / RH Prime-Counting (`CharacterSums/DirichletGRH.lean` & `SchoenfeldRH/PrimeCountingRH.lean`)
 - **Targets**: `JSLemma51Premise consts.li2` and `SchoenfeldPrimePremise consts.li2` from
   `DirichletLNonvanishingRightOfHalf` (`lsernau/grh-lean@72fead1`) and
   `Mathlib.NumberTheory.LSeries.DirichletContinuation`.
@@ -77,14 +78,14 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
   3. Schoenfeld explicit RH bound `|π(x) - li(x)| ≤ (√x ln x) / (8π)` for `x ≥ 2657`
      (*Math. Comp.* **30** (1976), Cor. 1) and unconditional Rosser–Schoenfeld fallback.
 
-### Track 3: Unconditional Mertens Reciprocal-Prime Bounds (`MertensSums/`)
+### Track 2 (Open PR Target): Explicit Mertens Reciprocal-Prime Bounds (`MertensSums/`)
 - **Target**: `MertensPrimeSumPremise consts.M0` (`RobinOmegaBound` is already discharged via `robinOmegaBound_holds`).
 - **Sub-lemmas**:
   1. Explicit Mertens reciprocal-prime bounds `∑_{p < x} 1/p = ln ln x + M₀ + O*(...)`
      following Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 3.2) and
      Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Lemmas 16–17).
 
-### Track 4: Unconditional Euler Product Asymptotic & Constants (`EulerProductV/` & `NumericalConstants/`)
+### Track 3 (Open PR Target): Unconditional Euler Product Asymptotic & Constants (`EulerProductV/` & `NumericalConstants/`)
 - **Targets**: `EulerProductVPremise consts.U_c consts.eNegGamma` and `CertifiedConstants`.
 - **Sub-lemmas**:
   1. Unconditional shifted-prime Euler product asymptotic `V_N(x) = (U_N / ln x) (1 + O*(δ_V))`

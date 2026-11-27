@@ -22,6 +22,20 @@ Both Lean 4 formalizations (`k4/lean/AllEvenOnePlusFour/` and `k3/`) use:
 
 GRH enters both certificates only through the explicit AP prime-counting bound of Grenié–Molteni / Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1). Both packages use the closed-interval `(H*)` correction replacing Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Theorem 6).
 
+## Active Formalization Branch (`on-dev`)
+
+Pull requests discharging the remaining classical analytic lemmas in `k3/BuchstabSwitching/External/` should target the **`on-dev`** branch (`leanprover/lean4:v4.36.0`, Mathlib `fc4f59e5`):
+
+- **Already Discharged in Lean 4**: `BuchstabSeriesPremise` (`buchstabSeriesPremise_proved`) and `RobinOmegaBound` (`robinOmegaBound_holds`, PR `#4`).
+- **Retained External Computational Premise (Out of Scope)**: `SmallEvenPremise` (`4 ≤ N < 4 * 10^18` distributed binary prime verification, Oliveira e Silva–Herzog–Pardi 2014) is intentionally kept as an external finite-table premise and is excluded from formalization PRs.
+- **Open Contributor Targets (`4` Analytic Lemmas + `CertifiedConstants`)**:
+  1. **`JSLemma51Premise consts.li2`** ([`k3/BuchstabSwitching/External/CharacterSums/DirichletGRH.lean`](k3/BuchstabSwitching/External/CharacterSums/DirichletGRH.lean)) — Explicit GRH prime counting in arithmetic progressions (Grenié–Molteni 2019, Cor. 1; Johnston–Starichkova `arXiv:2208.01229v3`, Lemma 5.1).
+  2. **`SchoenfeldPrimePremise consts.li2`** ([`k3/BuchstabSwitching/External/SchoenfeldRH/PrimeCountingRH.lean`](k3/BuchstabSwitching/External/SchoenfeldRH/PrimeCountingRH.lean)) — Schoenfeld (1976, Cor. 1) explicit RH prime-counting bound $|\pi(x) - \operatorname{li}(x)| \le \frac{\sqrt{x}\log x}{8\pi}$ for $x \ge 2657$.
+  3. **`MertensPrimeSumPremise consts.M0`** ([`k3/BuchstabSwitching/External/MertensSums/ReciprocalPrimeSums.lean`](k3/BuchstabSwitching/External/MertensSums/ReciprocalPrimeSums.lean)) — Explicit Mertens reciprocal-prime sum bounds (Johnston–Starichkova `arXiv:2208.01229v3`, Lemma 3.2; BJS `arXiv:2207.09452v6`, Lemmas 16–17).
+  4. **`EulerProductVPremise consts.U_c consts.eNegGamma`** ([`k3/BuchstabSwitching/External/EulerProductV/ProductAsymptotic.lean`](k3/BuchstabSwitching/External/EulerProductV/ProductAsymptotic.lean)) & **`CertifiedConstants`** ([`k3/BuchstabSwitching/External/NumericalConstants/ExplicitConstants.lean`](k3/BuchstabSwitching/External/NumericalConstants/ExplicitConstants.lean)) — Unconditional BJS (`arXiv:2207.09452v6`, Lemma 38) shifted-prime Euler product asymptotic $V_N(\lceil x \rceil)$ ($x \ge 285$) and explicit outward rational constant enclosures.
+
+See [`k3/CONTRIBUTING.md`](k3/CONTRIBUTING.md) and [`k3/BLUEPRINT.md`](k3/BLUEPRINT.md) for modular PR instructions and fast local verification workflows.
+
 ## Summary of Certified Results
 
 | Package | Target ($\forall$ even $N \ge 4$) | Finite Range | Tail Range | Lean 4 Project |
