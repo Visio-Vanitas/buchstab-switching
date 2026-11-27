@@ -112,6 +112,40 @@ theorem chen_above_plateau_quad_of_calibration'
   refine ⟨p, m, hp, hm_pos, hpN, ?_⟩
   simpa [ArithmeticFunction.cardFactors_apply] using hm
 
+/-- Literature-premise-free `polySplineKernel` 1-step variable-weight LP pure-GRH ray (`N ≥ 10^480`),
+discharging `SmoothExplicitFormulaLiteraturePremise` unconditionally inside Lean and aligned with
+`Challenge.lean`. -/
+theorem chen_above_polySpline_varWeight_pure_grh'
+    (hGRH : _root_.DirichletLNonvanishingRightOfHalf)
+    (hLemmas : BuchstabSwitchingK2.PureGRH.PureGRHVarWeightSieveLemmas
+      BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel
+      (1 / 25) (875 / 368) 1 688 84741000
+      BuchstabSwitchingK2.PureGRH.pureGRHPolySplineVarWeightRayCert) :
+    ∀ N : ℕ, 10 ^ 480 ≤ N → Even N →
+      ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ m.primeFactorsList.length ≤ 2 := by
+  intro N hN hEven
+  rcases BuchstabSwitchingK2.PureGRH.chen_above_polySpline_varWeight_pure_grh
+      hGRH hLemmas N hN hEven with ⟨p, m, hp, hm_pos, hpN, hm⟩
+  refine ⟨p, m, hp, hm_pos, hpN, ?_⟩
+  simpa [ArithmeticFunction.cardFactors_apply] using hm
+
+/-- Literature-premise-free `polySplineKernel` 2-step quadratic LP pure-GRH ray (`N ≥ 10^478`),
+discharging `SmoothExplicitFormulaLiteraturePremise` unconditionally inside Lean and aligned with
+`Challenge.lean`. -/
+theorem chen_above_polySpline_quad_pure_grh'
+    (hGRH : _root_.DirichletLNonvanishingRightOfHalf)
+    (hLemmas : BuchstabSwitchingK2.PureGRH.PureGRHQuadSieveLemmas
+      BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel
+      (1 / 25) (875 / 368) 1 688 84741000
+      BuchstabSwitchingK2.PureGRH.pureGRHPolySplineQuadRayCert) :
+    ∀ N : ℕ, 10 ^ 478 ≤ N → Even N →
+      ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ m.primeFactorsList.length ≤ 2 := by
+  intro N hN hEven
+  rcases BuchstabSwitchingK2.PureGRH.chen_above_polySpline_quad_pure_grh
+      hGRH hLemmas N hN hEven with ⟨p, m, hp, hm_pos, hpN, hm⟩
+  refine ⟨p, m, hp, hm_pos, hpN, ?_⟩
+  simpa [ArithmeticFunction.cardFactors_apply] using hm
+
 #print axioms allEvenPrimePlusAlmostPrime_agrees
 #print axioms dirichletLNonvanishingRightOfHalf_agrees
 #print axioms upstreamGRHPremise_agrees
@@ -123,6 +157,8 @@ theorem chen_above_plateau_quad_of_calibration'
 #print axioms chen_above_1e1668_sharp_grh'
 #print axioms chen_above_parzen_quad_smooth_pure_grh'
 #print axioms chen_above_plateau_quad_of_calibration'
+#print axioms chen_above_polySpline_varWeight_pure_grh'
+#print axioms chen_above_polySpline_quad_pure_grh'
 
 #print axioms BuchstabSwitchingK2.omegaMult_prime
 #print axioms BuchstabSwitchingK2.omegaMult_mul
@@ -295,6 +331,42 @@ theorem chen_above_plateau_quad_of_calibration'
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_plateau_quad_of_calibration
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_varWeight_of_primitive_contour_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_quad_of_primitive_contour_grh
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.differentiable_mellin_of_admissible
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.verticalIntegrable_mellin_of_admissible
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.sqrt_mul_abs_le_inv_two_pi_mellin_l1
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.mass_le_two_sub_sqrt_mul_mellin_l1
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.plateauBumpKernel_admissible
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.plateauBumpKernel_mass_ratio
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.nine_tenths_lt_plateauBumpKernel_mellin_l1
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel_admissible
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.integral_polySplineKernel
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.norm_mul_two_mellinPolySpline_le
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.norm_mul_three_mellinPolySpline_le
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.residue_rectangle_simple_poles
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.contour_vertical_shift_identity
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.smoothedPsiAll_eq_vertical_integral
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.smoothedPsiChar_eq_vertical_integral
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.zeroFactorization_on_ball
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.borelCaratheodory_logDeriv_on_subball
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.blaschke_borel_disk
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.local_expansion_LFunction_at_height
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.local_expansion_zeta_at_height
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.exists_good_shift_height_LFunction
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.exists_good_shift_height_zeta
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel_principalSmoothPNT
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel_primitiveSmoothEF
+#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel_smoothExplicitFormula
+#print axioms BuchstabSwitchingK2.PureGRH.pureGRHPolySplineConstRayCert_valid
+#print axioms BuchstabSwitchingK2.PureGRH.pureGRHPolySplineVarWeightRayCert_valid
+#print axioms BuchstabSwitchingK2.PureGRH.pureGRHPolySplineQuadRayCert_valid
+#print axioms BuchstabSwitchingK2.PureGRH.plateauBumpKernel_bounded
+#print axioms BuchstabSwitchingK2.PureGRH.plateauBumpKernel_calibration_mass_ratio
+#print axioms BuchstabSwitchingK2.PureGRH.plateauBumpKernel_mellin_l1_gt_nine_tenths
+#print axioms BuchstabSwitchingK2.PureGRH.plateauKernelCalibration_of_explicitFormula
+#print axioms BuchstabSwitchingK2.PureGRH.polySplineKernel_bounded
+#print axioms BuchstabSwitchingK2.PureGRH.chen_above_polySpline_const_pure_grh
+#print axioms BuchstabSwitchingK2.PureGRH.chen_above_polySpline_varWeight_pure_grh
+#print axioms BuchstabSwitchingK2.PureGRH.chen_above_polySpline_quad_pure_grh
 
 -- Challenge.lean: statement only. Expected to list `sorryAx`.
 #print axioms _root_.all_even_one_plus_two

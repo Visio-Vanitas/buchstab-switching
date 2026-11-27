@@ -711,6 +711,7 @@ def main() -> None:
     configs = [
         ("parzen_delta_1_25", Iv(4, 4), Iv(11, 11), 1),
         ("plateau_bump_model", Iv.from_frac(Fraction(9, 10)), Iv.from_frac(Fraction(14, 5)), 2),
+        ("polyspline_uncond_ef", Iv(688, 688), Iv(84741000, 84741000), 1),
     ]
     out: dict = {"ast_audit": ast_info, "regimes": {}}
     for label, k1, k0, ufac in configs:

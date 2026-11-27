@@ -1,4 +1,5 @@
 import BuchstabSwitchingK2.External.CitedPremisesK2
+import BuchstabSwitchingK2.External.SmoothExplicitFormula.PrimitiveExplicitFormulaProof
 import BuchstabSwitchingK2.Sieve.WeightedQuadraticSwitching
 import BuchstabSwitchingK2.Sieve.Regime3RayBridgeK2
 import BuchstabSwitchingK2.External.ClassicalBridgeK2
@@ -20,15 +21,24 @@ imports from beyond-square-root or sub-square-root cancellation bridges:
    - `divisiblePairCofactorSieved_self_subset_sievedShifted` (kernel closure of `S₂ ⊆ A_N(z)`);
    - `quadAbstractBalance`, `quadAbstractBalanceReal`, and `exists_rat_weight_quad_abstract_of_real_le`.
 3. **Kernel-Verified Pure-GRH Ray Certificates (`CertifiedPureGRHRays`)**:
-   - `pureGRHRayCert_325` (`10^325`), `pureGRHParzenConstRayCert` (`10^390`), and
-     `pureGRHPlateauConstRayCert` (`10^344`), each verified without evaluating large powers
-     directly inside `decide`.
+   - `pureGRHRayCert_325` (`10^325`), `pureGRHParzenConstRayCert` (`10^390`),
+     `pureGRHPlateauConstRayCert` (`10^344`), `pureGRHParzenVarWeightRayCert` (`10^320`),
+     `pureGRHPlateauVarWeightRayCert` (`10^284`), `pureGRHParzenQuadRayCert` (`10^316`),
+     `pureGRHPlateauQuadRayCert` (`10^280`), and literature-premise-free `polySplineKernel`
+     rays `pureGRHPolySplineConstRayCert` (`10^608`), `pureGRHPolySplineVarWeightRayCert`
+     (`10^480`), and `pureGRHPolySplineQuadRayCert` (`10^478`).
 4. **Top-Level Pure-GRH Theorems (`PureGRHTopLevelTheorems`)**:
-   - `chen_above_1e1668_sharp_grh`, `chen_above_1e325_smooth_pure_grh`,
-     `chen_above_1e390_parzen_smooth_pure_grh`, `chen_above_1e344_plateau_smooth_pure_grh`,
-     `chen_above_varWeight_smooth_pure_grh`, `chen_above_quad_smooth_pure_grh`, and
-     primitive-contour corollaries `chen_above_varWeight_of_primitive_contour_grh` and
-     `chen_above_quad_of_primitive_contour_grh`.
+   - Unconditional `plateauBumpKernel` admissibility (`plateauBumpKernel_bounded`), flat-top mass
+     ratio (`plateauBumpKernel_calibration_mass_ratio`), Fourier–Mellin uncertainty barrier
+     (`plateauBumpKernel_mellin_l1_gt_nine_tenths`), and single-field reduction
+     `plateauKernelCalibration_of_explicitFormula` for `PlateauKernelCalibrationLemma`;
+   - Literature-premise-free pure-GRH ray theorems `chen_above_polySpline_const_pure_grh`
+     (`10^608`), `chen_above_polySpline_varWeight_pure_grh` (`10^480`), and
+     `chen_above_polySpline_quad_pure_grh` (`10^478`), discharging
+     `SmoothExplicitFormulaLiteraturePremise` unconditionally inside Lean via
+     `SmoothExplicitFormula.polySplineKernel_smoothExplicitFormula`, alongside both existing
+     `Parzen` (`10^316` / `10^320` / `10^390`) and `plateau` (`10^280` / `10^284` / `10^344`)
+     frontiers.
 -/
 
 namespace BuchstabSwitchingK2.PureGRH
@@ -1052,6 +1062,10 @@ private lemma rayCert_valid_of_pow10 {k : ℕ} (hk : 19 ≤ k) {m e n d : ℕ}
   rw [RayCert.valid, decide_eq_true h1, decide_eq_true hd, decide_eq_true hn, decide_eq_true hle]
   rfl
 
+private lemma rayCert_X_LS_of_pow10 {k m e n d : ℕ} :
+    ({ X_LS := 10 ^ k, main_num := m, err_num := e, net_num := n, den := d } : RayCert).X_LS =
+      10 ^ k := rfl
+
 /-- Certified smooth 1-step constant-weight pure-GRH ray at `10^325`. -/
 def pureGRHRayCert_325 : RayCert where
   X_LS := 10 ^ 325
@@ -1129,6 +1143,42 @@ def pureGRHPlateauQuadRayCert : RayCert where
 theorem pureGRHPlateauQuadRayCert_valid : pureGRHPlateauQuadRayCert.valid = true :=
   rayCert_valid_of_pow10 (k := 280) (by decide) (by decide) (by decide) (by decide)
 
+/-- Certified 90-digit outward-rounded 1-step constant-weight ray at `10^608` for the
+literature-premise-free `polySplineKernel` explicit formula (`κ₁ = 688`, `κ₀ = 84741000`). -/
+def pureGRHPolySplineConstRayCert : RayCert where
+  X_LS := 10 ^ 608
+  main_num := 11098352
+  err_num := 11094548
+  net_num := 3804
+  den := 1000000
+
+theorem pureGRHPolySplineConstRayCert_valid : pureGRHPolySplineConstRayCert.valid = true :=
+  rayCert_valid_of_pow10 (k := 608) (by decide) (by decide) (by decide) (by decide)
+
+/-- Certified 90-digit outward-rounded 1-step variable-weight LP ray at `10^480` for the
+literature-premise-free `polySplineKernel` explicit formula (`κ₁ = 688`, `κ₀ = 84741000`). -/
+def pureGRHPolySplineVarWeightRayCert : RayCert where
+  X_LS := 10 ^ 480
+  main_num := 10984781
+  err_num := 10979235
+  net_num := 5546
+  den := 1000000
+
+theorem pureGRHPolySplineVarWeightRayCert_valid : pureGRHPolySplineVarWeightRayCert.valid = true :=
+  rayCert_valid_of_pow10 (k := 480) (by decide) (by decide) (by decide) (by decide)
+
+/-- Certified 90-digit outward-rounded 2-step quadratic LP ray at `10^478` for the
+literature-premise-free `polySplineKernel` explicit formula (`κ₁ = 688`, `κ₀ = 84741000`). -/
+def pureGRHPolySplineQuadRayCert : RayCert where
+  X_LS := 10 ^ 478
+  main_num := 11188826
+  err_num := 11184777
+  net_num := 4049
+  den := 1000000
+
+theorem pureGRHPolySplineQuadRayCert_valid : pureGRHPolySplineQuadRayCert.valid = true :=
+  rayCert_valid_of_pow10 (k := 478) (by decide) (by decide) (by decide) (by decide)
+
 end CertifiedPureGRHRays
 
 /-! ### Part 4: Pure-GRH Sieve Bundles & Top-Level Conditional Theorems -/
@@ -1153,14 +1203,61 @@ theorem exists_boundedSmoothedKernel_one_fiftieth :
 calibration of an admissible flat-top `C_c^∞` plateau bump kernel `Φ` achieving explicit-formula
 constants `κ₁ = 9 / 10` and `κ₀ = 14 / 5` together with flat-top mass ratio
 `(17 / 25 : ℝ) * Φ_max ≤ ∫ t in (0 : ℝ)..1, Φ t`. Left as an explicit open lemma hypothesis
-(zero `sorry`, zero custom `axiom`) on the `plateau` ray theorems below, whereas the conservative
-`Parzen` (`δ = 1 / 25`, `κ₁ = 4`, `κ₀ = 11`) ray theorems require only the standard cited
-explicit-formula premise. -/
+(zero `sorry`, zero custom `axiom`) on the `plateau` ray theorems below (`kernel` and `mass_ratio`
+are already discharged unconditionally below by `plateauBumpKernel_bounded` and
+`plateauBumpKernel_calibration_mass_ratio`, while `plateauBumpKernel_mellin_l1_gt_nine_tenths`
+isolates the vertical zero-cancellation content of `explicit_formula`). -/
 structure PlateauKernelCalibrationLemma (Φ : ℝ → ℝ) (δ Φ_max X₀ : ℝ) : Prop where
   kernel : BoundedSmoothedKernel Φ δ Φ_max
   mass_ratio : (17 / 25 : ℝ) * Φ_max ≤ ∫ t in (0 : ℝ)..1, Φ t
   explicit_formula :
     CitedPremises.SmoothExplicitFormulaLiteraturePremise Φ X₀ (9 / 10) (14 / 5)
+
+/-- Unconditional proof of the `kernel` field of `PlateauKernelCalibrationLemma` for the explicit
+`C_c^∞` flat-top kernel `SmoothExplicitFormula.plateauBumpKernel` (`δ = 1 / 25`, `Φ_max = 1`). -/
+theorem plateauBumpKernel_bounded :
+    BoundedSmoothedKernel SmoothExplicitFormula.plateauBumpKernel (1 / 25) 1 where
+  admissible := SmoothExplicitFormula.plateauBumpKernel_admissible
+  phi_max_nn := zero_le_one
+  phi_ub := SmoothExplicitFormula.plateauBumpKernel_le_one
+
+/-- Unconditional proof of the `mass_ratio` field of `PlateauKernelCalibrationLemma` for
+`SmoothExplicitFormula.plateauBumpKernel` (`(17 / 25) * 1 ≤ 18 / 25 ≤ ∫_0^1 Φ`). -/
+theorem plateauBumpKernel_calibration_mass_ratio :
+    (17 / 25 : ℝ) * 1 ≤ ∫ t in (0 : ℝ)..1, SmoothExplicitFormula.plateauBumpKernel t := by
+  linarith [SmoothExplicitFormula.plateauBumpKernel_mass_ratio]
+
+/-- **Fourier–Mellin Uncertainty Barrier for `PlateauKernelCalibrationLemma`**: for
+`SmoothExplicitFormula.plateauBumpKernel`, the critical-line Mellin `L¹` integral strictly exceeds
+`9 / 10`. Consequently, the `explicit_formula` field (`κ₁ = 9 / 10`, `κ₀ = 14 / 5`) of
+`PlateauKernelCalibrationLemma` cannot hold via triangle-inequality absolute zero-summation and
+genuinely requires vertical zero-cancellation. -/
+theorem plateauBumpKernel_mellin_l1_gt_nine_tenths :
+    (9 / 10 : ℝ) <
+      (1 / (2 * Real.pi)) *
+        ∫ y : ℝ,
+          ‖mellin (fun t : ℝ => (SmoothExplicitFormula.plateauBumpKernel t : ℂ))
+            ((1 / 2 : ℂ) + (y : ℂ) * Complex.I)‖ :=
+  SmoothExplicitFormula.nine_tenths_lt_plateauBumpKernel_mellin_l1
+
+/-- Reduces `PlateauKernelCalibrationLemma` on `SmoothExplicitFormula.plateauBumpKernel` (`δ = 1 / 25`,
+`Φ_max = 1`) solely to its vertical-cancellation `explicit_formula` bound, discharging `kernel` and
+`mass_ratio` unconditionally. -/
+theorem plateauKernelCalibration_of_explicitFormula {X₀ : ℝ}
+    (hEF : CitedPremises.SmoothExplicitFormulaLiteraturePremise
+      SmoothExplicitFormula.plateauBumpKernel X₀ (9 / 10) (14 / 5)) :
+    PlateauKernelCalibrationLemma SmoothExplicitFormula.plateauBumpKernel (1 / 25) 1 X₀ where
+  kernel := plateauBumpKernel_bounded
+  mass_ratio := plateauBumpKernel_calibration_mass_ratio
+  explicit_formula := hEF
+
+/-- Unconditional `BoundedSmoothedKernel` witness for `SmoothExplicitFormula.polySplineKernel`
+(`δ = 1 / 25`, `∫_0^1 Φ = 1`, `Φ_max = 875 / 368`). -/
+theorem polySplineKernel_bounded :
+    BoundedSmoothedKernel SmoothExplicitFormula.polySplineKernel (1 / 25) (875 / 368) where
+  admissible := SmoothExplicitFormula.polySplineKernel_admissible
+  phi_max_nn := by norm_num
+  phi_ub := SmoothExplicitFormula.polySplineKernel_le
 
 /-- Pure-GRH 1-step constant-weight ray main-term + unconditional-dispersion bundle over `[r.X_LS, ∞)`. -/
 def PureGRHConstRayMainTermLemma
@@ -1598,6 +1695,52 @@ theorem chen_above_plateau_quad_of_calibration
     ∀ N : ℕ, 10 ^ 280 ≤ N → Even N →
       ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ Ω m ≤ 2 :=
   chen_above_quad_smooth_pure_grh hGRH hPlateau.explicit_formula hLemmas
+
+/-- **Literature-Premise-Free Pure-GRH 1-Step Constant-Weight Smooth Ray (`N ≥ 10^608`)**:
+eliminates `SmoothExplicitFormulaLiteraturePremise` completely as an external premise by discharging
+it inside Lean via `SmoothExplicitFormula.polySplineKernel_smoothExplicitFormula` (`κ₁ = 688`,
+`κ₀ = 84741000`). -/
+theorem chen_above_polySpline_const_pure_grh
+    (hGRH : CitedPremises.UpstreamGRHPremise)
+    (hLemmas : PureGRHConstSieveLemmas SmoothExplicitFormula.polySplineKernel
+      (1 / 25) (875 / 368) 1 688 84741000 pureGRHPolySplineConstRayCert) :
+    ∀ N : ℕ, 10 ^ 608 ≤ N → Even N →
+      ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ Ω m ≤ 2 := by
+  have hX : pureGRHPolySplineConstRayCert.X_LS = 10 ^ 608 := rayCert_X_LS_of_pow10 (k := 608)
+  intro N hN hEven
+  rw [← hX] at hN
+  exact chen_above_const_smooth_pure_grh hGRH
+    SmoothExplicitFormula.polySplineKernel_smoothExplicitFormula hLemmas N hN hEven
+
+/-- **Literature-Premise-Free Pure-GRH 1-Step Variable-Weight LP Smooth Ray (`N ≥ 10^480`)**:
+requires ONLY `UpstreamGRHPremise` and conjecture-free `PureGRHVarWeightSieveLemmas`, with
+`SmoothExplicitFormulaLiteraturePremise` proved unconditionally in Lean. -/
+theorem chen_above_polySpline_varWeight_pure_grh
+    (hGRH : CitedPremises.UpstreamGRHPremise)
+    (hLemmas : PureGRHVarWeightSieveLemmas SmoothExplicitFormula.polySplineKernel
+      (1 / 25) (875 / 368) 1 688 84741000 pureGRHPolySplineVarWeightRayCert) :
+    ∀ N : ℕ, 10 ^ 480 ≤ N → Even N →
+      ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ Ω m ≤ 2 := by
+  have hX : pureGRHPolySplineVarWeightRayCert.X_LS = 10 ^ 480 := rayCert_X_LS_of_pow10 (k := 480)
+  intro N hN hEven
+  rw [← hX] at hN
+  exact chen_above_varWeight_smooth_pure_grh hGRH
+    SmoothExplicitFormula.polySplineKernel_smoothExplicitFormula hLemmas N hN hEven
+
+/-- **Literature-Premise-Free Pure-GRH 2-Step Quadratic Role-Reversal LP Smooth Ray (`N ≥ 10^478`)**:
+requires ONLY `UpstreamGRHPremise` and conjecture-free `PureGRHQuadSieveLemmas`, with
+`SmoothExplicitFormulaLiteraturePremise` proved unconditionally in Lean. -/
+theorem chen_above_polySpline_quad_pure_grh
+    (hGRH : CitedPremises.UpstreamGRHPremise)
+    (hLemmas : PureGRHQuadSieveLemmas SmoothExplicitFormula.polySplineKernel
+      (1 / 25) (875 / 368) 1 688 84741000 pureGRHPolySplineQuadRayCert) :
+    ∀ N : ℕ, 10 ^ 478 ≤ N → Even N →
+      ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ Ω m ≤ 2 := by
+  have hX : pureGRHPolySplineQuadRayCert.X_LS = 10 ^ 478 := rayCert_X_LS_of_pow10 (k := 478)
+  intro N hN hEven
+  rw [← hX] at hN
+  exact chen_above_quad_smooth_pure_grh hGRH
+    SmoothExplicitFormula.polySplineKernel_smoothExplicitFormula hLemmas N hN hEven
 
 end PureGRHTopLevelTheorems
 

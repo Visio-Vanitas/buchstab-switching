@@ -29,18 +29,42 @@ beyond-$\sqrt{N}$ or sub-$\sqrt{N}$ cancellation conjectures.
   - Unconditional multiplicative large sieve (`multiplicativeLargeSieve`), smoothed bilinear
     dispersion eliminating the $B_N$ parity error above $10^{50}$ (`smoothedBilinearDispersion`),
     Selberg $\Lambda^2$ / $L^1$ bounds (`SelbergL1Cancellation.lean`), and primitive-character
-    1D explicit-formula reductions (`CitedPremisesK2.lean`, `KernelSieveAssemblyK2.lean`).
+    1D explicit-formula reductions (`CitedPremisesK2.lean`, `KernelSieveAssemblyK2.lean`);
+  - **Complex-Analytic Proof of `SmoothExplicitFormulaLiteraturePremise` (`External/SmoothExplicitFormula/`)**:
+    - `KernelMellinDecay.lean`: general Mellin holomorphy, vertical integrability, universal
+      Fourier–Mellin uncertainty bounds (`sqrt_mul_abs_le_inv_two_pi_mellin_l1`,
+      `mass_le_two_sub_sqrt_mul_mellin_l1`), unconditional `plateauBumpKernel` construction
+      (`plateauBumpKernel_admissible`, `plateauBumpKernel_mass_ratio`, and strict Mellin $L^1$
+      barrier `nine_tenths_lt_plateauBumpKernel_mellin_l1`), and explicit normalized $C^2$
+      spline `polySplineKernel` (`integral_polySplineKernel = 1`, `O(|t|^{-2})` and `O(|t|^{-3})`
+      IBP Mellin bounds);
+    - `RectangleResidueMultiplicity.lean`, `MellinDirichletIdentity.lean`,
+      `RightHalfPlaneLandau.lean`, and `PrimitiveExplicitFormulaProof.lean`: Cauchy rectangle
+      residue identity with arbitrary zero multiplicity, $\sigma = 3/2$ Mellin–Dirichlet vertical
+      inversion, single-disk Blaschke + Borel–Carathéodory right-half-plane zero-density and
+      logarithmic-derivative bounds, and right-half-plane contour shifting ($\sigma_0 = 3/2 \to
+      \sigma_1 = 1/4$) proving `polySplineKernel_principalSmoothPNT`,
+      `polySplineKernel_primitiveSmoothEF`, and `polySplineKernel_smoothExplicitFormula` directly
+      from `UpstreamGRHPremise` (`DirichletLNonvanishingRightOfHalf`).
 - **Certified Pure-GRH `1 + 2` Rays (`PureGRHShowcaseK2.lean`, `scripts/certify_pure_grh_1p2.py`)**:
+  - **Literature-Premise-Free `polySplineKernel` (`δ = 1/25`, `∫_0^1 Φ = 1`, `Φ_max = 875/368`,
+    `κ₁ = 688`, `κ₀ = 84741000` proved unconditionally in Lean — zero `SmoothExplicitFormulaLiteraturePremise` hypothesis)**:
+    - `chen_above_polySpline_quad_pure_grh`: 2-step quadratic role-reversal LP ray for
+      $N \ge 10^{478}$ (`net_lo = +0.004049`, disjoint-modulus `c_mult = 1`, `7,864` squarefree +
+      non-squarefree multisets verified in exact `Fraction`);
+    - `chen_above_polySpline_varWeight_pure_grh`: 1-step variable-weight LP ray for
+      $N \ge 10^{480}$ (`net_lo = +0.005546`);
+    - `chen_above_polySpline_const_pure_grh`: 1-step constant-weight ray for $N \ge 10^{608}$
+      (`net_lo = +0.003804`);
   - **Conservative Parzen (`δ = 1/25`, `κ₁ = 4`, `κ₀ = 11`, standard cited explicit-formula premise)**:
     - `chen_above_parzen_quad_smooth_pure_grh`: 2-step quadratic role-reversal LP ray for
-      $N \ge 10^{316}$ (`net_lo = +0.001251`, disjoint-modulus `c_mult = 1`, `7,864` squarefree +
-      non-squarefree multisets verified in exact `Fraction`);
+      $N \ge 10^{316}$ (`net_lo = +0.001251`);
     - `chen_above_parzen_varWeight_smooth_pure_grh`: 1-step variable-weight LP ray for
       $N \ge 10^{320}$ (`net_lo = +0.007149`);
     - `chen_above_1e390_parzen_smooth_pure_grh`: 1-step constant-weight ray for $N \ge 10^{390}$
       (`net_lo = +0.000318`);
-  - **Flat-top plateau bump (`κ₁ = 9/10`, `κ₀ = 14/5`, explicitly conditioned on open calibration
-    lemma `PlateauKernelCalibrationLemma`)**:
+  - **Flat-top plateau bump (`κ₁ = 9/10`, `κ₀ = 14/5`, conditioned on `PlateauKernelCalibrationLemma`,
+    reduced to its vertical-cancellation field by `plateauKernelCalibration_of_explicitFormula`)**:
     - `chen_above_plateau_quad_of_calibration`: 2-step quadratic role-reversal LP ray for
       $N \ge 10^{280}$ (`net_lo = +0.000216`);
     - `chen_above_plateau_varWeight_of_calibration`: 1-step variable-weight LP ray for
