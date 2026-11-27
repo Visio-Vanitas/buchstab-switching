@@ -1,9 +1,11 @@
 # External Analytic Premises Directory
 
-`BuchstabSwitching/Main.lean` proves `BuchstabSwitching.even_eq_prime_add_omegaMult_le_three` and
-`BuchstabSwitching.all_even_one_plus_three_of_premises` with **zero `sorry`** and **only the three
-standard Lean axioms** (`propext`, `Quot.sound`, `Classical.choice`), parameterized explicitly over
-the analytic and computational interfaces collected in this directory.
+`BuchstabSwitching/Main.lean` proves `BuchstabSwitching.all_even_one_plus_three_of_classical`,
+`BuchstabSwitching.all_even_one_plus_three_of_premises`, and
+`BuchstabSwitching.even_eq_prime_add_omegaMult_le_three` with **zero `sorry`**, **zero
+`native_decide`**, and **only the three standard Lean axioms** (`propext`, `Quot.sound`,
+`Classical.choice`), parameterized explicitly over the analytic and computational interfaces
+collected in this directory.
 
 The directory is organized into **8 independent classical lemma subfolders**, **2 sieve-enclosure
 bridges**, and the top-level bundle `Bridge.lean`:

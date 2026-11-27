@@ -10,7 +10,7 @@ large" threshold. The repository is split symmetrically into two verified packag
 analytic sieve infrastructure:
 
 - [`k4/`](k4/README.md): **`1 + 4` ($\Omega(\eta) \le 4$ for all even $N \ge 4$)** — Brun block sieve on $[4 \cdot 10^{18}, 10^{500})$ + closed-interval `(H*)` linear sieve on $[10^{500}, \infty)$, stdlib-only Python interval certificates, and Lean 4 reduction (`k4/lean/AllEvenOnePlusFour/`).
-- [`k3/`](k3/README.md): **`1 + 3` ($\Omega(m) \le 3$ for all even $N \ge 4$)** — One-step Buchstab–Richert weighted sieve switching across `127` finite slabs on $[4 \cdot 10^{18}, 10^{600})$ (`2a`/`2b`/`2c`, Bonferroni + Brun block + adaptive Selberg $\Lambda^2$) + closed-interval `(H*)` linear sieve + Selberg $\Lambda^2$ on $[10^{600}, \infty)$, outward-rounded Python certifier (`PREC = 90`), and Lean 4 formalization (`k3/BuchstabSwitching/`) discharging `BuchstabSeries`, finite closed-interval `(H*)`, Lean kernel `C₂ ≤ 494`, and Regime 2/3 sieve engines.
+- [`k3/`](k3/README.md): **`1 + 3` ($\Omega(m) \le 3$ for all even $N \ge 4$)** — One-step Buchstab–Richert weighted sieve switching across `127` finite slabs on $[4 \cdot 10^{18}, 10^{600})$ (`2a`/`2b`/`2c`, Bonferroni + Brun block + adaptive Selberg $\Lambda^2$) + closed-interval `(H*)` linear sieve + Selberg $\Lambda^2$ on $[10^{600}, \infty)$, outward-rounded Python certifier (`PREC = 90`), and Lean 4 formalization (`k3/BuchstabSwitching/`) reducing `AllEvenPrimePlusAlmostPrime 3` (`all_even_one_plus_three_of_classical`) to GRH + 6 classical literature premises by discharging `BuchstabSeries`, closed-interval `(H*)` (`Q0_100`), Lean kernel `C₂ ≤ 494`, all `127` Regime 2 slabs via binary `Dyadic` proof-by-reflection (`SlabCertInst*`), and all `120` Regime 3 ray strips (`RayCertInst*`).
 - [`shared/`](shared/README.md): **Shared linear-sieve and block-sieve foundations** — notes `S1`–`S6`, Brun block sieve proof, linear-sieve `(H*)`/`C₁, C₂` Python certifiers, and SHA-256-verified provenance inputs.
 
 ## Pinned GRH Statement & Toolchain
@@ -27,7 +27,7 @@ GRH enters both certificates only through the explicit AP prime-counting bound o
 | Package | Target ($\forall$ even $N \ge 4$) | Finite Range | Tail Range | Lean 4 Project |
 | :--- | :--- | :--- | :--- | :--- |
 | [`k4/`](k4/README.md) | $\Omega(\eta) \le 4$ | `[4·10^18, 10^500)`: `58` Brun block slabs (`min net > 1.6796e-3`) | `[10^500, ∞)`: linear sieve `ε = 1/80` (`net > 0.07522`) | [`k4/lean/AllEvenOnePlusFour/`](k4/lean/AllEvenOnePlusFour/README.md) (`Challenge.lean` reduction + `comparator`) |
-| [`k3/`](k3/README.md) | $\Omega(m) \le 3$ | `[4·10^18, 10^600)`: `127` slabs (`min net >= 0.001833`, `min sieve_net >= 0.009891`) | `[10^600, ∞)`: closed `(H*)` `Q0_100` + Lean `C₂ ≤ 494` (`cap 495`, `net >= 0.046862`, `tol = 609.2x`; `100:old` `0.051917`, `100:new` `0.055822`) | [`k3/`](k3/README.md) (one-step switching, Brun/Bonferroni/Selberg/BJS engines, `by decide` certs + `comparator`) |
+| [`k3/`](k3/README.md) | $\Omega(m) \le 3$ | `[4·10^18, 10^600)`: `127` slabs (`min net >= 0.001763`, `min sieve_net >= 0.003969`, `min tol = 1.04x`) | `[10^600, ∞)`: closed `(H*)` `Q0_100` + Lean `C₂ ≤ 494` (`cap 495`, `net >= 0.046825`, `C₂ break-even <= 1853.2`, `tol = 608.7x`; `100:old` `0.051880`, `100:new` `0.055785`) | [`k3/`](k3/README.md) (`all_even_one_plus_three_of_classical`, binary `Dyadic` reflection on `127` slabs + `120` ray strips, `by decide` + `comparator`) |
 
 ## Reproduce
 
@@ -54,5 +54,6 @@ lake env lean AxiomsCheckK3.lean
 python3 scripts/quick_verify.py
 python3 scripts/certify_omega_le_3.py   # regenerates scripts/data/certified_bounds.txt and scripts/data/certified_slabs.json
 python3 scripts/generate_lean_data.py   # regenerates BuchstabSwitching/Certificates/Data.lean from certified_slabs.json
+python3 -m scripts.sieve_cert.slab_witness_export  # regenerates 12 binary Dyadic witness shards SlabCertInstData*.lean
 bash comparator/run_comparator.sh
 ```

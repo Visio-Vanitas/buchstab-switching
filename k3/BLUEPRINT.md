@@ -1,8 +1,9 @@
 # Blueprint for Discharging External Analytic Inputs
 
 This blueprint describes the modular architecture of `BuchstabSwitching` and provides a
-roadmap for proving the remaining assumptions in `BuchstabSwitching/External/` inside Lean 4 /
-Mathlib so that `even_eq_prime_add_omegaMult_le_three` rests only on
+roadmap for proving the six classical literature assumptions in `External.ClassicalBasicLemmas`
+inside Lean 4 / Mathlib so that `all_even_one_plus_three_of_classical` (and
+`even_eq_prime_add_omegaMult_le_three`) rests only on
 `External.DirichletLNonvanishingRightOfHalf` (pinned to
 `https://github.com/lsernau/grh-lean@72fead102f663d5c7a407964a13dc0cf9d977207`,
 `grh-compact/src/Statements.lean`, where `src/Main.lean` proves `LFunction_ne_zero_of_half_lt_re`).
@@ -10,58 +11,84 @@ Mathlib so that `even_eq_prime_add_omegaMult_le_three` rests only on
 ## Proof Dependency Graph
 
 ```
-Core/MultiplicativeOmega.lean       Core/ShiftedPrimes.lean
-             \                               /
-              v                             v
-         Sieve/OneStepSwitching.lean   Sieve/{BonferroniHybrid, SelbergLambdaSq}.lean
-                      \
-                       v
-Certificates/{Types, Data, Soundness}.lean  +  External/Bridge.lean
-                                  \               /
-                                   v             v
-                            BuchstabSwitching/Main.lean
+Core/{MultiplicativeOmega, ShiftedPrimes}.lean
+                 |
+                 v
+Sieve/{OneStepSwitching, BonferroniHybrid, BrunBlockSieve, SelbergLambdaSq, ...}.lean
+                 |
+       +---------+-------------------------------+
+       |                                         |
+       v                                         v
+Sieve/Regime2SlabBridge/SlabCertInst*.lean   Sieve/Regime3RayBridge/RayCertInst*.lean
+(127/127 slabs, binary Dyadic reflection)    (Q0_100 closed (H*), C₂ ≤ 494, 120 strips,
+       |                                      + BuchstabSeries.buchstabSeriesPremise_proved)
+       v                                         |
+External/SlabSieveEnclosure.lean                 v
+       \                                External/AsymptoticRayEnclosure.lean
+        \                                       /
+         v                                     v
+      External/Bridge.lean (ClassicalBasicLemmas → externalPremises_of_classical)
+                              |
+                              v
+      BuchstabSwitching/Main.lean (all_even_one_plus_three_of_classical)
 ```
 
-All combinatorial, multiplicative, and rational-certificate modules (`Core/`, `Sieve/`,
-`Certificates/`, `Main.lean`) are **fully verified with zero `sorry` and zero custom axioms**.
+## 1. Already Discharged Inside Lean 4 (`0 sorry`, `0` custom axioms, `0 native_decide`)
 
-## Contributor Roadmap (`BuchstabSwitching/External/`)
+All combinatorial, multiplicative, linear-sieve, and numerical-certificate engines are **fully
+proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`:
+
+1. **Combinatorial One-Step Switching & Sieve Engines (`Core/`, `Sieve/`)**:
+   - Multiplicative $\Omega(m)$ pinch (`omegaMult_le_three_of_sieve_pinch`, `switchingBalance_le_card_good`).
+   - Hybrid `Q₁ × P₂` Bonferroni identities and prime-omission monotonicity (`BonferroniHybrid`, `BonferroniEstimates`).
+   - Brun combinatorial block lower sieve parity rule ($\chi^- \le \mathbf{1}$), remainder $E^-$, level bound $\prod z_i^{m_i - m_{i-1}}$, and prime-omission monotonicity (`BrunBlockSieve`).
+   - Selberg $\Lambda^2$ quadratic upper sieve, diagonalization, `V_N(z) J_N(z, ξ) ≥ V_full(z) J_full(z, ξ)` coupling, disjoint two-prime inclusion-exclusion `J_full(z, ξ)`, odd squarefree bound $\sum_{d \le X, 2\nmid d} \mu^2(d) \le \frac{4}{\pi^2} X + \sqrt{X}$, and collision sum $\sum_{L \le X, 2\nmid L} \mu^2(L) 3^{\omega(L)} \le \frac{1}{16} X (\ln X + 6)^2$ (`SelbergLambdaSq`, `SelbergDiagonalization`, `OddSquarefreeBounds`).
+2. **Buchstab Delay-Differential Series (`External/BuchstabSeries/`)**:
+   - Unconditional theorem `buchstabSeriesPremise_proved` establishing $F(s) = 1 + \sum_{n \text{ odd}} f_n(s)$ and $f(s) = 1 - \sum_{n \text{ even}} f_n(s)$.
+3. **Regime 2 Finite-Slab Enclosure (`SlabSieveEnclosurePremise` via `SlabCertInst*`)**:
+   - `slabSieveEnclosurePremise_of_sieveBridge` + `allSlabs_bridges_inst` verify all `127` contiguous slabs on $[4 \cdot 10^{18}, 10^{600})$ (`21` in `2a`, `40` in `2b`, `66` in `2c`, `6,448` slices total) via binary `Dyadic` proof-by-reflection (`m * 2^e / 2^8192`), depth-6 `OddPrimeTree` (`2,960` odd primes $< 27{,}000$), and non-deterministic algebraic/transcendental witnesses (`by decide`).
+4. **Regime 3 Asymptotic Ray Enclosure (`AsymptoticRayEnclosurePremise` via `RayCertInst*`)**:
+   - `asymptoticRayEnclosurePremise_of_sieveBridge` + `ray_cert_data_inst` verify all even $N \ge 10^{600}$ via closed-interval `(H*)` on `Q0_100` (`closedHStarCond_Q0_100`, $\varepsilon_* < 1/100$), kernel-certified `C2_bjs certifiedDecaySeq (1/100) ≤ 494` (Python cap `495`, break-even $C_2 \le 1853.2$), integer cutoffs $z = \lfloor N^{1/16} \rfloor$, $y = \lceil (N/z)^{1/3} \rceil$, and `L = 120` monotone Selberg `Λ²` strips.
+
+---
+
+## 2. Contributor Roadmap: Remaining 6 Classical Premises (`ClassicalBasicLemmas`)
+
+`External.externalPremises_of_classical` reduces `ExternalPremises` to constructing a
+`CertifiedConstants` witness together with the six classical literature lemmas below:
 
 ### Track 1: Finite Binary Verification (`External/FiniteVerification/SmallEven.lean`)
-- **Goal**: Establish `SmallEvenPremise` for even integers `4 ≤ N < 4 * 10^18`.
+- **Target**: `SmallEvenPremise` (`4 ≤ N < 4 * 10^18`).
 - **Strategy**: Verified certificate replay (e.g., segmented prime-gap tables or bounded
   bitmask verification up to `4 * 10^18`, following Oliveira e Silva, Herzog & Pardi,
   *Math. Comp.* **83** (2014), 2033–2060).
 
-### Track 2: Explicit GRH Prime-Counting in APs (`External/CharacterSums/DirichletGRH.lean`)
-- **Goal**: Derive `ExplicitPrimeInAPPremise` from `DirichletLNonvanishingRightOfHalf` (`lsernau/grh-lean@72fead1`) and
+### Track 2: Explicit GRH / RH Prime-Counting (`CharacterSums/DirichletGRH.lean` & `SchoenfeldRH/PrimeCountingRH.lean`)
+- **Targets**: `JSLemma51Premise consts.li2` and `SchoenfeldPrimePremise consts.li2` from
+  `DirichletLNonvanishingRightOfHalf` (`lsernau/grh-lean@72fead1`) and
   `Mathlib.NumberTheory.LSeries.DirichletContinuation`.
 - **Sub-lemmas**:
-  1. Explicit von Mangoldt smoothed Perron formula (`ψ(x, χ)`) under zero-free strip
+  1. Explicit von Mangoldt smoothed Perron formula (`ψ(x, χ)`) under zero-free half-plane
      `Re(s) > 1/2`.
-  2. Partial summation from `ψ(x; d, a)` to `π(x; d, a) = li(x) / φ(d) + O*(c_π(x) √x ln x)`
-     following Grenié–Molteni (*Ramanujan J.* **49** (2019), 535–548).
-  3. Schoenfeld explicit `|π(x) - li(x)| ≤ (√x ln x) / (8π)` and Robin explicit `ω(N)` bound.
+  2. Partial summation to `|π(x; d, a) - li(x) / φ(d)| ≤ c_π(X₂) √x ln x` (`x ≥ X₂ ≥ 4 * 10^18`,
+     `3 ≤ d ≤ √x`) following Grenié–Molteni (*J. Number Theory* **200** (2019), Cor. 1;
+     *Ramanujan J.* **49** (2019), 535–548) and Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 5.1).
+  3. Schoenfeld explicit RH bound `|π(x) - li(x)| ≤ (√x ln x) / (8π)` for `x ≥ 2657`
+     (*Math. Comp.* **30** (1976), Cor. 1) and unconditional Rosser–Schoenfeld fallback.
 
-### Track 3: Finite-Slab Sieve Enclosures (`External/MultiplicativeBounds/SlabSieveEnclosure.lean`)
-- **Goal**: Prove `SlabSieveEnclosurePremise` linking each `c ∈ allSlabs` over
-  `[4 * 10^18, 10^600)` to `switchingBalance N c.z c.y` (normalized by `|A_N|` on `2a/2b`
-  and `|A_N| * V_N(z)` on `2c`).
+### Track 3: Unconditional Prime-Factor & Mertens Bounds (`RobinOmega/` & `MertensSums/`)
+- **Targets**: `RobinOmegaBound` and `MertensPrimeSumPremise consts.M0`.
 - **Sub-lemmas**:
-  1. Explicit Mertens sums `∑_{p < x} 1/p` (`Rosser–Schoenfeld 1962`, `Johnston–Starichkova arXiv:2208.01229v3`).
-  2. Odd squarefree counting `∑_{d ≤ X, 2 ∤ d} μ²(d) ≤ (4/π²) X + √X` and Selberg collision
-     bound `∑_{L ≤ X, 2 ∤ L} μ²(L) 3^{ω(L)} ≤ (1/16) X (ln X + 6)²`.
-  3. Brun combinatorial block lower sieve parity rule (`χ⁻ ≤ 1`), block remainder `E⁻`,
-     modbound `∏ z_i^{m_i - m_{i-1}}`, prime-omission monotonicity across sub-cutoffs `z_sub ≤ z`,
-     and two-prime inclusion-exclusion `J_full(z, ξ)`.
+  1. Robin's explicit prime-divisor bound `ω(N) ≤ 1.3841 ln N / ln ln N` for `N ≥ 3`
+     (*Acta Arith.* **42** (1983), Théorème 11).
+  2. Explicit Mertens reciprocal-prime bounds `∑_{p < x} 1/p = ln ln x + M₀ + O*(...)`
+     following Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 3.2) and
+     Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Lemmas 16–17).
 
-### Track 4: Asymptotic Ray Closure (`External/LinearSieve/AsymptoticRayEnclosure.lean`)
-- **Goal**: Prove `AsymptoticRayEnclosurePremise` uniformly for all even `N ≥ 10^600`.
+### Track 4: Unconditional Euler Product Asymptotic & Constants (`EulerProductV/` & `NumericalConstants/`)
+- **Targets**: `EulerProductVPremise consts.U_c consts.eNegGamma` and `CertifiedConstants`.
 - **Sub-lemmas**:
-  1. Closed-interval two-variable pre-sieve error `(H*)` on `Q0_100` (`ε_* < 1/100`, Lean kernel-certified
-     `certifiedDecaySeq` `C₂ ≤ 494` / Python cap `495`, plus SHA-256 cross-checks `100:old`
-     `C₂ ≤ 348.365884` and `100:new` `C₂ ≤ 235.091292` in `../shared/data/linear_sieve_inputs/`,
-     break-even `C₂ ≤ 1854.3`).
-  2. Explicit Jurkat–Richert / linear-sieve enclosure of Buchstab's lower sieve function `f(s)`
-     and error `h(s)` with integer cutoff rounding `z = ⌊N^{1/16}⌋`, `y = ⌈(N/z)^{1/3}⌉`.
-  3. Monotone pre-sieve-free Selberg `Λ²` bound `V_N(z) * J_full(z, z^r)`.
+  1. Unconditional shifted-prime Euler product asymptotic `V_N(x) = (U_N / ln x) (1 + O*(δ_V))`
+     for `x ≥ 285` following Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Lemma 38 `vjlem`).
+  2. Rational interval enclosures in `CertifiedConstants` for `li(2)`, Meissel–Mertens `M₀`,
+     `U_c = 2 C₂ e^{-γ}`, and `e^{-γ}` via convergent series and finite prime products with integral tails.
