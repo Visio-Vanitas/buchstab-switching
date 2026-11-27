@@ -7,11 +7,11 @@ Lake version 5.0.0-src+0b77e12 (Lean version 4.37.0-rc1)
 [exit 0]
 == build BuchstabSwitching
 $ lake build BuchstabSwitching
-ℹ [8193/8197] Replayed BuchstabSwitching.Main
+ℹ [8237/8241] Replayed BuchstabSwitching.Main
 info: BuchstabSwitching/Main.lean:87:0: 'BuchstabSwitching.even_eq_prime_add_omegaMult_le_three' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: BuchstabSwitching/Main.lean:88:0: 'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: BuchstabSwitching/Main.lean:89:0: 'BuchstabSwitching.all_even_one_plus_three_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
-Build completed successfully (8197 jobs).
+Build completed successfully (8241 jobs).
 [exit 0]
 == axioms check
 $ lake env lean AxiomsCheckK3.lean
@@ -40,6 +40,7 @@ $ lake env lean AxiomsCheckK3.lean
 'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.ray_cert_data_inst' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.SieveInst.allSlabs_bridges_inst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.External.robinOmegaBound_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.External.externalPremises_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.all_even_one_plus_three_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
 [exit 0]
@@ -103,6 +104,7 @@ $ lake env lean BuchstabSwitching/Sieve/AxiomsAudit.lean
  Classical.choice,
  Quot.sound]
 'BuchstabSwitching.External.buchstabSeriesPremise_proved' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BuchstabSwitching.External.robinOmegaBound_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.External.slabSieveEnclosurePremise_of_sieveBridge' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
@@ -120,35 +122,35 @@ $ lake env lean BuchstabSwitching/Sieve/AxiomsAudit.lean
 'BuchstabSwitching.all_even_one_plus_three_of_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitching.all_even_one_plus_three_of_classical' depends on axioms: [propext, Classical.choice, Quot.sound]
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Types.olean comparator/ChallengeK3Types.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Types.olean comparator/ChallengeK3Types.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Data.olean comparator/ChallengeK3Data.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Data.olean comparator/ChallengeK3Data.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3MertensTwoVar.olean comparator/ChallengeK3MertensTwoVar.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3MertensTwoVar.olean comparator/ChallengeK3MertensTwoVar.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3DirichletGRH.olean comparator/ChallengeK3DirichletGRH.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3DirichletGRH.olean comparator/ChallengeK3DirichletGRH.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Schoenfeld.olean comparator/ChallengeK3Schoenfeld.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Schoenfeld.olean comparator/ChallengeK3Schoenfeld.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3MertensExt.olean comparator/ChallengeK3MertensExt.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3MertensExt.olean comparator/ChallengeK3MertensExt.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3EulerV.olean comparator/ChallengeK3EulerV.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3EulerV.olean comparator/ChallengeK3EulerV.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Constants.olean comparator/ChallengeK3Constants.lean
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Constants.olean comparator/ChallengeK3Constants.lean
 [exit 0]
-$ env LEAN_PATH=C:/bs-work/repo/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Reduction.olean comparator/ChallengeK3Reduction.lean
-comparator/ChallengeK3Reduction.lean:78:8: warning: declaration uses `sorry`
-comparator/ChallengeK3Reduction.lean:90:8: warning: declaration uses `sorry`
-comparator/ChallengeK3Reduction.lean:97:8: warning: declaration uses `sorry`
-comparator/ChallengeK3Reduction.lean:103:8: warning: declaration uses `sorry`
+$ env LEAN_PATH=D:/hajimi/buchstab-switching/k3/.lake/comparator lake env lean --root=comparator -o .lake/comparator/ChallengeK3Reduction.olean comparator/ChallengeK3Reduction.lean
+comparator/ChallengeK3Reduction.lean:73:8: warning: declaration uses `sorry`
+comparator/ChallengeK3Reduction.lean:85:8: warning: declaration uses `sorry`
+comparator/ChallengeK3Reduction.lean:92:8: warning: declaration uses `sorry`
+comparator/ChallengeK3Reduction.lean:98:8: warning: declaration uses `sorry`
 [exit 0]
-$ bash -c LEAN_PATH='C:/bs-work/repo/k3/.lake/comparator' lake env leanexport ChallengeK3Reduction -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/c/bs-work/repo/k3/.lake/exp/red-challenge.export'
+$ bash -c LEAN_PATH='D:/hajimi/buchstab-switching/k3/.lake/comparator' lake env leanexport ChallengeK3Reduction -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/d/hajimi/buchstab-switching/k3/.lake/exp/red-challenge.export'
 [exit 0]
-$ bash -c lake env leanexport BuchstabSwitching -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/c/bs-work/repo/k3/.lake/exp/red-solution.export'
+$ bash -c lake env leanexport BuchstabSwitching -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/d/hajimi/buchstab-switching/k3/.lake/exp/red-solution.export'
 [exit 0]
-sha256: fb9d35f3f8ea4e9ab0da06ca105a6148eb58dba3675374062c9a4122455d82a5 red-challenge.export; a8dc22765c2c2c4b1ecddee7546b13055576e996e758d6750ba372a955540934 red-solution.export
+sha256: 126e001660f8decdd04785091697ad2bf6e1e3deeceb94ba07f8fec860678b54 red-challenge.export; 6d4b034f887e86125eb40b320499853832531b79038902d2e70afb64981b9f87 red-solution.export
 external kernels available: leanchecker-paranoid.exe leanchecker.exe nanoda_bin.exe 
-$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k3/.lake/exp/reduction.runtime.json --challenge-from-export C:/bs-work/repo/k3/.lake/exp/red-challenge.export --solution-from-export C:/bs-work/repo/k3/.lake/exp/red-solution.export
+$ lake comparator --inadvisably-no-sandbox --config D:/hajimi/buchstab-switching/k3/.lake/exp/reduction.runtime.json --challenge-from-export D:/hajimi/buchstab-switching/k3/.lake/exp/red-challenge.export --solution-from-export D:/hajimi/buchstab-switching/k3/.lake/exp/red-solution.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 Running Lean paranoid kernel on solution
 Lean paranoid kernel accepts the solution
@@ -159,7 +161,7 @@ Lean default kernel accepts the solution
 Your solution is okay!
 [exit 0]
 == rehearsal: self-challenge (must reject sorryAx)
-$ lake comparator --inadvisably-no-sandbox --config C:/bs-work/repo/k3/.lake/exp/reduction.runtime.json --challenge-from-export C:/bs-work/repo/k3/.lake/exp/red-challenge.export --solution-from-export C:/bs-work/repo/k3/.lake/exp/red-challenge.export
+$ lake comparator --inadvisably-no-sandbox --config D:/hajimi/buchstab-switching/k3/.lake/exp/reduction.runtime.json --challenge-from-export D:/hajimi/buchstab-switching/k3/.lake/exp/red-challenge.export --solution-from-export D:/hajimi/buchstab-switching/k3/.lake/exp/red-challenge.export
 WARNING: Sandbox disabled, this run is not trustworthy.
 error: Illegal axiom detected: 'sorryAx'
 [exit 1]

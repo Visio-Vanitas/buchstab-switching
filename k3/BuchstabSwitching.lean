@@ -23,6 +23,11 @@ import BuchstabSwitching.Certificates.Soundness
 import BuchstabSwitching.External.FiniteVerification.SmallEven
 import BuchstabSwitching.External.CharacterSums.DirichletGRH
 import BuchstabSwitching.External.SchoenfeldRH.PrimeCountingRH
+import BuchstabSwitching.External.RobinOmega.Basic
+import BuchstabSwitching.External.RobinOmega.Reduction
+import BuchstabSwitching.External.RobinOmega.ChebyshevLower
+import BuchstabSwitching.External.RobinOmega.Asymptotic
+import BuchstabSwitching.External.RobinOmega.FiniteCheck
 import BuchstabSwitching.External.RobinOmega.PrimeFactorCount
 import BuchstabSwitching.External.MertensSums.ReciprocalPrimeSums
 import BuchstabSwitching.External.EulerProductV.ProductAsymptotic

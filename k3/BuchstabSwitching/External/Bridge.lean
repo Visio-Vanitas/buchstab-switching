@@ -17,13 +17,13 @@ Combines the three independent external premise interfaces (finite initial check
 finite-slab GRH sieve enclosure, and asymptotic linear-sieve ray enclosure) into a single
 `Prop` structure consumed by `BuchstabSwitching/Main.lean`.
 
-Also provides `ClassicalBasicLemmas`, gathering the six classical/computational external
-premises (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`,
-`RobinOmegaBound`, `MertensPrimeSumPremise`, and unconditional BJS v6 Lemma 38
-`EulerProductVPremise`), together with `externalPremises_of_classical`, which discharges
-`ExternalPremises` through the kernel-instantiated `127`-slab bridge (`SlabCertInst`) and
-the `L = 120` asymptotic ray bridge (`RayCertInst`). No custom `axiom` declarations are used
-anywhere in this project.
+Also provides `ClassicalBasicLemmas`, gathering the five remaining classical/computational
+external premises (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`,
+`MertensPrimeSumPremise`, and unconditional BJS v6 Lemma 38 `EulerProductVPremise`), together
+with `externalPremises_of_classical`, which discharges `ExternalPremises` through the
+unconditionally proved `robinOmegaBound_holds` (`RobinOmega/PrimeFactorCount.lean`), the
+kernel-instantiated `127`-slab bridge (`SlabCertInst`), and the `L = 120` asymptotic ray bridge
+(`RayCertInst`). No custom `axiom` declarations are used anywhere in this project.
 -/
 
 namespace BuchstabSwitching.External
@@ -35,21 +35,21 @@ structure ExternalPremises : Prop where
   slab_enclosure : SlabSieveEnclosurePremise
   ray_enclosure : AsymptoticRayEnclosurePremise
 
-/-- Consolidated classical/computational premise bundle across the six independent external
-premises (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`,
-`RobinOmegaBound`, `MertensPrimeSumPremise`, and unconditional BJS v6 Lemma 38
-`EulerProductVPremise`). All Regime 2 (`127/127` slabs) and Regime 3 (`L = 120` ray strips)
-sieve certificates, `BuchstabSeries`, and closed-interval `(H*)` are discharged internally. -/
+/-- Consolidated classical/computational premise bundle across the five remaining independent
+external premises (`SmallEvenPremise`, `JSLemma51Premise`, `SchoenfeldPrimePremise`,
+`MertensPrimeSumPremise`, and unconditional BJS v6 Lemma 38 `EulerProductVPremise`).
+`RobinOmegaBound` (`robinOmegaBound_holds`), `BuchstabSeries` (`buchstabSeriesPremise_proved`),
+closed-interval `(H*)`, and all Regime 2 (`127/127` slabs) and Regime 3 (`L = 120` ray strips)
+sieve certificates are discharged internally. -/
 structure ClassicalBasicLemmas (consts : CertifiedConstants) : Prop where
   small_even : SmallEvenPremise
   js_ap : JSLemma51Premise consts.li2
   schoenfeld : SchoenfeldPrimePremise consts.li2
-  robin : RobinOmegaBound
   mertens : MertensPrimeSumPremise consts.M0
   euler_v : EulerProductVPremise consts.U_c consts.eNegGamma
 
-/-- Discharges `ExternalPremises` from `ClassicalBasicLemmas consts` via the formalized
-Regime 2 (`127`-slab) and Regime 3 (`L = 120` ray) sieve bridges. -/
+/-- Discharges `ExternalPremises` from `ClassicalBasicLemmas consts` via `robinOmegaBound_holds`
+and the formalized Regime 2 (`127`-slab) and Regime 3 (`L = 120` ray) sieve bridges. -/
 theorem externalPremises_of_classical
     {consts : CertifiedConstants} (hCls : ClassicalBasicLemmas consts) :
     ExternalPremises :=
@@ -57,9 +57,9 @@ theorem externalPremises_of_classical
     ⟨by linarith [consts.li2_bounds.1], by linarith [consts.li2_bounds.2]⟩
   { small_even := hCls.small_even
     slab_enclosure := slabSieveEnclosurePremise_of_sieveBridge
-      ⟨⟨hCls.js_ap, hCls.schoenfeld, hCls.robin, hli2⟩, hCls.mertens,
+      ⟨⟨hCls.js_ap, hCls.schoenfeld, robinOmegaBound_holds, hli2⟩, hCls.mertens,
         BuchstabSwitching.SieveInst.allSlabs_bridges_inst consts⟩
     ray_enclosure := asymptoticRayEnclosurePremise_of_sieveBridge
-      ⟨⟨hCls.js_ap, hCls.schoenfeld, hCls.robin, hli2⟩, hCls.mertens, hCls.euler_v⟩ }
+      ⟨⟨hCls.js_ap, hCls.schoenfeld, robinOmegaBound_holds, hli2⟩, hCls.mertens, hCls.euler_v⟩ }
 
 end BuchstabSwitching.External
