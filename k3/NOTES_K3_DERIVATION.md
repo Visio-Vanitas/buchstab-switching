@@ -2,7 +2,7 @@
 
 This note documents the mathematical derivation, normalization conventions, finite-terminating Buchstab error bounds, two-variable Mertens closure, and parameter robustness of the `k3/` subproject, verifying:
 
-> **Theorem (`BuchstabSwitching.all_even_one_plus_three_of_classical` & `even_eq_prime_add_omegaMult_le_three`).** *Assuming `DirichletLNonvanishingRightOfHalf` (GRH for Dirichlet $L$-functions, instantiated against Mathlib's `DirichletCharacter.LFunction` matching `https://github.com/lsernau/grh-lean@72fead102f663d5c7a407964a13dc0cf9d977207`, `grh-compact/src/Statements.lean`) together with the five classical literature premises in `BuchstabSwitching.External.ClassicalBasicLemmas`, every even integer $N \ge 4$ satisfies $N = p + m$ with $p$ prime, $0 < m$, and $\Omega(m) \le 3$.*
+> **Theorem (`BuchstabSwitching.all_even_one_plus_three_of_classical` & `even_eq_prime_add_omegaMult_le_three`).** *Assuming `DirichletLNonvanishingRightOfHalf` (GRH for Dirichlet $L$-functions, instantiated against Mathlib's `DirichletCharacter.LFunction` matching `https://github.com/lsernau/grh-lean@72fead102f663d5c7a407964a13dc0cf9d977207`, `grh-compact/src/Statements.lean`) together with the four classical literature premises in `BuchstabSwitching.External.ClassicalBasicLemmas`, every even integer $N \ge 4$ satisfies $N = p + m$ with $p$ prime, $0 < m$, and $\Omega(m) \le 3$.*
 
 ---
 

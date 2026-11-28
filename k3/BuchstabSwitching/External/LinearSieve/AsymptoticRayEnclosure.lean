@@ -3,8 +3,10 @@ import BuchstabSwitching.Sieve.Regime3RayBridge
 import BuchstabSwitching.Certificates.Data
 import BuchstabSwitching.External.CharacterSums.DirichletGRH
 import BuchstabSwitching.External.NumericalConstants.ExplicitConstants
+import BuchstabSwitching.External.NumericalConstants.CanonicalConstants
 import BuchstabSwitching.External.MertensSums.ReciprocalPrimeSums
 import BuchstabSwitching.External.EulerProductV.ProductAsymptotic
+import BuchstabSwitching.External.EulerProductV.EulerProductProof
 import BuchstabSwitching.External.BuchstabSeries.DelayDiffEqIdentity
 import BuchstabSwitching.External.BuchstabSeries.AdjointEvaluation
 
@@ -61,5 +63,17 @@ theorem asymptoticRayEnclosurePremise_of_sieveBridge
     hGRH hPrem.classical hPrem.mertens hPrem.euler_v buchstabSeriesPremise_proved hHStar
     BuchstabSwitching.C2_bjs_certified_nonneg
     hL strips hvj_pos hbr_LS hCertInt hN_even hN
+
+/-- Specializes `asymptoticRayEnclosurePremise_of_sieveBridge` to `canonicalConstants`,
+discharging `EulerProductVPremise` internally via
+`eulerProductVPremise_of_schoenfeld_and_mertens`. -/
+theorem asymptoticRayEnclosurePremise_of_canonical
+    (hClassical : BuchstabSwitching.ClassicalPrimePremises canonicalConstants.li2)
+    (hMert : MertensPrimeSumPremise canonicalConstants.M0) :
+    AsymptoticRayEnclosurePremise := by
+  intro hGRH
+  exact asymptoticRayEnclosurePremise_of_sieveBridge (consts := canonicalConstants)
+    ⟨hClassical, hMert,
+      eulerProductVPremise_of_schoenfeld_and_mertens hClassical.schoenfeld hMert hGRH⟩ hGRH
 
 end BuchstabSwitching.External

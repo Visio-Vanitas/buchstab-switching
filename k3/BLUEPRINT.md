@@ -1,7 +1,7 @@
 # Blueprint for Discharging External Analytic Inputs
 
 This blueprint describes the modular architecture of `BuchstabSwitching` and provides a
-roadmap for proving the five remaining classical literature assumptions in `External.ClassicalBasicLemmas`
+roadmap for proving the four remaining classical literature assumptions in `External.ClassicalBasicLemmas`
 inside Lean 4 / Mathlib so that `all_even_one_plus_three_of_classical` (and
 `even_eq_prime_add_omegaMult_le_three`) rests only on
 `External.DirichletLNonvanishingRightOfHalf` (pinned to
@@ -43,9 +43,11 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
    - Hybrid `Q₁ × P₂` Bonferroni identities and prime-omission monotonicity (`BonferroniHybrid`, `BonferroniEstimates`).
    - Brun combinatorial block lower sieve parity rule ($\chi^- \le \mathbf{1}$), remainder $E^-$, level bound $\prod z_i^{m_i - m_{i-1}}$, and prime-omission monotonicity (`BrunBlockSieve`).
    - Selberg $\Lambda^2$ quadratic upper sieve, diagonalization, `V_N(z) J_N(z, ξ) ≥ V_full(z) J_full(z, ξ)` coupling, disjoint two-prime inclusion-exclusion `J_full(z, ξ)`, odd squarefree bound $\sum_{d \le X, 2\nmid d} \mu^2(d) \le \frac{4}{\pi^2} X + \sqrt{X}$, and collision sum $\sum_{L \le X, 2\nmid L} \mu^2(L) 3^{\omega(L)} \le \frac{1}{16} X (\ln X + 6)^2$ (`SelbergLambdaSq`, `SelbergDiagonalization`, `OddSquarefreeBounds`).
-2. **Buchstab Delay-Differential Series & Robin `ω(N)` Bound (`External/BuchstabSeries/`, `External/RobinOmega/`)**:
+2. **Buchstab Series, Robin `ω(N)` Bound, Certified Constants & Shifted Euler Product (`External/BuchstabSeries/`, `External/RobinOmega/`, `External/NumericalConstants/`, `External/EulerProductV/`)**:
    - Unconditional theorem `buchstabSeriesPremise_proved` establishing $F(s) = 1 + \sum_{n \text{ odd}} f_n(s)$ and $f(s) = 1 - \sum_{n \text{ even}} f_n(s)$.
    - Unconditional theorem `robinOmegaBound_holds` establishing $\omega(N) < 1.3841 \ln N / \ln \ln N$ for all $N \ge 3$ via primorial reduction, Mod-30 Chebyshev + Abel summation ($p \ge 13000$), and Q64 `by decide` verification ($p < 13000$).
+   - Unconditional canonical witness `canonicalConstants : CertifiedConstants` establishing `10^-15`-accurate rational enclosures for $\ln 2$, $e^2$, $\gamma$, $e^{\pm\gamma}$, $\alpha_0$, $\operatorname{li}(2)$ (`canonicalLi2`), $H_0$, $C_2 = 1/H_0$, $U_c = 2 C_2$, and Meissel–Mertens $M_0$ (`meisselMertensConst`) via Euler–Maclaurin and $\zeta(2) = \pi^2 / 6$ acceleration.
+   - Theorem `eulerProductVPremise_of_schoenfeld_and_mertens` proving `EulerProductVPremise` for all even $N \ge 3$ and $x \ge 285$ via Q64 finite verification ($x \le 27000$), Mertens cancellation ($27000 \le x \le 10^{12}$), and discrete Schoenfeld Abel summation ($x \ge 10^{12}$).
 3. **Regime 2 Finite-Slab Enclosure (`SlabSieveEnclosurePremise` via `SlabCertInst*`)**:
    - `slabSieveEnclosurePremise_of_sieveBridge` + `allSlabs_bridges_inst` verify all `127` contiguous slabs on $[4 \cdot 10^{18}, 10^{600})$ (`21` in `2a`, `40` in `2b`, `66` in `2c`, `6,448` slices total) via binary `Dyadic` proof-by-reflection (`m * 2^e / 2^8192`), depth-6 `OddPrimeTree` (`2,960` odd primes $< 27{,}000$), and non-deterministic algebraic/transcendental witnesses (`by decide`).
 4. **Regime 3 Asymptotic Ray Enclosure (`AsymptoticRayEnclosurePremise` via `RayCertInst*`)**:
@@ -53,11 +55,12 @@ proved in Lean 4** depending solely on `[propext, Classical.choice, Quot.sound]`
 
 ---
 
-## 2. Contributor Roadmap on `on-dev`: 4 Remaining Analytic Lemmas (+ `CertifiedConstants`)
+## 2. Contributor Roadmap on `on-dev`: 3 Remaining Analytic Lemmas
 
 `External.externalPremises_of_classical` reduces `ExternalPremises` to `SmallEvenPremise`
-(retained as an external computational premise) plus constructing a `CertifiedConstants` witness
-and proving the **four remaining classical analytic lemmas** below on the **`on-dev`** branch:
+(retained as an external computational premise) plus proving the **three remaining classical
+analytic lemmas** below on the **`on-dev`** branch (`canonicalConstants`, `robinOmegaBound_holds`,
+and `eulerProductVPremise_of_schoenfeld_and_mertens` are instantiated internally):
 
 ### Retained External Computational Input (Out of Scope for `on-dev` PRs)
 - **`SmallEvenPremise` (`External/FiniteVerification/SmallEven.lean`)**: Binary prime
@@ -66,7 +69,7 @@ and proving the **four remaining classical analytic lemmas** below on the **`on-
   premise rather than re-tabulated inside Lean.
 
 ### Track 1 (Open PR Target): Explicit GRH / RH Prime-Counting (`CharacterSums/DirichletGRH.lean` & `SchoenfeldRH/PrimeCountingRH.lean`)
-- **Targets**: `JSLemma51Premise consts.li2` and `SchoenfeldPrimePremise consts.li2` from
+- **Targets**: `JSLemma51Premise canonicalLi2` and `SchoenfeldPrimePremise canonicalLi2` from
   `DirichletLNonvanishingRightOfHalf` (`lsernau/grh-lean@72fead1`) and
   `Mathlib.NumberTheory.LSeries.DirichletContinuation`.
 - **Sub-lemmas**:
@@ -79,16 +82,9 @@ and proving the **four remaining classical analytic lemmas** below on the **`on-
      (*Math. Comp.* **30** (1976), Cor. 1) and unconditional Rosser–Schoenfeld fallback.
 
 ### Track 2 (Open PR Target): Explicit Mertens Reciprocal-Prime Bounds (`MertensSums/`)
-- **Target**: `MertensPrimeSumPremise consts.M0` (`RobinOmegaBound` is already discharged via `robinOmegaBound_holds`).
+- **Target**: `MertensPrimeSumPremise meisselMertensConst` (`RobinOmegaBound`,
+  `CertifiedConstants`, and `EulerProductVPremise` are already discharged in Lean).
 - **Sub-lemmas**:
   1. Explicit Mertens reciprocal-prime bounds `∑_{p < x} 1/p = ln ln x + M₀ + O*(...)`
      following Johnston–Starichkova (`arXiv:2208.01229v3`, Lemma 3.2) and
      Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Lemmas 16–17).
-
-### Track 3 (Open PR Target): Unconditional Euler Product Asymptotic & Constants (`EulerProductV/` & `NumericalConstants/`)
-- **Targets**: `EulerProductVPremise consts.U_c consts.eNegGamma` and `CertifiedConstants`.
-- **Sub-lemmas**:
-  1. Unconditional shifted-prime Euler product asymptotic `V_N(x) = (U_N / ln x) (1 + O*(δ_V))`
-     for `x ≥ 285` following Bordignon–Johnston–Starichkova (`arXiv:2207.09452v6`, Lemma 38 `vjlem`).
-  2. Rational interval enclosures in `CertifiedConstants` for `li(2)`, Meissel–Mertens `M₀`,
-     `U_c = 2 C₂ e^{-γ}`, and `e^{-γ}` via convergent series and finite prime products with integral tails.
