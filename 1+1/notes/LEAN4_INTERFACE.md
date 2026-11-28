@@ -77,10 +77,10 @@ def SelbergShortIntervalL2 (hrh : RiemannHypothesis) (C_Sel : ℝ) : Prop :=
       C_Sel * B * X * (Real.log X) ^ 2
 
 theorem theorem_1A_explicit [ChenSections.GeneralizedRiemannHypothesis]
-    (hbase : EmpiricalBase) : ExceptionalSetProp 12731 3
+    (hbase : EmpiricalBase) : ExceptionalSetProp 16 3
 
-theorem theorem_1B_explicit [ChenSections.GeneralizedRiemannHypothesis]
-    (hbase : EmpiricalBase) : ShortIntervalProp 6281 2
+theorem theorem_1B_explicit (hrh : RiemannHypothesis)
+    (hbase : EmpiricalBase) : ShortIntervalProp 8 2
 ```
 
 ---

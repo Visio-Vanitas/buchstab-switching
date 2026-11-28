@@ -5,17 +5,17 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 namespace OnePlusOne.External
 
-def DyadicLaplaceCirclePremise : Prop :=
+def FouradicLaplaceCirclePremise : Prop :=
   DirichletLNonvanishingRightOfHalf →
     ∀ Y : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ Y →
-      (exceptionalCount Y : ℝ) - (exceptionalCount (Y / 2) : ℝ) ≤
-        (372872 / 100 : ℝ) * Real.sqrt Y * (Real.log Y) ^ 3
+      (exceptionalCount Y : ℝ) - (exceptionalCount (Y / 4) : ℝ) ≤
+        (777 / 100 : ℝ) * Real.sqrt Y * (Real.log Y) ^ 3
 
 def FejerShortIntervalPositivityPremise : Prop :=
   RiemannHypothesis →
     ∀ X : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ X →
       ∃ W : ℕ → ℝ, (∀ N, 0 ≤ W N) ∧
-        0 < ∑ N ∈ Finset.Icc (Nat.ceil X) (Nat.floor (X + 6281 * (Real.log X) ^ 2)),
+        0 < ∑ N ∈ Finset.Icc (Nat.ceil X) (Nat.floor (X + 8 * (Real.log X) ^ 2)),
           W N * goldbachIndicator N
 
 def LinnikCircleAboveBridgePremise : Prop :=
@@ -25,7 +25,7 @@ def LinnikCircleAboveBridgePremise : Prop :=
 
 structure OnePlusOnePremises : Prop where
   empirical : EmpiricalGoldbachBase
-  dyadicLaplace : DyadicLaplaceCirclePremise
+  fouradicLaplace : FouradicLaplaceCirclePremise
   fejerShort : FejerShortIntervalPositivityPremise
   linnikCircle : LinnikCircleAboveBridgePremise
 

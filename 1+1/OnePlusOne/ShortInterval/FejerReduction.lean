@@ -8,8 +8,8 @@ import Mathlib.Tactic.Positivity
 # Fejér Short-Interval Reduction (`OnePlusOne.ShortInterval.FejerReduction`)
 
 Complete Mathlib proofs of:
-1. `short_interval_small_range`: for every `X ∈ [4, 4 * 10^18)`, the interval `[X, X + 6281 * (log X)^2]`
-   contains an even integer `N ∈ [4, 4 * 10^18]` (since `log 4 > 1`, so `6281 * (log X)^2 ≥ 2`),
+1. `short_interval_small_range`: for every `X ∈ [4, 4 * 10^18)`, the interval `[X, X + 8 * (log X)^2]`
+   contains an even integer `N ∈ [4, 4 * 10^18]` (since `log 4 > 1`, so `8 * (log X)^2 ≥ 2`),
    hence `IsGoldbachEven N` follows directly from `EmpiricalGoldbachBase`.
 2. `exists_goldbach_of_fejer_pos`: if a nonnegatively weighted sum of Goldbach prime-pair counts
    over `N ∈ [⌈X⌉₊, ⌊X + H⌋₊]` is strictly positive, then `[X, X + H]` contains an `IsGoldbachEven N`.
@@ -20,7 +20,7 @@ namespace OnePlusOne.ShortInterval
 
 open scoped BigOperators
 
-/-- Unconditional lower bound `1 < Real.log 4`, giving `6281 * (log X)^2 ≥ 2` for `X ≥ 4`. -/
+/-- Unconditional lower bound `1 < Real.log 4`, giving `8 * (log X)^2 ≥ 2` for `X ≥ 4`. -/
 theorem one_lt_log_four : (1 : ℝ) < Real.log 4 := by
   have he : Real.exp 1 < 4 := (Real.exp_one_lt_d9).trans (by norm_num)
   exact (Real.lt_log_iff_exp_lt (by norm_num)).mpr he
@@ -81,12 +81,12 @@ theorem exists_goldbach_of_weighted_pos
     (Nat.floor_le (by linarith))
   exact ⟨N, hNX, hNXH, hG⟩
 
-/-- **All-Range Short-Interval Goldbach Theorem** (`[X, X + 6281 * (log X)^2]`, `∀ X ≥ 4`). -/
+/-- **All-Range Short-Interval Goldbach Theorem v2** (`[X, X + 8 * (log X)^2]`, `∀ X ≥ 4`). -/
 theorem short_interval_all_range
     (hbase : EmpiricalGoldbachBase)
     (hlarge : ∀ X : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ X →
-      ∃ N : ℕ, X ≤ (N : ℝ) ∧ (N : ℝ) ≤ X + 6281 * (Real.log X) ^ 2 ∧ IsGoldbachEven N) :
-    ShortIntervalProp 6281 2 := by
+      ∃ N : ℕ, X ≤ (N : ℝ) ∧ (N : ℝ) ≤ X + 8 * (Real.log X) ^ 2 ∧ IsGoldbachEven N) :
+    ShortIntervalProp 8 2 := by
   intro X hX4
   by_cases hsmall : X < ((4 * 10 ^ 18 : ℕ) : ℝ)
   · exact short_interval_small_range hbase (by norm_num) hX4 hsmall

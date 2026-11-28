@@ -10,25 +10,29 @@ matching the convention of `k3/`, `k2/`, and `1+a/` and mirrored verbatim in `co
 
 namespace OnePlusOne.External
 
-/-- **Theorem 1A Parseval–Laplace Input (GRH-conditional):**
-Under `DirichletLNonvanishingRightOfHalf`, the Laplace-smoothed circle-method decomposition at
-`Q₀ = ⌊(1/2)√Y⌋` certifies `E(Y) - E(Y/2) ≤ 3728.72 * √Y * (log Y)^3` for all `Y ≥ 4 * 10^18`
+/-- **Theorem 1A v2 Parseval–Laplace 4-adic Input (GRH-conditional):**
+Under `DirichletLNonvanishingRightOfHalf`, the v2 Laplace-smoothed circle-method decomposition
+on 4-adic shells `(Y/4, Y]` (with `κ = 11/20`, `Q₀ = ⌊3 Z^{1/4}⌋`, `Q_D = ⌊√Z⌋`, BMOR zero-counting,
+Binet vertical contour shift, and zero-black-box `C_E2 ≤ 28.0916`) certifies
+`E(Y) - E(Y/4) ≤ (777 / 100) * √Y * (log Y)^3` for all `Y ≥ 4 * 10^18`
 (verified across `[4 * 10^18, 10^10000]` + asymptotic tail in `scripts/certify_exceptional_short.py`). -/
-def DyadicLaplaceCirclePremise : Prop :=
+def FouradicLaplaceCirclePremise : Prop :=
   DirichletLNonvanishingRightOfHalf →
     ∀ Y : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ Y →
-      (exceptionalCount Y : ℝ) - (exceptionalCount (Y / 2) : ℝ) ≤
-        (372872 / 100 : ℝ) * Real.sqrt Y * (Real.log Y) ^ 3
+      (exceptionalCount Y : ℝ) - (exceptionalCount (Y / 4) : ℝ) ≤
+        (777 / 100 : ℝ) * Real.sqrt Y * (Real.log Y) ^ 3
 
-/-- **Theorem 1B Fejér–Mellin Short-Interval Input (RH-conditional):**
-Under `RiemannHypothesis`, the Fejér triangle weight `W(n)` and Laplace sum `S(α)` on
-`[X, X + 6281 * (log X)^2]` satisfy strict positivity of the Goldbach weighted sum for all
-`X ≥ 4 * 10^18` (via `C_Sel ≤ 78.04`, verified in `scripts/certify_exceptional_short.py`). -/
+/-- **Theorem 1B v2 Averaged Fejér–Mellin Short-Interval Input (RH-conditional):**
+Under `RiemannHypothesis`, the averaged sharp-cutoff Fejér weight `W̃(n)` on
+`[X, X + 8 * (log X)^2]` (at `ε = 1/4`, Bochner-optimal zero-density kernel, exact closed-form
+Mellin moments, and Fatou's Lemma with zero black-box buffers) satisfies strict positivity of the
+Goldbach weighted sum for all `X ≥ 4 * 10^18` (`C_J ≤ 1.76`, verified in
+`scripts/certify_exceptional_short.py`). -/
 def FejerShortIntervalPositivityPremise : Prop :=
   RiemannHypothesis →
     ∀ X : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ X →
       ∃ W : ℕ → ℝ, (∀ N, 0 ≤ W N) ∧
-        0 < ∑ N ∈ Finset.Icc (Nat.ceil X) (Nat.floor (X + 6281 * (Real.log X) ^ 2)),
+        0 < ∑ N ∈ Finset.Icc (Nat.ceil X) (Nat.floor (X + 8 * (Real.log X) ^ 2)),
           W N * goldbachIndicator N
 
 /-- **Theorem 3 Circle-Method Input above the Binary Goldbach Bridge (GRH-conditional):**
@@ -41,10 +45,10 @@ def LinnikCircleAboveBridgePremise : Prop :=
     ∀ N : ℕ, ((2 ^ 23 - 2) * 2 ^ 61 + 4 * 10 ^ 18) < N → Even N →
       HasExactPosLinnikRep 22 N
 
-/-- Combined analytic premises for `1+1/` Theorems 1A, 1B, and 3. -/
+/-- Combined analytic premises for `1+1/` Theorems 1A (v2), 1B (v2), and 3. -/
 structure OnePlusOnePremises : Prop where
   empirical : EmpiricalGoldbachBase
-  dyadicLaplace : DyadicLaplaceCirclePremise
+  fouradicLaplace : FouradicLaplaceCirclePremise
   fejerShort : FejerShortIntervalPositivityPremise
   linnikCircle : LinnikCircleAboveBridgePremise
 

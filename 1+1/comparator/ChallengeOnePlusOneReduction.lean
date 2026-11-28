@@ -47,6 +47,10 @@ theorem dyadic_geom_sum_lt (m : ℕ) :
     ∑ k ∈ Finset.range m, (1 / Real.sqrt 2) ^ k < 2 + Real.sqrt 2 := by
   sorry
 
+theorem fouradic_geom_sum_lt (m : ℕ) :
+    ∑ k ∈ Finset.range m, (1 / 2 : ℝ) ^ k < 2 := by
+  sorry
+
 end Arithmetic
 
 namespace Exceptional
@@ -60,6 +64,15 @@ theorem exceptional_all_range_of_dyadic
     ExceptionalSetProp ((2 + Real.sqrt 2) * C_dyad) 3 := by
   sorry
 
+theorem exceptional_all_range_of_fouradic
+    (hbase : EmpiricalGoldbachBase)
+    {C_4adic : ℝ} (hC : 0 ≤ C_4adic)
+    (hfour : ∀ Y : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ Y →
+      (exceptionalCount Y : ℝ) - (exceptionalCount (Y / 4) : ℝ) ≤
+        C_4adic * Real.sqrt Y * (Real.log Y) ^ 3) :
+    ExceptionalSetProp (2 * C_4adic) 3 := by
+  sorry
+
 end Exceptional
 
 namespace ShortInterval
@@ -67,8 +80,8 @@ namespace ShortInterval
 theorem short_interval_all_range
     (hbase : EmpiricalGoldbachBase)
     (hlarge : ∀ X : ℝ, ((4 * 10 ^ 18 : ℕ) : ℝ) ≤ X →
-      ∃ N : ℕ, X ≤ (N : ℝ) ∧ (N : ℝ) ≤ X + 6281 * (Real.log X) ^ 2 ∧ IsGoldbachEven N) :
-    ShortIntervalProp 6281 2 := by
+      ∃ N : ℕ, X ≤ (N : ℝ) ∧ (N : ℝ) ≤ X + 8 * (Real.log X) ^ 2 ∧ IsGoldbachEven N) :
+    ShortIntervalProp 8 2 := by
   sorry
 
 end ShortInterval
@@ -100,13 +113,13 @@ end Linnik
 theorem theorem_1A_all_even_exceptional_set
     (hGRH : DirichletLNonvanishingRightOfHalf)
     (hPrem : External.OnePlusOnePremises) :
-    ExceptionalSetProp 12731 3 := by
+    ExceptionalSetProp 16 3 := by
   sorry
 
 theorem theorem_1B_all_even_short_interval
     (hRH : RiemannHypothesis)
     (hPrem : External.OnePlusOnePremises) :
-    ShortIntervalProp 6281 2 := by
+    ShortIntervalProp 8 2 := by
   sorry
 
 theorem theorem_3A_all_even_exact_linnik_22

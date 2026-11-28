@@ -426,4 +426,11 @@ theorem dyadic_geom_sum_lt (m : ℕ) :
       field_simp
       nlinarith
 
+/-- Finite 4-adic geometric series bound `∑_{k < m} (1/2)^k < 2`. -/
+theorem fouradic_geom_sum_lt (m : ℕ) :
+    ∑ k ∈ Finset.range m, (1 / 2 : ℝ) ^ k < 2 := by
+  have hgeom := geom_sum_mul_one_sub (1 / 2 : ℝ) m
+  have hpow_pos : 0 < (1 / 2 : ℝ) ^ m := by positivity
+  linarith
+
 end OnePlusOne.Arithmetic

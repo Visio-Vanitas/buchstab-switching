@@ -19,16 +19,18 @@ $ lake env lean AxiomsCheckOnePlusOne.lean
 'OnePlusOne.Arithmetic.twin_prime_partial_product_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Arithmetic.totient_sq_ge_half' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Arithmetic.dyadic_geom_sum_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Arithmetic.fouradic_geom_sum_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Certificates.certifiedCells_valid' does not depend on any axioms
 'OnePlusOne.Certificates.certifiedCells_count' does not depend on any axioms
-'OnePlusOne.Certificates.dyadic_12731_rat_check' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Certificates.fouradic_16_rat_check' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Certificates.linnikCheckpointCells_valid' does not depend on any axioms
 'OnePlusOne.Certificates.linnikCheckpointCells_count' does not depend on any axioms
 'OnePlusOne.Certificates.linnik_tail_growth_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Exceptional.exceptional_all_range_of_dyadic' depends on axioms: [propext, Classical.choice, Quot.sound]
-'OnePlusOne.Exceptional.dyadic_multiplier_le_12731' depends on axioms: [propext, Classical.choice, Quot.sound]
-'OnePlusOne.Exceptional.dyadic_of_parseval_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
-'OnePlusOne.Exceptional.theorem_1A_of_dyadic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.exceptional_all_range_of_fouradic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.fouradic_multiplier_le_16' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.fouradic_of_parseval_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.theorem_1A_of_fouradic' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.ShortInterval.one_lt_log_four' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.ShortInterval.short_interval_small_range' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.ShortInterval.exists_goldbach_of_weighted_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -52,21 +54,23 @@ comparator/ChallengeOnePlusOneReduction.lean:33:8: warning: declaration uses `so
 comparator/ChallengeOnePlusOneReduction.lean:37:8: warning: declaration uses `sorry`
 comparator/ChallengeOnePlusOneReduction.lean:42:8: warning: declaration uses `sorry`
 comparator/ChallengeOnePlusOneReduction.lean:46:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:54:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:50:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:58:8: warning: declaration uses `sorry`
 comparator/ChallengeOnePlusOneReduction.lean:67:8: warning: declaration uses `sorry`
 comparator/ChallengeOnePlusOneReduction.lean:80:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:86:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:92:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:100:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:106:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:112:8: warning: declaration uses `sorry`
-comparator/ChallengeOnePlusOneReduction.lean:118:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:93:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:99:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:105:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:113:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:119:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:125:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:131:8: warning: declaration uses `sorry`
 [exit 0]
 $ bash -c LEAN_PATH='/tmp/wt-buchstab-1p1/1+1/.lake/comparator' lake env leanexport ChallengeOnePlusOneReduction -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export'
 [exit 0]
 $ bash -c lake env leanexport OnePlusOne -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/tmp/wt-buchstab-1p1/1+1/.lake/exp/red-solution.export'
 [exit 0]
-sha256: b8296268f85bfb4411be12b632644b6128c8b3fdbc8b7c31b22bffd35a0eaccc red-challenge.export; 4debe9c621b7ca9f1077a7824e4d3471364b70112fc4c18ac978293661268c31 red-solution.export
+sha256: 9e7a7768eaf8fef7ab230c8586473fff82057032b8bbbb9c4cd9a7ca14955951 red-challenge.export; a5db4023b39cfeb66ae353ba13daa36d98e403b31f106323f89c7fba28fad575 red-solution.export
 external kernels available: leanchecker leanchecker-paranoid nanoda_bin 
 $ lake comparator --inadvisably-no-sandbox --config /tmp/wt-buchstab-1p1/1+1/comparator/reduction.json --challenge-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export --solution-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-solution.export
 WARNING: Sandbox disabled, this run is not trustworthy.

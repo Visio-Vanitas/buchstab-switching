@@ -91,24 +91,24 @@ def verify_lean_data_exact() -> list[str]:
         fail(f"Expected >= 15 CertifiedCell rows in Data.lean, found {len(rows)}")
     saved_lines = (ROOT / "data" / "certify_exceptional_short_output.txt").read_text(encoding="utf-8")
     parsed = re.findall(
-        r"C_dyadic\(1A\)\s*<=\s*([0-9.]+)\s*\|\s*C_Sel\s*<=\s*([0-9.]+)\s*\|\s*C1\(1B\)\s*<=\s*(\d+)",
+        r"C_4adic\(1A\)\s*<=\s*([0-9.]+)\s*\|\s*C_J\(1B\)\s*<=\s*([0-9.]+)\s*\|\s*C1\(1B\)\s*<=\s*(\d+)",
         saved_lines,
     )
     if len(parsed) != 15:
         fail(f"Expected 15 cell summary lines, found {len(parsed)}")
-    for idx, (row, (cd, cs, c1)) in enumerate(zip(rows[:15], parsed)):
-        _, _, _, cd_num, cs_num, c1_int, denom = map(int, row)
-        if denom != 10_000_000:
-            fail(f"Row {idx} denom != 10^7")
-        cd_scaled = int((Decimal(cd) * Decimal(denom)).to_integral_value(rounding=ROUND_CEILING))
-        cs_scaled = int((Decimal(cs) * Decimal(denom)).to_integral_value(rounding=ROUND_CEILING))
-        if cd_num < cd_scaled or cd_num > cd_scaled + 2:
-            fail(f"Row {idx} cDyadic mismatch: {cd_num} vs {cd_scaled}")
-        if cs_num < cs_scaled or cs_num > cs_scaled + 2:
-            fail(f"Row {idx} cSel mismatch: {cs_num} vs {cs_scaled}")
+    for idx, (row, (c4, cj, c1)) in enumerate(zip(rows[:15], parsed)):
+        _, _, _, c4_num, cj_num, c1_int, denom = map(int, row)
+        if denom != 100_000_000:
+            fail(f"Row {idx} denom != 10^8")
+        c4_scaled = int((Decimal(c4) * Decimal(denom)).to_integral_value(rounding=ROUND_CEILING))
+        cj_scaled = int((Decimal(cj) * Decimal(denom)).to_integral_value(rounding=ROUND_CEILING))
+        if c4_num != c4_scaled:
+            fail(f"Row {idx} cFouradic mismatch: {c4_num} vs {c4_scaled}")
+        if cj_num != cj_scaled:
+            fail(f"Row {idx} cJ mismatch: {cj_num} vs {cj_scaled}")
         if c1_int != int(c1):
             fail(f"Row {idx} c1Short mismatch: {c1_int} vs {c1}")
-    out.append("  PASS 15/15 CertifiedCell rows in Data.lean match certified bounds (exact 10^-7 scale)")
+    out.append("  PASS 15/15 CertifiedCell rows in Data.lean match certified v2 bounds (exact 10^-8 scale)")
 
     linnik_rows = re.findall(
         r"⟨(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+)⟩",

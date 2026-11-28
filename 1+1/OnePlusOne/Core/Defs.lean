@@ -11,8 +11,8 @@ import Mathlib.Tactic.Linarith
 
 Target statements under `DirichletLNonvanishingRightOfHalf` (exact token-for-token match with
 `k3/`, `k2/`, `1+a/`, and `lsernau/grh-lean`) and the empirical verification base `E(4 * 10^18) = 0`:
-1. Theorem 1A: All-range explicit `1+1` exceptional set `E(X) ≤ 12731 * √X * (log X)^3` (`∀ X ≥ 4`);
-2. Theorem 1B: All-range explicit short-interval `1+1` in `[X, X + 6281 * (log X)^2]` (`∀ X ≥ 4`);
+1. Theorem 1A (v2): All-range explicit `1+1` exceptional set `E(X) ≤ 16 * √X * (log X)^3` (`∀ X ≥ 4`);
+2. Theorem 1B (v2): All-range explicit short-interval `1+1` in `[X, X + 8 * (log X)^2]` (`∀ X ≥ 4`);
 3. Theorem 3: All-range explicit Linnik–Goldbach `N = p₁ + p₂ + ∑_{j=1}^s 2^{k_j}` (`s ≤ r`).
 -/
 
