@@ -1,0 +1,610 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,booktabs,microtype}
+\usepackage[a4paper,top=24mm,bottom=24mm,left=27mm,right=27mm]{geometry}
+\usepackage{enumitem,xcolor}
+\usepackage[pdfusetitle,colorlinks=true,linkcolor={blue!35!black},citecolor={blue!35!black},urlcolor={blue!40!black}]{hyperref}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small A weighted sieve for even integers}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\setlength{\headheight}{15pt}
+\setlength{\emergencystretch}{3em}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\leanid}[1]{{\small\urlstyle{tt}\nolinkurl{#1}}}
+\urlstyle{same}
+\title{Representing every even integer as a prime plus\texorpdfstring{\\}{ }a product of at most three primes under GRH}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-2.3em}
+\begin{abstract}
+Assuming the generalized Riemann hypothesis for Dirichlet $L$-functions, every even integer $N\ge4$ can be written as $p+m$ with $p$ prime, $m\ge2$, and $m$ having at most three prime factors counted with multiplicity. We give a mathematical account of the computer-assisted proof in the Buchstab Switching project. Its weight charges both medium prime divisors and their squares. A lower sieve on the shifted primes and upper sieves on their multiples give a positive balance on 127 intervals from $4\cdot10^{18}$ to $10^{600}$. For every even $N\ge4\cdot10^{18}$ the bounds give at least $46\,000$ distinct representing primes. For $N\ge10^{600}$ we obtain more than $0.9892\,N/(\log N)^2-1$ representations with $m\ge2$. We match the six external inputs of the Lean reduction to explicit prime estimates and the finite verification of binary Goldbach, and supply a numerical witness for its real-constant parameters. A separate four-factor calculation illustrates how the cost of the upper sieve changes with the number of factors allowed.
+\end{abstract}
+
+\section{Introduction}
+Let $\Omega(m)$ be the number of prime factors of $m$ counted with multiplicity. For instance, $\Omega(45)=3$. Rényi proved that a fixed upper bound on $\Omega(m)$ suffices to represent every even $N\ge4$ in the form $p+m$ \cite{Renyi}. Chen obtained $\Omega(m)\le2$ for all sufficiently large even integers \cite{Chen}. Requiring the conclusion for every even integer brings the lower endpoint of the analytic sieve into the problem. Oliveira e Silva, Herzog and Pardi verified binary Goldbach up to $4\cdot10^{18}$ \cite{OHP}. An explicit sieve starting above that computation must also cover the interval between the two ranges.
+
+Throughout, GRH means nonvanishing of Dirichlet $L(s,\chi)$ in $\Re s>1/2$, excluding the pole of the principal character at $s=1$. Write
+\[
+ R_3(N)=\#\{p\le N-2 : p\text{ is prime and }\Omega(N-p)\le3\},
+ \qquad \mathfrak D(N)=\prod_{\substack{p\mid N\\p>2}}\frac{p-1}{p-2},
+\]
+where products indexed by $p$ run over primes.
+\begin{theorem}[Computer-assisted representation theorem]\label{thm:main}
+Assume GRH. Then $R_3(N)\ge1$ for every even integer $N\ge4$. Moreover, $R_3(N)\ge46\,000$ for every even $N\ge4\cdot10^{18}$, and for $N\ge10^{600}$,
+\[
+ R_3(N)>0.9892\,\mathfrak D(N)\frac{N}{(\log N)^2}-1 .
+\]
+\end{theorem}
+
+The proof uses the formal reduction and sieve certificates of the Buchstab Switching project of Visio Vanitas \cite{Repo}. The named Lean theorem takes a real-constant record and six premises in addition to GRH. Sections~\ref{sec:switch} and~\ref{sec:inputs} identify their mathematical content. Section~\ref{sec:k3} explains how the finite and infinite estimates yield the theorem, including the exclusion of $m=1$. Section~\ref{sec:k4} treats a separate certificate allowing four factors.
+
+Johnston and Starichkova proved an all-even bound of 395 factors unconditionally and 31 under GRH \cite[Theorems 1.3--1.4]{JS}. Johnston subsequently gave 16 under GRH \cite[Theorem 2]{Johnston}. A recent preprint of Aquila reports 18 unconditionally and 9 under GRH \cite{Aquila}. At two factors, Bordignon and Starichkova obtained the conditional threshold $\exp(\exp(14))$ \cite{BS}. The question addressed here is how to keep the count positive all the way down to the verified Goldbach range while allowing only three factors. In the first group of intervals, a five per cent increase in the combined error would exhaust the surplus on one interval.
+
+The weight is easiest to see before making any distributional estimate. If $N-p$ has at least four factors, each at least $z$, then $N\le zy^3$ forces at least two of those factors below $y$, counted with multiplicity. Two distinct medium primes and a repeated medium prime can therefore be charged at the same cost. The size of the ensuing subtraction determines the division into ranges.
+
+\section{The weighted count of shifted primes}\label{sec:switch}
+
+Fix an even integer $N\ge4$. The map $p\mapsto N-p$ is injective, so a sum
+over shifts may equally be read as a sum over primes. Write
+\[
+ \mathcal A_N=\{N-p:p<N,\ p\text{ prime},\ p\nmid N\},\qquad
+ (\mathcal A_N)_d=\{a\in \mathcal A_N:d\mid a\}.
+\]
+Every $a\in \mathcal A_N$ is positive and coprime to $N$, since
+$\gcd(N-p,N)=\gcd(p,N)$. For $2\le z\le y$ put
+\[
+ P_N(z)=\prod_{\substack{r<z\\r\nmid N}} r,\qquad
+ S(\mathcal A,z)=\#\{a\in\mathcal A:\gcd(a,P_N(z))=1\},\qquad
+ I=\{q:z\le q<y,\ q\nmid N\},
+\]
+where $r$ and $q$ range over primes. A surviving shift has no prime
+factor below $z$. We write $G_k(N)$ for the number of primes $p<N$ with
+$\Omega(N-p)\le k$, and use $\Omega(1)=0$.
+
+A surviving shift with four or five prime factors need not have two
+\emph{distinct} factors of moderate size. To detect repeated factors, assign
+to each shift the weight
+\[
+ w(a)=1-\tfrac12\sum_{q\in I}
+              \bigl(\mathbf 1_{q\mid a}+\mathbf 1_{q^2\mid a}\bigr).
+\]
+Let $W(N;z,y)$ be the sum of $w(a)$ over the surviving elements of $\mathcal A_N$.
+For estimates it is convenient to remove the sifting condition from the
+square term. This gives the balance
+\begin{equation}\label{eq:switch}
+ B(N;z,y)=S(\mathcal A_N,z)-\tfrac12\sum_{q\in I}
+           \bigl(S((\mathcal A_N)_q,z)+|(\mathcal A_N)_{q^2}|\bigr).
+\end{equation}
+
+\begin{proposition}[One-step weighted inequality]\label{prop:pinch}
+Let $k\ge1$ and suppose $N\le y^{k+1}$ and $N\le z y^k$. Then
+\[
+       B(N;z,y)\le W(N;z,y)\le G_k(N).
+\]
+In particular, $B(N;z,y)>0$ gives a representation $N=p+m$ with
+$p$ prime, $m>0$, and $\Omega(m)\le k$.
+\end{proposition}
+\begin{proof}
+Exchanging the two finite sums over $a$ and $q$ gives the first
+inequality, since the count of sifted multiples of $q^2$ is at most
+$|(\mathcal A_N)_{q^2}|$. If $w(a)>0$, the sum of the two integer indicators
+over $q$ is at most one. There are two possibilities. If $a$ has no
+prime factor in $I$, every factor is at least $y$, so $\Omega(a)\ge k+1$
+would give $a\ge y^{k+1}\ge N$. Otherwise exactly one $q\in I$ divides
+$a$, with multiplicity one. The remaining factors are at least $y$, so
+$\Omega(a)\ge k+1$ would give $a\ge qy^k\ge zy^k\ge N$. Both
+contradictions use the strict inequality $a=N-p<N$. Thus each positive
+weight comes from a shift counted by $G_k(N)$, and contributes at most
+one to $W$.
+\end{proof}
+
+The paper uses $k=3$ and $k=4$. At a fixed $z$, the condition
+$zy^k\ge N$ explains the cost of improving $k$.
+Taking $y$ near $(N/z)^{1/k}$ gives a longer interval of primes to
+subtract when $k=3$. Each additional $q$ also multiplies the modulus
+in the upper sieve. These two costs enter the estimates separately.
+
+\subsection{The arithmetic progression error}
+
+The distribution of primes enters through an explicit estimate for
+\[
+         r_N(d)=|(\mathcal A_N)_d|-|\mathcal A_N|/\varphi(d).
+\]
+Here $r_N(1)=0$. For $3\le d\le\sqrt N$ with $(d,N)=1$, write
+$\nu_d=\#\{p:p\mid N,\ p\text{ prime},\ p\equiv N\pmod d\}$ and
+let $\omega(N)$ count distinct prime divisors. Since $N$ is composite,
+\[
+ |\mathcal A_N|=\pi(N)-\omega(N),\qquad
+ |(\mathcal A_N)_d|=\pi(N;d,N)-\nu_d.
+\]
+Both $\nu_d$ and $\omega(N)/\varphi(d)$ lie between $0$ and
+$\omega(N)$. Thus the absolute contribution of the removed primes to
+$r_N(d)$ is at most $\omega(N)$.
+
+To keep the convention on the logarithmic integral explicit, write
+$L(x)=\int_2^x dt/\log t$ and $\ell(x)=L(x)+\operatorname{li}(2)$,
+where $\operatorname{li}$ denotes the principal-value logarithmic integral.
+For $x\ge X\ge 4\cdot10^{18}$ set
+\[
+ c_0(X)=\frac{3}{8\pi}+\frac{6+1/\pi}{4\log X}
+              +\frac{6}{\log^2 X},\qquad
+ c_\pi(X)=c_0(X)+\frac{\operatorname{li}(2)}{\sqrt X\log X}.
+\]
+For $(a,d)=1$ and $3\le d\le\sqrt x$, the proof of
+\cite[Lemma~5.1]{JS} applies the cyclotomic case of
+\cite[Corollary~1]{GM} under GRH and obtains
+$|\pi(x;d,a)-L(x)/\varphi(d)|\le c_0(X)\sqrt x\log x$.
+Adding $\operatorname{li}(2)/\varphi(d)$ to the error gives the
+published bound with center $\ell(x)/\varphi(d)$ and coefficient
+$c_\pi(X)$. The same proof therefore supplies the offset convention
+with coefficient $c_\pi(X)$ used by the Lean arithmetic-progression
+premise. Combining the published bound with Schoenfeld's estimate
+$|\pi(N)-\ell(N)|\le\sqrt N\log N/(8\pi)$ for $N\ge2657$
+\cite{Schoenfeld}, $\varphi(d)\ge2$, and Robin's bound for
+$\omega(N)$ \cite{Robin}, gives
+\begin{equation}\label{eq:aperror}
+ |r_N(d)|\le \left(c_\pi(X)+\frac1{16\pi}\right)\sqrt N\log N
+                  +\frac{1.3841\log N}{\log\log N}.
+\end{equation}
+For $q\in I$ and $d\mid P_N(z)$, coprimality yields the exact identity
+\[
+ |(\mathcal A_N)_{qd}|-\frac{|(\mathcal A_N)_q|}{\varphi(d)}
+            =r_N(qd)-\frac{r_N(q)}{\varphi(d)}.
+\]
+Hence the upper sieve must keep track of $qd$ as well as $d$.
+The last term of \eqref{eq:switch} also has a bound independent of GRH:
+$|(\mathcal A_N)_{q^2}|\le\lfloor(N-1)/q^2\rfloor$. For integer $z\ge2$,
+summing over all integers $n\ge z$ bounds the full square contribution
+by $N/(2(z-1))$.
+
+\subsection{Pre-sieving and the endpoint condition}\label{sec:presieve}
+
+On the sifting primes set $g(p)=1/(p-1)$, and extend $g$
+multiplicatively to squarefree integers. Then
+$g(d)=1/\varphi(d)$ for $d\mid P_N(z)$. The main-term density is
+\[
+ V_N(z)=\prod_{p\mid P_N(z)}(1-g(p)).
+\]
+Removing a prime divisor of $N$ from a full product over the odd primes
+increases the density. When a lower and an upper sieve are subtracted,
+this observation may be applied to their common factor $V_N(z)$ once
+the remaining bracket has been bounded below by a positive number.
+
+For a set of pre-sieving primes let $Q\mid P_N(z)$ be their product.
+On the primes in $P_N(z)/Q$ take divisor weights $\lambda_d$, supported
+on $d<D$, with $|\lambda_d|\le1$. Exact inclusion--exclusion on $Q$
+gives
+\begin{align*}
+ \sum_{\substack{a\in \mathcal A_N\\(a,Q)=1}}\ \sum_{d\mid (a,P_N(z)/Q)}\lambda_d
+ &= |\mathcal A_N|\prod_{p\mid Q}(1-g(p))
+        \sum_{d\mid P_N(z)/Q}\lambda_d g(d) \\
+ &\quad+\sum_{e\mid Q}\sum_{d\mid P_N(z)/Q}\mu(e)\lambda_d r_N(ed).
+\end{align*}
+For each $ed$ the two factors are determined by their disjoint prime
+supports. The absolute error is consequently at most
+$\sum_{h\mid P_N(z),\ h<QD}|r_N(h)|$. The gain from removing the small
+primes is paid for by the factor $Q$ in the level of the remainder.
+
+The explicit linear sieve on the infinite ranges uses a product condition
+for every subinterval of the residual primes. Write $\mathcal R$ for those
+primes and $V_{\mathcal R}(u)=\prod_{p\in\mathcal R,\ p<u}(1-g(p))$.
+For a fixed $z$ and a constant $K\ge1$ this condition is
+\begin{equation}\label{eq:hstar}
+ \prod_{\substack{a\le p\le b\\ p\in\mathcal R}}
+       (1-g(p))^{-1}\le K\frac{\log b}{\log a}
+ \qquad(a,b\in\mathcal R,\ a\le b<z).
+\end{equation}
+In particular $(1-g(a))^{-1}\le K$ even for a single prime. This
+explains why an explicit pre-sieve is needed when $K$ is close to one.
+
+\begin{lemma}\label{lem:closed}
+Condition \eqref{eq:hstar} is equivalent to
+$V_{\mathcal R}(u)/V_{\mathcal R}(w)\le K\log w/\log u$
+for all real $1<u<w\le z$.
+\end{lemma}
+\begin{proof}
+If $[u,w)$ contains a residual prime, take $a$ and $b$ to be its first
+and last residual primes. Its product is the one on $[a,b]$ and
+$\log b/\log a\le\log w/\log u$. The empty product is one.
+Conversely fix $a\le b<z$, set $u=a$, and take $w\downarrow b$
+through points above $b$ and below the next residual prime.
+The product then includes both endpoints while the right-hand side
+tends to $K\log b/\log a$.
+\end{proof}
+
+The distinction is operational. For example, a residual prime set
+consisting of $41$ alone meets a product condition at a sufficiently
+large fixed upper endpoint $z$ with $K=1$. At $[41,41]$ its product is
+$40/39$. In a Rosser-weight recursion the upper endpoint changes when
+the largest prime factor is removed. Lemma~\ref{lem:closed} gives the
+same hypothesis at each smaller level. If the residual primes in a finite
+scan are $p_1<\cdots<p_t$, put
+$T_j=\sum_{h\le j}-\log(1-g(p_h))$, with $T_0=0$. The largest
+logarithmic excess in \eqref{eq:hstar} with right endpoint $p_j$ is
+\[
+ T_j-\log\log p_j
+       -\min_{1\le i\le j}\bigl(T_{i-1}-\log\log p_i\bigr).
+\]
+Updating the minimum before testing $j$ includes the singleton interval.
+This turns a quadratic list of prime pairs into a single pass. Extending
+the finite scan to all primes requires a separate analytic product
+estimate, as in the tail constructions below.
+
+For a finite prime set with general local weights, the weaker condition in which both endpoints are sifting primes can give a quantitatively incorrect third remainder. Appendix~\ref{sec:threeprimes} gives a three-prime example.
+
+\section{Classical inputs and their normalization}\label{sec:inputs}
+
+The three-factor reduction uses six external statements. The following identification specifies the functions and endpoint conventions required to invoke them. The numerical interval checks for the real constants are described in Appendix~\ref{app:constants}.
+
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=*,itemsep=4pt]
+\item For every even $4\le N<4\cdot10^{18}$ there are primes $p,q$ with $p+q=N$. This is a subinterval of the range verified in \cite{OHP}.
+\item Under GRH, $|\pi(x;d,a)-L(x)/\varphi(d)|\le c_\pi(X)\sqrt x\log x$ on the range in Section~\ref{sec:switch}. The proof of \cite[Lemma~5.1]{JS} gives the bound for this choice of $L$ directly.
+\item Under GRH, $|\pi(x)-\operatorname{li}(x)|\le\sqrt{x}\log x/(8\pi)$ for $x\ge2657$. The modulus-one instance supplies the ordinary Riemann hypothesis used by Schoenfeld \cite[Corollary~1]{Schoenfeld}.
+\item For $n\ge3$ the number of distinct prime factors is less than $1.3841\log n/\log\log n$ \cite[Théorème 11]{Robin}.
+\item For $x\ge2$, let $M$ be the Meissel--Mertens constant and put $s(x)=\sum_{p<x}1/p-\log\log x-M$. The lower bound is $s(x)\ge-2.964\cdot10^{-6}/\log x$. The upper bound is
+\[
+ s(x)\le\begin{cases}
+ 1 & 2\le x\le e^{8.9},\\
+ 0.001614 & e^{8.9}<x\le e^{10},\\
+ 2/(\sqrt x\log x) & e^{10}<x\le10^{12},\\
+ 6.836\cdot10^{-6}/\log x & x>10^{12}.
+ \end{cases}
+\]
+The lower bound and the last three cases are in \cite[Lemma~3.2 and its proof]{JS}. In the first case it suffices to test the right limit after each prime, since $s$ decreases between jumps. The finite check in Appendix~\ref{app:constants} gives an upper bound of $0.606$. The interval for $M$ there also gives $0.261497\le M\le0.261498$.
+\item Let $C_{\rm twin}=\prod_{p>2}(1-(p-1)^{-2})$ and $U_c=2C_{\rm twin}$. For even $N\ge4$ and real $x\ge285$, put
+\[
+ u_1=1.45\,\frac{\log N+10\log\log N}{x-1},\qquad
+ u_2=\frac{1.002}{x-3},\qquad u_3=\frac1{2\log^2 x}.
+\]
+The product $V_N(\lceil x\rceil)$ divided by $e^{-\gamma}U_c\mathfrak D(N)/\log x$ lies within
+$\Delta=\prod_{i=1}^3(1+u_i)-1$ of one. Indeed, \cite[Lemma~38, $j=0$]{BJS} gives a product of factors $1+\theta_i u_i$, $|\theta_i|\le1$. Expansion gives the stated symmetric error, which equals the maximum used in the formal definition since all $u_i$ are nonnegative. Its prime cutoff $p<x$ is equivalent to $p<\lceil x\rceil$. In the proof of that lemma the exceptional-modulus multiplier equals one for $j=0$, and the estimate $\omega(N)\le\log N/\log 2$ suffices for all even $N\ge4$.
+\end{enumerate}
+
+With these inputs, the formal reduction constructs the lower bound on each finite interval and on the final ray. The two range-positivity statements follow within the three-factor proof.
+
+\section{The certificate for three prime factors}\label{sec:k3}
+
+Write $A=|\mathcal A_N|$ and $V_2(z)=\prod_{3\le p<z}(1-1/(p-1))$, with the product over primes. We estimate the switching balance $B(N;z,y)$ of Proposition~\ref{prop:pinch}. The same cutoffs must do two jobs. They must force the factor-counting inequality, and they must leave enough room for estimating divisibility by $q$ inside a sifted set. As $q$ grows, this second requirement reduces the available sieve level.
+
+\subsection{From progression estimates to a slab bound}
+
+On an interval $[X,Y)$, every modulus used with the progression error $r_N(d)$ in \eqref{eq:aperror} must satisfy $d\le\sqrt X$. The choice of divisor weights controls both the main term and the number of progressions that incur this error.
+
+Treat a set of small primes by exact inclusion--exclusion and partition the remaining odd sifting primes $P$ into blocks in decreasing order. Let $T_i$ be the union of the first $i$ blocks. Retain a subset $S\subseteq P$ when $|S\cap T_i|\le m_i$ for all $i$, with $0\le m_1\le m_2\le\cdots$. Write $g(p)=1/(p-1)$ and $V(T)=\prod_{p\in T}(1-g(p))$. When the caps have the same parity, the relative error in the truncated Euler-product main term is at most
+\begin{equation}\label{eq:k3brun}
+ E(\boldsymbol m)=\sum_i
+ \frac{\bigl(\sum_{p\in T_i}g(p)\bigr)^{m_i+1}}
+ {(m_i+1)!\,V(T_i)} .
+\end{equation}
+To prove this, list the primes of a discarded subset in decreasing order and stop at the first prime $p$ that violates a cap. If $T_i$ contains $p$, it also contains every previously selected prime. The stopped subset therefore has $m_i+1$ elements for any cap violated at this step. For the pointwise sieve, summing over all tails drawn from the smaller prime divisors of a shift gives a coprimality indicator. The sign of the discarded contribution is $(-1)^{m_i+1}$, so odd caps yield a lower sieve and even caps an upper sieve. For the Euler-product main term the corresponding tail sum is $V(\{r\in P:r<p\})$. Dividing this by $V(P)$ costs at most $1/V(T_i)$. Assign each stopped subset to one violated cap. The sum of its possible products of $m_i+1$ distinct weights in $T_i$ is bounded by $(\sum_{r\in T_i}g(r))^{m_i+1}/(m_i+1)!$. Summing over $i$ gives \eqref{eq:k3brun}. The retained moduli contribute an additional arithmetic-progression error bounded by the sum of $|r_N(d)|$ on their support.
+
+For the negative term in the switching balance, partition the primes $z\le q<y$ into contiguous intervals. An upper weight on a slice can use an even truncation at a smaller cutoff, since dropping sifting primes only enlarges the count. A second choice is a Selberg upper weight of level $\xi$. Its main-term denominator for a set $P$ is
+\[
+ J(P,\xi)=\sum_{\substack{d\mid\prod_{p\in P}p\\ d\le\xi}}
+              \prod_{p\mid d}\frac{g(p)}{1-g(p)}.
+\]
+Indeed, the square of $\sum_{d\mid m}\lambda_d$, with $\lambda_1=1$ and support on these divisors, majorizes the indicator of a sifted integer. Minimizing the main quadratic form gives $1/J(P,\xi)$. A squarefree least common multiple $L$ occurs in at most $3^{\omega(L)}$ ordered pairs in the expanded square, since each prime can appear in the first divisor, the second, or both. In the $q$-slice the arithmetic progression is taken modulo $qL$, so the admissible $\xi$ decreases with $q$. For the separate square term one uses $|(\mathcal A_N)_{q^2}|=A/[q(q-1)]+r_N(q^2)$ up to a chosen threshold $q_*^2\le\sqrt X$. Above that threshold $|(\mathcal A_N)_{q^2}|\le N/q^2$ suffices.
+
+In the first two groups of slabs, the positive count is bounded below by $A V_N(z)r-Ae_0$, and the upper estimate on slice $i$ is $A[V_N(z)m_i'/V_2(z)+e_i]$. Let $e_2 A$ bound the half-weighted square sum. Collecting terms gives
+\[
+ \frac{B(N;z,y)}{A}\ \ge \frac{V_N(z)}{V_2(z)}
+ \left(V_2(z)r-\tfrac12\sum_i m_i'\right)
+ -e_0-\tfrac12\sum_i e_i-e_2 .
+\]
+The bracket is checked to be nonnegative. Since omitting primes dividing $N$ gives $V_N(z)/V_2(z)\ge1$, replacing this ratio by one preserves the lower bound. The third group carries the factor $AV_N(z)$ throughout. The 127 individual estimates are assembled in Table~\ref{tab:k3list}. Each decimal in the last column is the exact minimum of the stored rational net on the indicated group.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lrlr@{}}
+\hline
+Range of $N$ & Slabs & Scale & Minimum net \\
+\hline
+$[4\cdot10^{18},2\cdot10^{23})$ & 21 & $A$ & $0.0018320230$ \\
+$[2\cdot10^{23},10^{84})$       & 40 & $A$ & $0.0017630162$ \\
+$[10^{84},10^{600})$            & 66 & $AV_N(z)$ & $0.0039692169$ \\
+\hline
+\end{tabular}
+\caption{Lower bounds on $B(N;z,y)$ divided by the indicated positive scale, under the three-factor inputs.}\label{tab:k3list}
+\end{table}
+
+For a worked example take $5\cdot10^{18}\le N<7\cdot10^{18}$. The third slab uses $z=23$ and $y=672652$, so $zy^3=7\,000\,017\,882\,589\,131\,584$ exceeds the right endpoint. The seven odd primes below $23$ give at most $2^7=128$ moduli for the positive count. Their product is $4\,849\,845<\sqrt{5\cdot10^{18}}$, and $V_2(23)=935/4096$. For $23\le q<377$, the upper weight takes the first two sifting primes exactly, followed by an even truncation of order four on the other five. It uses at most $4\sum_{j=0}^4\binom5j=124$ moduli before multiplication by $q$. Subsequent slices reduce the support as $q$ increases. With $q_*=47287$ for the square correction, the assembled certificate gives
+\[
+ \frac{B(N;23,672652)}{A}
+ \ge\frac{410508708-392188478}{10^{10}}
+ =0.0018320230 .
+\]
+For example, increasing the entire error budget on this slab by five per cent would exhaust its surplus, since $1.05(392188478)>410508708$.
+
+\subsection{The infinite range}
+
+Set $X_0=10^{600}$, $z=\lfloor N^{1/16}\rfloor$ and $y=\lceil(N/z)^{1/3}\rceil$. For $N\ge X_0$ we have $z\le y$ and $N\le zy^3\le y^4$. Define
+\[
+ U(N)=U_c\prod_{\substack{p\mid N\\p>2}}\frac{p-1}{p-2},
+ \qquad D(N)=\frac{16 A\,U(N)}{\log N},
+\]
+where $p$ runs over primes and $U_c$ is the normalization constant in the Euler-product hypothesis. In the usual normalization $U_c=2\prod_{p>2}(1-(p-1)^{-2})$. The factor $e^{-\gamma}$ enters the coefficient of $D(N)$ through the approximation to $V_N(z)$.
+
+The lower sieve pays for the pre-sieve before selecting its level. Let $Q$ be the product of all odd primes up to $101$ and the six additional primes $107,109,137,149,191,227$. The remaining sifting primes satisfy the closed product condition~\eqref{eq:hstar} with $K=1+1/100$. For a given $N$ only the factors coprime to $N$ need be removed. Using the full $Q$ gives a level and a uniform lower bound for its sieve parameter,
+\[
+ \mathcal D=\frac{\sqrt N}{Q(\log N)^{7/2}},\qquad
+ \frac{\log\mathcal D}{\log z}\ge s_A(N)
+ =16\left(\frac12-\frac{\log Q+\tfrac72\log\log N}{\log N}\right).
+\]
+Indeed, $\log z\le(\log N)/16$, and pre-sieving lifts the residual moduli to moduli at most $Q\mathcal D$. This leaves a factor $(\log N)^{7/2}$ below the square-root limit for the progression errors.
+
+On the odd primes left after the pre-sieve, the certificate proves \eqref{eq:hstar} with $K=101/100$. It checks the prime list and all closed intervals with upper endpoint at most $8000$ by the running minimum of Section~\ref{sec:presieve}. For an interval crossing $8000$ it combines the stored prefix bound with the reciprocal-prime estimate in Section~\ref{sec:inputs}. If both endpoints exceed $8000$, that estimate applies throughout. Deleting any primes dividing $N$ preserves the upper bound.
+
+At $s=s_A(N)$ the coefficient on $A V_N(z)$ before subtracting those errors is
+\[
+    f(s)-\tfrac{1}{100} C_2 e^2 h(s),\qquad h(s)=3e^{-s}/s\quad(s\ge3).
+\]
+Here $f,F$ have initial values $f(s)=0$, $F(s)=2e^\gamma/s$ on $0<s\le2$ and satisfy $(sf(s))'=F(s-1)$, $(sF(s))'=f(s-1)$ for $s>2$~\cite{BJS}. Thus $f(s)=2e^\gamma\log(s-1)/s$ on $2\le s\le4$; integration over successive unit intervals continues it to $s=6$. A trapezoidal enclosure of the iterated integral at $6$, with mesh $1/50$ and a second-derivative error bound, gives $f(6)\ge0.99986$. At $X_0$ the product $Q$ gives $s_A(X_0)\ge6.344769$. Since $f$ is nondecreasing, the lower bound for $f(6)$ and the decay bound $C_2\le494$ give the lower coefficient used below.
+
+For the upper sieve put $\beta=5/16+10^{-9}$, $\alpha_q(X)=\tfrac{11}{2}\log\log X/\log X$, and set
+\[
+ u_k=\frac1{16}+\frac{k}{120}\left(\beta-\frac1{16}\right),\qquad
+ r_k=\min\!\left\{\frac{59}{20},\;8\left(\frac12-\alpha_q(X_0)-u_{k+1}\right)\right\}.
+\]
+For $0\le k<120$ take $N^{u_k}\le q<N^{u_{k+1}}$ inside $[z,y)$, starting the first strip at $z$ to include the floor. The Selberg divisor cutoff on this strip is $\xi_k=\lfloor z^{r_k}\rfloor$. Its largest possible progression modulus satisfies
+\[
+    q\xi_k^2\le N^{u_{k+1}+r_k/8}\le\frac{\sqrt N}{(\log N)^{11/2}},
+\]
+since $\alpha_q(N)\le\alpha_q(X_0)$. This accounts for the decreasing level as $q$ grows. Each strip contributes its upper bound for $\sum_q1/(q-1)$ divided by its lower bound for $V_N(z)J(P,\xi_k)$, where $P$ consists of the primes below $z$ coprime to $N$. Both bounds may be evaluated uniformly at $X_0$; the $10^{-9}$ allowance ensures $y\le N^\beta$ throughout the ray.
+
+Let $a$ denote the lower main coefficient for the rough count, $b$ the sum of upper main coefficients for the divisor slices, $\delta$ the Euler-product relative-error bound and $e$ the combined normalized remainder. The ray estimate reads
+\[
+ \frac{B(N;z,y)}{D(N)}
+ \ge (1-\delta)e^{-\gamma}(a-\tfrac12 b)-e .
+\]
+At $X_0$ the formal strip calculation gives $a\ge0.969550$, $b\le1.770383099751$, $\delta\le0.000067062$ and $e\le0.000078$. Using the recorded lower enclosure $0.561459483566885$ for $e^{-\gamma}$ yields
+\begin{align*}
+ &(1-0.000067062)\,0.561459483566885
+ \bigl(0.969550-\tfrac12\,1.770383099751\bigr)-0.000078\\
+ &\hspace{15mm} > 0.0469
+ \;>\;\frac{469030085-770465}{10^{10}}
+ =0.0468259620 .
+\end{align*}
+Thus the stored ray coefficient applies uniformly in the scale $D(N)$. In particular, the result bounds the number of distinct representing primes from below. Every even $N\ge X_0$ has at least $0.0468259620\,D(N)$ primes $p<N$ with $\Omega(N-p)\le3$, under the stated inputs.
+
+For $4\le N<4\cdot10^{18}$ the finite binary Goldbach input supplies $N=p+q$ and $\Omega(q)=1$~\cite{OHP}. On the union of the three finite groups and the ray, strict positivity of the balance yields the representation by Proposition~\ref{prop:pinch}. Half-open slabs assign each finite endpoint to the next interval, including the transition $N=X_0$ to the ray.
+
+\subsection{Removing the unit and counting representations}
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+The finite Goldbach computation supplies $m\ge2$ throughout the initial range. For larger $N$, Proposition~\ref{prop:pinch} bounds the number $G_3(N)$ allowing $m=1$. Removing that value costs at most one prime, namely $p=N-1$.
+
+For each finite row $[X,Y)$, its recorded integer $z$ satisfies $z\ge3$ and $z^2\le X$. These inequalities are checked directly from the 127 pairs $(X,z)$. Multiplying over all integers in place of the eligible primes gives
+\[
+ V_N(z)\ge \prod_{j=3}^{z-1}\frac{j-2}{j-1}
+ =\frac1{z-2}\ge\frac1{\sqrt N}.
+\]
+The least entry of Table~\ref{tab:k3list} exceeds $1/1000$. Since $|\mathcal A_N|>N/\log N$ for $N\ge4\cdot10^{18}$ \cite[Lemma~3.1]{JS}, both finite normalizations give
+\[
+ G_3(N)>\frac{\sqrt N}{1000\log N}>1 .
+\]
+The last expression is increasing for $N>e^2$ and already exceeds $46\,000+1$ at $4\cdot10^{18}$. Hence the finite sieve supplies at least $46\,000$ distinct representations with $m\ge2$ on every one of its intervals.
+
+On the ray, $U(N)=U_c\mathfrak D(N)$ and $U_c>1.320323061$. Consequently
+\[
+ 0.0468259620\frac{16|\mathcal A_N|\,U(N)}{\log N}
+ >0.9892\,\mathfrak D(N)\frac{N}{(\log N)^2}.
+\]
+This exceeds $46\,001$ at the left endpoint and thereafter, since $N/(\log N)^2$ increases for $N>e^2$ and $\mathfrak D(N)\ge1$. Subtracting one proves the asserted lower bounds.
+\end{proof}
+
+\section{An independent four-factor certificate}\label{sec:k4}
+
+The four-factor bound admits a direct proof using a lower sieve on the original sequence and an upper sieve on each sequence of multiples of a medium prime. Its finite computation ends at $10^{500}$.
+
+For an even $N$, let $\mathcal A=\mathcal A_N$ and $A=|\mathcal A|$. Use the balance $B(N;z,y)$ in \eqref{eq:switch} with $zy^4\ge N$ and $y^5>N$. The inequality $W(N;z,y)\ge B(N;z,y)$ supplies the weighted positivity required by Proposition~\ref{prop:pinch}.
+
+\subsection{The 58 finite intervals}
+Fix an interval $[X,Y)$ and choose integers $z,y$ satisfying $zy^4\ge Y$ and $y^5>Y$. Sieve the small odd primes exactly and divide the remaining primes below $z$ into blocks with endpoints $z=z_0>z_1>\cdots>z_r$. Apply the odd caps of Section~\ref{sec:k3} to $\mathcal A$ and the even caps to each $\mathcal A_q$. Let $E^-$ and $E^+$ be the bounds from \eqref{eq:k3brun} for the two choices of caps. The same bounds apply after deleting primes dividing $N$, since each numerator can only decrease and each denominator can only increase.
+If
+\[
+ b=1-E^- -\frac12(1+E^+)\sum_{\substack{z\le q<y\\q\text{ prime}}}\frac1{q-1}>0,
+\]
+then the main term on the right of \eqref{eq:switch} is at
+least $A V_2(z)b$, with the square-divisor term left among
+the errors. Indeed removing primes dividing $N$ increases the product
+and decreases the subtracted sum. The sign of $b$ justifies both
+replacements.
+
+The level constraint is checked separately for each sign. If $Q_1$ is the
+product of the small odd primes sieved exactly and $m_0=0$, all moduli
+in the lower sum are at most
+$L^-=Q_1\prod_i z_{i-1}^{m_i-m_{i-1}}$ for its choice of caps.
+For the upper sum on $\mathcal A_q$ use the analogous $L^+$ and the extra
+factor $q$. The integer checks $(L^-)^2\le X$ and $(yL^+)^2\le X$
+keep the moduli within the range of the progression estimate.
+For each modulus we use the error term in
+\eqref{eq:aperror}. In the upper sieve on $\mathcal A_q$ the local error is
+$r_N(qd)-r_N(q)/\varphi(d)$, since $q$ is coprime to every allowed $d$.
+The certificate sums absolute values using the counts of admissible
+moduli and an upper bound on $\sum_d1/\varphi(d)$.
+The square term is bounded either by the progression estimate at $q^2$,
+when $y^4\le X$, or by $|\mathcal A_{q^2}|\le N/q^2$.
+
+For example, the first interval in the certificate~\cite{Repo} is $[4\cdot10^{18},4\cdot10^{20})$.
+Here $z=115$, $y=43186$, $Q_1=3\cdot5\cdot7\cdot11$, and the remaining
+block uses caps $3$ and $0$. The size conditions hold, since $115\cdot43186^4=400\,008\,999\,261\,853\,249\,840>4\cdot10^{20}$ and $43186>115$. In units of $N/\log N$, the main term is
+at least $0.02429262$ and the combined error is at most $0.02246963$, leaving a surplus of at least $0.00182299$. The lower sieve and the family of upper sieves contribute at most $0.01191795$ and $0.00939365$ respectively to this error.
+Across all 58 intervals the smallest recorded lower bound for
+$B/(N/\log N)$ exceeds $0.0016796$ and occurs on
+$[10^{390},10^{400})$. Adjacent intervals have identical integer
+endpoints and the last ends at $10^{500}$.
+
+\subsection{The infinite range}
+For $N\ge10^{500}$ take $M=22$, $z=N^{1/M}$,
+$\beta=(M-1)/(4M)$ and $y=N^\beta$. Thus $zy^4=N$ and
+$\beta>1/5$. Set
+\[
+ D=N^{1/2-0.1024},\qquad H=\frac{\sqrt N}{(\log N)^{4.01}},
+ \qquad s=\frac{\log D}{\log z}=8.7472 .
+\]
+The pre-sieve consists of the odd primes up to $82$ and the four primes
+$103,107,191,223$, omitting divisors of $N$. Its product $Q$
+satisfies $QD\le H$. The product bound \eqref{eq:hstar} holds with
+$\varepsilon=1/80$. The worst-case product excess is bounded by $0.012385508$, and $\log Q\le89.520059$. The refined recurrence gives upper bounds $C_1<391.822$ and $C_2<390.690$. The lower linear sieve at level $D$ applies to
+$\mathcal A$. The upper sieve on $\mathcal A_q$ has level $D/q$, hence
+$s_q=\log(D/q)/\log z\ge3.4972$. With $f,F$ the lower and upper
+linear sieve functions and $h$ the explicit error profile, the coefficient of $A V_N(z)$ in the lower bound is
+\[
+ f(s)-\varepsilon C_2e^2h(s)
+ -\frac12\sum_q
+ \frac{F(s_q)+\varepsilon C_1e^2h(s_q)}{q-1}
+ .
+\]
+The sum is bounded by splitting $\log q/\log N\in[1/M,\beta)$ into
+$2000$ equal intervals and applying the reciprocal-prime estimate
+on each. In the sum involving $r_N(qd)$ the prime $q\ge z$ is the unique largest prime of $qd$, so every modulus occurs
+at most once in that double sum. The remaining square term is bounded
+by $N/(2(z-1))$.
+
+For comparison across the two recursions, write
+\[
+ U_N=2e^{-\gamma}\!
+ \prod_{p>2}\left(1-\frac1{(p-1)^2}\right)
+ \prod_{\substack{p\mid N\\ p>2}}\frac{p-1}{p-2}.
+\]
+The table uses units of $M U_N N/(\log N)^2$. Each row uses the
+stated $M$ throughout, including in $z$ and $y$.
+\begin{center}
+\begin{tabular}{lrrrr}
+\hline
+Recursion & $M$ & Main term $\ge$ & Total error $\le$ & Net $>$\\
+\hline
+Refined & 22 & 0.07666683 & 0.00144344 & 0.07522\\
+Classical & 24 & 0.04041969 & 0.00132316 & 0.03909\\
+\hline
+\end{tabular}
+\end{center}
+The bounds are uniform on the infinite range. Indeed $QD\le H$ follows
+by a direct check at the left endpoint, and $N^{0.1024}/(\log N)^{4.01}$ increases there
+and thereafter. The normalized progression errors contain inverse powers
+of $\log N$ with positive exponents, the smallest being $0.01$.
+The square-divisor error is bounded by a constant times
+$(\log N)^2/(N^{1/M}-1)$, which is decreasing here.
+
+The formal theorem combines three hypotheses. These are binary Goldbach through
+$4\cdot10^{18}$, positivity of $W$ for some admissible $z,y$ on
+$[4\cdot10^{18},10^{500})$, and the same positivity on $[10^{500},\infty)$.
+The first range supplies a prime second summand by the computation of Oliveira e Silva, Herzog and Pardi~\cite{OHP}. On either remaining
+range, Proposition~\ref{prop:pinch} gives a representation. The Lean library
+proves precisely this implication, as well as the version in which the
+last two hypotheses are implications from Dirichlet GRH. The external argument uses the two numerical certificates to establish positivity of the analytic lower bound.
+
+\section{The formal statements and their replay}\label{sec:replay}
+The proof and certificate data cited here are pinned to commit
+\texttt{ddeaeef76cfc}. The projects specify Lean 4.37.0-rc1 and Mathlib
+\texttt{31ce06eaadf4}. The following entry points locate the stages at which hypotheses are discharged.
+
+
+\paragraph{Three-factor reduction.}
+In \leanid{k3/BuchstabSwitching/Main.lean}, the theorem
+\leanid{all_even_one_plus_three_of_classical} accepts the constant record, Dirichlet GRH and the six inputs of Section~\ref{sec:inputs}. Its conclusion allows any positive second summand. In \leanid{External/Bridge.lean}, the theorem \leanid{externalPremises_of_classical} constructs the finite and infinite enclosures from these inputs. The concrete finite instantiation is \leanid{allSlabs_bridges_inst}. On the ray, \leanid{regime3_switchingBalance_analytic_lb} retains the real scale $D(N)$ used in the counting bound. The last conversion to an existential positive rational scale suffices for existence. The preceding real inequality is needed to count representations.
+\paragraph{Four-factor reduction.}
+In \leanid{AllEvenOnePlusFour/Reduction.lean} the statement
+\leanid{all_even_one_plus_four_of_conditionalInputs} accepts the small Goldbach computation and GRH-conditional positivity on two ranges. Section~\ref{sec:k4} describes how the Python certificates address those ranges. The GRH-only declaration in \leanid{Challenge.lean} contains a proof placeholder. The comparator log accepts the separate conditional reduction.
+\paragraph{Integer checks.}
+The three-factor finite and infinite records store integer numerators for a lower main term, an upper error and a positive net. With denominator $10^{10}$ the check is
+$0<n_{\rm net}\le n_{\rm main}-n_{\rm err}$. The finite checks also prove adjacency and both cutoff inequalities against the right endpoint of each interval. Their arithmetic was replayed with the pinned Lean kernel using the data and Boolean checker from the source; the replay needs no Mathlib or additional axioms. The supplementary script also checks $z^2\le X$ and the uniform margin used to remove the unit.
+
+
+The four-factor replay recomputed all 58 intervals and both tail records. The upstream three-factor consistency check passed on the stored JSON, its printed summary and the integer records. The asymptotic Python calculation independently reproduced the stored ray value. A fresh evaluation matched the stored numerical output on the first 61 finite rows. On the last 66, the regenerated lower estimates for the main term and net differed in their final digits. The largest difference in the net was less than $1.17\cdot10^{-9}$. The least regenerated value in this group was $0.003969216147652$, against $0.003969217037886$ in the archived JSON. Both exceed $0.003969$. The endpoints, cutoffs and upper error estimates agreed. Table~\ref{tab:k3list} uses the archived Lean rationals. All 127 archived witness bodies also passed the corresponding integer checks against the archived row headers in a Python replay. The full Mathlib-dependent projects were not rebuilt for this manuscript. Their committed comparator transcripts record acceptance of the reduction targets by the Lean default and paranoid kernels and by \texttt{nanoda}, with sandboxing disabled. The classical theorems used in Section~\ref{sec:inputs} enter the formal statements as parameters. Their mathematical identification and the real-constant instantiation in the appendix complete the argument at the level of this paper.
+
+\appendix
+\section{An explicit witness for the real constants}\label{app:constants}
+Several of the real parameters of the formal reduction occur both in numerical intervals and in an analytic premise. To instantiate these parameters simultaneously, take the actual Euler constant $\gamma$, the principal value $\operatorname{li}(2)$, the Meissel--Mertens constant $M$, and the twin-prime product $C_{\rm twin}$. Set
+\[
+ U_c=2C_{\rm twin},\qquad H_0=1/C_{\rm twin},\qquad
+ \alpha_0=(\gamma+\log 2)/2,\qquad C_{f_0}=0.78.
+\]
+Use the exact decimals $H_\sigma=5.360998310866785$ and $\widetilde H=1.295731517927648$ and put $C_J=(\alpha_0+C_{f_0})H_\sigma$. The type constrains the two chosen parameters by numerical inequalities and imposes the displayed identity on $C_J$. The six external statements refer only to $\operatorname{li}(2),M,U_c$ and $e^{-\gamma}$ among these constants.
+
+Here is one reproducible calculation of the required intervals. Generate the primes up to $T=4\,000\,000$ by Eratosthenes' sieve and let $C_T$ be the corresponding finite twin product. The omitted product is at least one minus the sum of its deficits, giving
+\[
+ C_T\left(1-\frac{1}{T-1}\right)\le C_{\rm twin}\le C_T.
+\]
+Indeed $\sum_{p>T}(p-1)^{-2}\le\sum_{n\ge T}n^{-2}\le 1/(T-1)$. For $M$ use the convergent series
+\[
+ M=\gamma-\sum_p\sum_{j=2}^\infty\frac{1}{jp^j}.
+\]
+The loss beyond $T$ is at most $\sum_{n>T}1/(2n(n-1))=1/(2T)$. Each finite inner series has a geometric tail. Outward rounding gives
+\begin{align*}
+ 0.6601616610274818978&\le C_{\rm twin}\le0.6601618260679796750,\\
+ 0.2614970955890086299&\le M\le0.2614972205890086300,\\
+ 7.5867852168295458493&\le C_J\le7.5867852168295458494 .
+\end{align*}
+In particular the interval for $M$ lies inside both the constant record and the Mertens premise. The first interval also puts $U_c$ and $H_0$ inside their respective boxes.
+
+For the remaining elementary constants evaluate the harmonic Euler--Maclaurin expansion at $n=128$ up to $-1/(240n^8)$, with $\gamma$ lying between that approximation and its sum with $1/(132n^{10})$. Evaluate $\operatorname{li}(2)$ by
+\[
+ \gamma+\log\log2+\sum_{j\ge1}\frac{(\log2)^j}{j\,j!}.
+\]
+After 44 terms its positive tail is bounded by the next term divided by $1-(\log2)/46$. All elementary operations in the supplementary verifier have outward-rounded integer endpoints on a grid of spacing $10^{-48}$. Logarithms use the series for $2\operatorname{arctanh}((x-1)/(x+1))$ after reduction to $1\le x\le2$. Exponentials use the Taylor series with a geometric bound on the tail. This verifies the fourteen intervals of the real-constant record and its algebraic identities. For the small Mertens range, the verifier tests the 934 prime jumps up to $e^{8.9}$ and obtains an upper bound of $0.6050158250$ for the excursion in Section~\ref{sec:inputs}.
+
+The source archive includes \leanid{verify_inputs.py} for this calculation and \leanid{core_replay.py} for the integer certificate checks. A third script, \leanid{witness_replay.py}, replays the stored finite witnesses through the corresponding Python checkers. Full proof and certificate-generation commands, including the exact repository revision, are in the archive's reproduction instructions.
+
+\section{A three-prime obstruction}\label{sec:threeprimes}
+
+For general local weights $0<g(p)<1$, even testing every half-open interval whose endpoints are sifting primes can miss a term of the linear sieve. Write $V(w)=\prod_{p<w}(1-g(p))$ on a finite prime set $P$. The third remainder in the upper Rosser weight is
+\[
+ T_3(D,z)=\sum_{\substack{z>p>q>r,\ p,q,r\in P\\
+                  p^3<D\le pqr^3}}
+                   g(p)g(q)g(r)V(r).
+\]
+Its continuous comparison term at $D=z$ is $f_3(1)=\int_2^4 f_2(u)\,du$, where
+$u f_2(u)=u-4+3\log(3/(u-1))$ for $2\le u\le4$.
+
+\begin{proposition}\label{prop:threeprimes}
+There exist $P,g$ and $D=z$ for which
+\[
+ \frac{V(v)}{V(w)}=\frac{\log w}{\log v}
+ \qquad(v\in P,\ w\in P\cup\{z\},\ v<w)
+\]
+but $T_3(D,z)/V(z)-f_3(1)>0.0365$.
+\end{proposition}
+\begin{proof}
+Let $r_1=53$, $r_2=829$, $r_3=10007$, $P=\{r_1,r_2,r_3\}$ and
+$r_4=z=D=r_3 r_2 r_1^3$. Put $a_i=\log r_i$ and take $g(r_i)=1-a_i/a_{i+1}$. Products of $(1-g(r_i))^{-1}=a_{i+1}/a_i$ telescope. All three numbers in $P$ are prime, as trial division up to their square roots verifies. The only descending triple satisfies $r_3^3<D$, since $10007^2=100140049<123419033=829\cdot53^3$. It attains the other cutoff with equality. As $V(r_1)=1$, it follows that
+\[
+ \frac{T_3(D,z)}{V(z)}
+   =\frac{a_4}{a_1}\prod_{i=1}^3\left(1-\frac{a_i}{a_{i+1}}\right)
+   >0.5192 .
+\]
+The function $f_2$ decreases on $[2,4]$ because $u^2f_2'(u)=1-3/(u-1)-3\log(3/(u-1))\le0$. An upper Riemann sum of mesh $1/2$ gives
+\[
+ f_3(1)\le\tfrac12\bigl(f_2(2)+f_2(5/2)+f_2(3)+f_2(7/2)\bigr)<0.48263 .
+\]
+Both decimal inequalities can be checked with rational arithmetic. Reduce each logarithm by powers of two, then use $\log x=2\sum_{j=0}^{11}t^{2j+1}/(2j+1)+R$, $t=(x-1)/(x+1)$, on $1\le x\le2$. The remainder is bounded by $0\le R\le 2t^{25}/(25(1-t^2))$.
+\end{proof}
+
+The effective recursion level $D^{1/3}$ lies strictly between $r_3$ and $z$. Replacing it by the next admissible endpoint jumps all the way to $z$. Consequently a bound whose additive error tends to zero with the excess of the prime-endpoint constant over one cannot follow from these half-open tests alone. The example concerns general sieve weights. In the shifted-prime application the weights are fixed and the closed condition~\eqref{eq:hstar} is checked directly.
+
+\small
+\begin{thebibliography}{99}
+\setlength{\itemsep}{3pt plus 1pt minus 1pt}
+\bibitem{Aquila} W. Aquila, \emph{Every even integer greater than 2 is a prime plus a product of at most 18 primes}, preprint, November 2026. \href{https://hexagonmath.org/pdf/2611.00415v1}{Hexagon manuscript 2611.00415v1}.
+\bibitem{BJS} M. Bordignon, D. R. Johnston and V. Starichkova, An explicit version of Chen's theorem and the linear sieve, \emph{Int. J. Number Theory} \textbf{21} (2025), 2497--2572. \href{https://doi.org/10.1142/S1793042125501192}{doi:10.1142/S1793042125501192}. Lemma numbering follows \href{https://arxiv.org/abs/2207.09452v6}{arXiv:2207.09452v6}.
+\bibitem{BS} M. Bordignon and V. Starichkova, An explicit version of Chen's theorem assuming the Generalized Riemann Hypothesis, \emph{Ramanujan J.} \textbf{64} (2024), 1213--1242. \href{https://doi.org/10.1007/s11139-024-00866-x}{doi:10.1007/s11139-024-00866-x}.
+\bibitem{Chen} J. R. Chen, On the representation of a large even integer as the sum of a prime and the product of at most two primes, \emph{Sci. Sinica} \textbf{16} (1973), 157--176.
+\bibitem{GM} L. Grenié and G. Molteni, An explicit Chebotarev density theorem under GRH, \emph{J. Number Theory} \textbf{200} (2019), 441--485. \href{https://doi.org/10.1016/j.jnt.2018.12.005}{doi:10.1016/j.jnt.2018.12.005}.
+\bibitem{Johnston} D. R. Johnston, New explicit and asymptotic results in sieve theory, thesis abstract, \emph{Bull. Aust. Math. Soc.} \textbf{113} (2026), 372--374. \href{https://doi.org/10.1017/S0004972725100828}{doi:10.1017/S0004972725100828}.
+\bibitem{JS} D. R. Johnston and V. V. Starichkova, Some explicit results on the sum of a prime and an almost prime, \emph{Acta Math. Hungar.} \textbf{177} (2025), 163--192. \href{https://doi.org/10.1007/s10474-025-01572-w}{doi:10.1007/s10474-025-01572-w}. \href{https://arxiv.org/abs/2208.01229v3}{arXiv:2208.01229v3}.
+\bibitem{OHP} T. Oliveira e Silva, S. Herzog and S. Pardi, Empirical verification of the even Goldbach conjecture and computation of prime gaps up to $4\cdot10^{18}$, \emph{Math. Comp.} \textbf{83} (2014), 2033--2060. \href{https://doi.org/10.1090/S0025-5718-2013-02787-1}{doi:10.1090/S0025-5718-2013-02787-1}.
+\bibitem{Renyi} A. Rényi, On the representation of an even number as the sum of a prime and of an almost prime, \emph{Izv. Akad. Nauk SSSR Ser. Mat.} \textbf{12} (1948), 57--78.
+\bibitem{Robin} G. Robin, Estimation de la fonction de Tchebychef $\theta$ sur le $k$-ième nombre premier et grandes valeurs de la fonction $\omega(n)$ nombre de diviseurs premiers de $n$, \emph{Acta Arith.} \textbf{42} (1983), 367--389. \href{https://doi.org/10.4064/aa-42-4-367-389}{doi:10.4064/aa-42-4-367-389}.
+\bibitem{Schoenfeld} L. Schoenfeld, Sharper bounds for the Chebyshev functions $\theta(x)$ and $\psi(x)$. II, \emph{Math. Comp.} \textbf{30} (1976), 337--360. \href{https://doi.org/10.1090/S0025-5718-1976-0457374-X}{doi:10.1090/S0025-5718-1976-0457374-X}.
+\bibitem{Repo} Visio Vanitas, \emph{Buchstab Switching}, Lean proofs, certificate data, Python programs and analytic notes. Revision \texttt{ddeaeef76cfc241ce004bd93f3d5f38812fe79c2}. \href{https://github.com/Visio-Vanitas/buchstab-switching/tree/ddeaeef76cfc241ce004bd93f3d5f38812fe79c2}{GitHub, immutable source tree}.
+\end{thebibliography}
+\end{document}
