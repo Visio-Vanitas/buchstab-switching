@@ -96,22 +96,6 @@ theorem chen_above_parzen_quad_smooth_pure_grh'
   refine ⟨p, m, hp, hm_pos, hpN, ?_⟩
   simpa [ArithmeticFunction.cardFactors_apply] using hm
 
-/-- Flat-top plateau 2-step quadratic LP pure-GRH ray (`N ≥ 10^280`) conditioned on the open
-calibration lemma `PlateauKernelCalibrationLemma`, aligned with `Challenge.lean`. -/
-theorem chen_above_plateau_quad_of_calibration'
-    {Φ : ℝ → ℝ} {δ Φ_max X₀ : ℝ}
-    (hGRH : _root_.DirichletLNonvanishingRightOfHalf)
-    (hPlateau : BuchstabSwitchingK2.PureGRH.PlateauKernelCalibrationLemma Φ δ Φ_max X₀)
-    (hLemmas : BuchstabSwitchingK2.PureGRH.PureGRHQuadSieveLemmas Φ δ Φ_max X₀ (9 / 10) (14 / 5)
-      BuchstabSwitchingK2.PureGRH.pureGRHPlateauQuadRayCert) :
-    ∀ N : ℕ, 10 ^ 280 ≤ N → Even N →
-      ∃ p m : ℕ, p.Prime ∧ 0 < m ∧ N = p + m ∧ m.primeFactorsList.length ≤ 2 := by
-  intro N hN hEven
-  rcases BuchstabSwitchingK2.PureGRH.chen_above_plateau_quad_of_calibration
-      hGRH hPlateau hLemmas N hN hEven with ⟨p, m, hp, hm_pos, hpN, hm⟩
-  refine ⟨p, m, hp, hm_pos, hpN, ?_⟩
-  simpa [ArithmeticFunction.cardFactors_apply] using hm
-
 /-- Literature-premise-free `polySplineKernel` 1-step variable-weight LP pure-GRH ray (`N ≥ 10^480`),
 discharging `SmoothExplicitFormulaLiteraturePremise` unconditionally inside Lean and aligned with
 `Challenge.lean`. -/
@@ -156,7 +140,6 @@ theorem chen_above_polySpline_quad_pure_grh'
 #print axioms all_even_one_plus_two_of_smooth_positivity'
 #print axioms chen_above_1e1668_sharp_grh'
 #print axioms chen_above_parzen_quad_smooth_pure_grh'
-#print axioms chen_above_plateau_quad_of_calibration'
 #print axioms chen_above_polySpline_varWeight_pure_grh'
 #print axioms chen_above_polySpline_quad_pure_grh'
 
@@ -311,33 +294,23 @@ theorem chen_above_polySpline_quad_pure_grh'
 #print axioms BuchstabSwitchingK2.PureGRH.exists_rat_weight_quad_abstract_of_real_le
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHRayCert_325_valid
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHParzenConstRayCert_valid
-#print axioms BuchstabSwitchingK2.PureGRH.pureGRHPlateauConstRayCert_valid
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHParzenVarWeightRayCert_valid
-#print axioms BuchstabSwitchingK2.PureGRH.pureGRHPlateauVarWeightRayCert_valid
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHParzenQuadRayCert_valid
-#print axioms BuchstabSwitchingK2.PureGRH.pureGRHPlateauQuadRayCert_valid
 #print axioms BuchstabSwitchingK2.PureGRH.exists_boundedSmoothedKernel_one_fiftieth
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_1e1668_sharp_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_const_smooth_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_1e325_smooth_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_1e390_parzen_smooth_pure_grh
-#print axioms BuchstabSwitchingK2.PureGRH.chen_above_1e344_plateau_smooth_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_varWeight_smooth_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_quad_smooth_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_parzen_varWeight_smooth_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_parzen_quad_smooth_pure_grh
-#print axioms BuchstabSwitchingK2.PureGRH.chen_above_plateau_const_of_calibration
-#print axioms BuchstabSwitchingK2.PureGRH.chen_above_plateau_varWeight_of_calibration
-#print axioms BuchstabSwitchingK2.PureGRH.chen_above_plateau_quad_of_calibration
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_varWeight_of_primitive_contour_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_quad_of_primitive_contour_grh
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.differentiable_mellin_of_admissible
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.verticalIntegrable_mellin_of_admissible
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.sqrt_mul_abs_le_inv_two_pi_mellin_l1
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.mass_le_two_sub_sqrt_mul_mellin_l1
-#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.plateauBumpKernel_admissible
-#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.plateauBumpKernel_mass_ratio
-#print axioms BuchstabSwitchingK2.SmoothExplicitFormula.nine_tenths_lt_plateauBumpKernel_mellin_l1
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel_admissible
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.integral_polySplineKernel
 #print axioms BuchstabSwitchingK2.SmoothExplicitFormula.norm_mul_two_mellinPolySpline_le
@@ -359,10 +332,6 @@ theorem chen_above_polySpline_quad_pure_grh'
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHPolySplineConstRayCert_valid
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHPolySplineVarWeightRayCert_valid
 #print axioms BuchstabSwitchingK2.PureGRH.pureGRHPolySplineQuadRayCert_valid
-#print axioms BuchstabSwitchingK2.PureGRH.plateauBumpKernel_bounded
-#print axioms BuchstabSwitchingK2.PureGRH.plateauBumpKernel_calibration_mass_ratio
-#print axioms BuchstabSwitchingK2.PureGRH.plateauBumpKernel_mellin_l1_gt_nine_tenths
-#print axioms BuchstabSwitchingK2.PureGRH.plateauKernelCalibration_of_explicitFormula
 #print axioms BuchstabSwitchingK2.PureGRH.polySplineKernel_bounded
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_polySpline_const_pure_grh
 #print axioms BuchstabSwitchingK2.PureGRH.chen_above_polySpline_varWeight_pure_grh

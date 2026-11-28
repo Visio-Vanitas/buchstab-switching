@@ -33,10 +33,8 @@ beyond-$\sqrt{N}$ or sub-$\sqrt{N}$ cancellation conjectures.
   - **Complex-Analytic Proof of `SmoothExplicitFormulaLiteraturePremise` (`External/SmoothExplicitFormula/`)**:
     - `KernelMellinDecay.lean`: general Mellin holomorphy, vertical integrability, universal
       Fourier–Mellin uncertainty bounds (`sqrt_mul_abs_le_inv_two_pi_mellin_l1`,
-      `mass_le_two_sub_sqrt_mul_mellin_l1`), unconditional `plateauBumpKernel` construction
-      (`plateauBumpKernel_admissible`, `plateauBumpKernel_mass_ratio`, and strict Mellin $L^1$
-      barrier `nine_tenths_lt_plateauBumpKernel_mellin_l1`), and explicit normalized $C^2$
-      spline `polySplineKernel` (`integral_polySplineKernel = 1`, `O(|t|^{-2})` and `O(|t|^{-3})`
+      `mass_le_two_sub_sqrt_mul_mellin_l1`), and explicit normalized $C^2$ spline
+      `polySplineKernel` (`integral_polySplineKernel = 1`, `O(|t|^{-2})` and `O(|t|^{-3})`
       IBP Mellin bounds);
     - `RectangleResidueMultiplicity.lean`, `MellinDirichletIdentity.lean`,
       `RightHalfPlaneLandau.lean`, and `PrimitiveExplicitFormulaProof.lean`: Cauchy rectangle
@@ -63,21 +61,13 @@ beyond-$\sqrt{N}$ or sub-$\sqrt{N}$ cancellation conjectures.
       $N \ge 10^{320}$ (`net_lo = +0.007149`);
     - `chen_above_1e390_parzen_smooth_pure_grh`: 1-step constant-weight ray for $N \ge 10^{390}$
       (`net_lo = +0.000318`);
-  - **Flat-top plateau bump (`κ₁ = 9/10`, `κ₀ = 14/5`, conditioned on `PlateauKernelCalibrationLemma`,
-    reduced to its vertical-cancellation field by `plateauKernelCalibration_of_explicitFormula`)**:
-    - `chen_above_plateau_quad_of_calibration`: 2-step quadratic role-reversal LP ray for
-      $N \ge 10^{280}$ (`net_lo = +0.000216`);
-    - `chen_above_plateau_varWeight_of_calibration`: 1-step variable-weight LP ray for
-      $N \ge 10^{284}$ (`net_lo = +0.008941`);
-    - `chen_above_plateau_const_of_calibration` / `chen_above_1e344_plateau_smooth_pure_grh`:
-      1-step constant-weight ray for $N \ge 10^{344}$ (`net_lo = +0.001777`);
   - **Sharp-cutoff & general contour corollaries**: `chen_above_1e1668_sharp_grh` ($N \ge 10^{1668}$),
     `chen_above_1e325_smooth_pure_grh`, `chen_above_varWeight_of_primitive_contour_grh`, and
     `chen_above_quad_of_primitive_contour_grh`.
 - **Full-Range Reduction Interface (`Main.lean`, `comparator/ChallengeK2Reduction.lean`)**:
   - `even_eq_prime_add_omegaMult_le_two` & `all_even_one_plus_two_of_premises` reduce full
     `AllEvenPrimePlusAlmostPrime 2` (`N ≥ 4`) to `ExternalPremisesK2`. Notice that without
-    additional distribution inputs, the low finite gap `[4 * 10^18, ~10^300)` remains open under
+    additional distribution inputs, the low finite gap `[4 * 10^18, ~10^316)` remains open under
     pure GRH + linear/quadratic switching cones.
 
 ## Verification

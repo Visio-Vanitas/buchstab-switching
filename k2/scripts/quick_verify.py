@@ -7,7 +7,7 @@ Audits:
   [1/4] AST zero-float and zero-`math`/`numpy`/`scipy` purity across all `scripts/**/*.py`,
         and verifies `Decimal` `Inexact`/`Rounded` traps are armed.
   [2/4] Repository naming & conjecture-isolation hygiene: zero forbidden keywords and
-        zero beyond-sqrt / sub-sqrt conjecture imports or definitions across `k2/`.
+        zero beyond-sqrt / sub-sqrt / unproved calibration imports or definitions across `k2/`.
   [3/4] JSON certificate <-> Lean `PureGRHShowcaseK2.lean` & `Data.lean` exact rational match.
   [4/4] Lean 4 module hygiene across `BuchstabSwitching/` and `BuchstabSwitchingK2/`
         (zero `sorry`, zero `admit`, zero `axiom` declarations, zero `native_decide`).
@@ -85,6 +85,8 @@ def verify_naming_and_isolation_hygiene() -> list[str]:
         "ConjecturesAndLemmasK2",
         "ModulusPowerCancellation",
         "OneRayModulusCancellation",
+        "PlateauKernelCalibrationLemma",
+        "plateau_bump_model",
         "b1Certified",
         "b2LowSlabs",
         "b2HighSlabs",
@@ -104,8 +106,8 @@ def verify_naming_and_isolation_hygiene() -> list[str]:
             if p.resolve() != Path(__file__).resolve():
                 for leak in conjecture_leak_terms:
                     if leak in raw:
-                        fail(f"Conjecture/B1B2 symbol {leak!r} found in {p.relative_to(ROOT)}")
-    return ["[2/4] NAMING & PURE-GRH ISOLATION HYGIENE: PASS (0 forbidden terms, 0 B1/B2 symbols)"]
+                        fail(f"Conjecture/unproved symbol {leak!r} found in {p.relative_to(ROOT)}")
+    return ["[2/4] NAMING & PURE-GRH ISOLATION HYGIENE: PASS (0 forbidden terms, 0 B1/B2/plateau symbols)"]
 
 
 def _scaled_int(dec_str: str, den: int = 1_000_000) -> int:
@@ -146,21 +148,21 @@ def verify_pure_grh_certificates() -> list[str]:
     if not wpath.exists():
         fail("Missing scripts/data/pure_grh_quad_lp_witness.json")
 
+    if set(data["regimes"].keys()) != {"parzen_delta_1_25", "polyspline_uncond_ef"}:
+        fail(f"Unexpected regimes in certified_pure_grh_frontier.json: {list(data['regimes'].keys())}")
+
     parzen_reg = data["regimes"]["parzen_delta_1_25"]
-    plateau_reg = data["regimes"]["plateau_bump_model"]
+    poly_reg = data["regimes"]["polyspline_uncond_ef"]
     showcase = (ROOT / "BuchstabSwitchingK2/PureGRHShowcaseK2.lean").read_text(encoding="utf-8")
     data_lean = (ROOT / "BuchstabSwitchingK2/Certificates/Data.lean").read_text(encoding="utf-8")
 
-    if "structure PlateauKernelCalibrationLemma" not in showcase:
-        fail("Missing explicit PlateauKernelCalibrationLemma in PureGRHShowcaseK2.lean")
-
     cert_pairs = (
         ("pureGRHParzenConstRayCert", parzen_reg["first_const"]),
-        ("pureGRHPlateauConstRayCert", plateau_reg["first_const"]),
         ("pureGRHParzenVarWeightRayCert", parzen_reg["first_varweight"]),
-        ("pureGRHPlateauVarWeightRayCert", plateau_reg["first_varweight"]),
         ("pureGRHParzenQuadRayCert", parzen_reg["first_quad"]),
-        ("pureGRHPlateauQuadRayCert", plateau_reg["first_quad"]),
+        ("pureGRHPolySplineConstRayCert", poly_reg["first_const"]),
+        ("pureGRHPolySplineVarWeightRayCert", poly_reg["first_varweight"]),
+        ("pureGRHPolySplineQuadRayCert", poly_reg["first_quad"]),
     )
     for name, jrow in cert_pairs:
         lrow = _extract_ray_cert(showcase, name)
@@ -185,13 +187,13 @@ def verify_pure_grh_certificates() -> list[str]:
         fail(f"Invalid asymptoticCert_new: {r1668}")
 
     pq = parzen_reg["first_quad"]
-    plq = plateau_reg["first_quad"]
+    psq = poly_reg["first_quad"]
     return [
         "[3/4] PURE-GRH CERTIFICATE CONSISTENCY: PASS "
-        f"(Parzen quad 10^{pq['exp10']} net=+{pq['net_lo']}, "
-        f"Plateau quad 10^{plq['exp10']} net=+{plq['net_lo']}, "
+        f"(PolySpline premise-free quad 10^{psq['exp10']} net=+{psq['net_lo']}, "
+        f"Parzen quad 10^{pq['exp10']} net=+{pq['net_lo']}, "
+        f"PolySpline const 10^{poly_reg['first_const']['exp10']}, "
         f"Parzen const 10^{parzen_reg['first_const']['exp10']}, "
-        f"Plateau const 10^{plateau_reg['first_const']['exp10']}, "
         f"Sharp 10^1668)"
     ]
 

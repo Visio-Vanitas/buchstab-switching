@@ -7,9 +7,9 @@ Lake version 5.0.0-src+611c117 (Lean version 4.36.0)
 [exit 0]
 == build Challenge & BuchstabSwitchingK2
 $ lake build Challenge BuchstabSwitchingK2
-⚠ [7391/8313] Replayed Challenge
+⚠ [7391/7724] Replayed Challenge
 warning: Challenge.lean:57:8: declaration uses `sorry`
-⚠ [7812/8313] Replayed BuchstabSwitchingK2.Sieve.ChenSwitching.Lemma21Hook
+⚠ [7813/8421] Replayed BuchstabSwitchingK2.Sieve.ChenSwitching.Lemma21Hook
 warning: BuchstabSwitchingK2/Sieve/ChenSwitching/Lemma21Hook.lean:88:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
 
 Hint: Replace the deprecated name:
@@ -18,7 +18,7 @@ warning: BuchstabSwitchingK2/Sieve/ChenSwitching/Lemma21Hook.lean:90:10: `if_neg
 
 Hint: Replace the deprecated name:
   i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
-⚠ [8190/8313] Replayed BuchstabSwitchingK2.Sieve.WeightedSmoothedSwitching
+⚠ [8191/8421] Replayed BuchstabSwitchingK2.Sieve.WeightedSmoothedSwitching
 warning: BuchstabSwitchingK2/Sieve/WeightedSmoothedSwitching.lean:260:12: `if_pos` has been deprecated: Use `ite_eq_left` instead
 
 Hint: Replace the deprecated name:
@@ -43,7 +43,7 @@ warning: BuchstabSwitchingK2/Sieve/WeightedSmoothedSwitching.lean:274:12: `if_ne
 
 Hint: Replace the deprecated name:
   i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
-⚠ [8210/8313] Replayed BuchstabSwitching.Core.ShiftedPrimes
+⚠ [8211/8421] Replayed BuchstabSwitching.Core.ShiftedPrimes
 warning: BuchstabSwitching/Core/ShiftedPrimes.lean:61:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
 If you'd rather continue using `push_neg` in your project, you can implement it as follows:
 ```
@@ -72,7 +72,7 @@ open Lean.Parser.Tactic in
 macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| push $cfg:optConfig Not $[$loc]?)
 ```
-⚠ [8212/8313] Replayed BuchstabSwitching.Sieve.OneStepSwitching
+⚠ [8213/8421] Replayed BuchstabSwitching.Sieve.OneStepSwitching
 warning: BuchstabSwitching/Sieve/OneStepSwitching.lean:63:8: `push_neg` has been deprecated. Prefer using `push Not` instead.
 If you'd rather continue using `push_neg` in your project, you can implement it as follows:
 ```
@@ -87,7 +87,7 @@ open Lean.Parser.Tactic in
 macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| push $cfg:optConfig Not $[$loc]?)
 ```
-ℹ [8238/8313] Replayed BuchstabSwitching.Sieve.BuchstabFunctions.Monotonicity
+ℹ [8239/8421] Replayed BuchstabSwitching.Sieve.BuchstabFunctions.Monotonicity
 info: BuchstabSwitching/Sieve/BuchstabFunctions/Monotonicity.lean:378:45: Try this:
   [apply] ring_nf
   
@@ -100,7 +100,7 @@ info: BuchstabSwitching/Sieve/BuchstabFunctions/Monotonicity.lean:378:45: Try th
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     
   Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
-⚠ [8264/8313] Replayed BuchstabSwitching.Sieve.SelbergLambdaSq
+⚠ [8265/8421] Replayed BuchstabSwitching.Sieve.SelbergLambdaSq
 warning: BuchstabSwitching/Sieve/SelbergLambdaSq.lean:38:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
 
 Hint: Replace the deprecated name:
@@ -169,15 +169,15 @@ warning: BuchstabSwitchingK2/External/KernelSieveAssemblyK2.lean:685:10: `if_neg
 Hint: Replace the deprecated name:
   i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
 ⚠ [8417/8421] Replayed BuchstabSwitchingK2.PureGRHShowcaseK2
-warning: BuchstabSwitchingK2/PureGRHShowcaseK2.lean:197:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: BuchstabSwitchingK2/PureGRHShowcaseK2.lean:191:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
 
 Hint: Replace the deprecated name:
   i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
-warning: BuchstabSwitchingK2/PureGRHShowcaseK2.lean:583:77: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: BuchstabSwitchingK2/PureGRHShowcaseK2.lean:577:77: `if_pos` has been deprecated: Use `ite_eq_left` instead
 
 Hint: Replace the deprecated name:
   i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
-warning: BuchstabSwitchingK2/PureGRHShowcaseK2.lean:653:77: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: BuchstabSwitchingK2/PureGRHShowcaseK2.lean:647:77: `if_pos` has been deprecated: Use `ite_eq_left` instead
 
 Hint: Replace the deprecated name:
   i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
@@ -195,7 +195,6 @@ $ lake env lean AxiomsCheckK2.lean
 'all_even_one_plus_two_of_smooth_positivity'' depends on axioms: [propext, Classical.choice, Quot.sound]
 'chen_above_1e1668_sharp_grh'' depends on axioms: [propext, Classical.choice, Quot.sound]
 'chen_above_parzen_quad_smooth_pure_grh'' depends on axioms: [propext, Classical.choice, Quot.sound]
-'chen_above_plateau_quad_of_calibration'' depends on axioms: [propext, Classical.choice, Quot.sound]
 'chen_above_polySpline_varWeight_pure_grh'' depends on axioms: [propext, Classical.choice, Quot.sound]
 'chen_above_polySpline_quad_pure_grh'' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitchingK2.omegaMult_prime' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -455,11 +454,8 @@ $ lake env lean AxiomsCheckK2.lean
  Quot.sound]
 'BuchstabSwitchingK2.PureGRH.pureGRHRayCert_325_valid' depends on axioms: [propext]
 'BuchstabSwitchingK2.PureGRH.pureGRHParzenConstRayCert_valid' depends on axioms: [propext]
-'BuchstabSwitchingK2.PureGRH.pureGRHPlateauConstRayCert_valid' depends on axioms: [propext]
 'BuchstabSwitchingK2.PureGRH.pureGRHParzenVarWeightRayCert_valid' depends on axioms: [propext]
-'BuchstabSwitchingK2.PureGRH.pureGRHPlateauVarWeightRayCert_valid' depends on axioms: [propext]
 'BuchstabSwitchingK2.PureGRH.pureGRHParzenQuadRayCert_valid' depends on axioms: [propext]
-'BuchstabSwitchingK2.PureGRH.pureGRHPlateauQuadRayCert_valid' depends on axioms: [propext]
 'BuchstabSwitchingK2.PureGRH.exists_boundedSmoothedKernel_one_fiftieth' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
@@ -473,9 +469,6 @@ $ lake env lean AxiomsCheckK2.lean
 'BuchstabSwitchingK2.PureGRH.chen_above_1e390_parzen_smooth_pure_grh' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-'BuchstabSwitchingK2.PureGRH.chen_above_1e344_plateau_smooth_pure_grh' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
 'BuchstabSwitchingK2.PureGRH.chen_above_varWeight_smooth_pure_grh' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
@@ -484,15 +477,6 @@ $ lake env lean AxiomsCheckK2.lean
  Classical.choice,
  Quot.sound]
 'BuchstabSwitchingK2.PureGRH.chen_above_parzen_quad_smooth_pure_grh' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.PureGRH.chen_above_plateau_const_of_calibration' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.PureGRH.chen_above_plateau_varWeight_of_calibration' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.PureGRH.chen_above_plateau_quad_of_calibration' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 'BuchstabSwitchingK2.PureGRH.chen_above_varWeight_of_primitive_contour_grh' depends on axioms: [propext,
@@ -511,15 +495,6 @@ $ lake env lean AxiomsCheckK2.lean
  Classical.choice,
  Quot.sound]
 'BuchstabSwitchingK2.SmoothExplicitFormula.mass_le_two_sub_sqrt_mul_mellin_l1' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.SmoothExplicitFormula.plateauBumpKernel_admissible' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.SmoothExplicitFormula.plateauBumpKernel_mass_ratio' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.SmoothExplicitFormula.nine_tenths_lt_plateauBumpKernel_mellin_l1' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 'BuchstabSwitchingK2.SmoothExplicitFormula.polySplineKernel_admissible' depends on axioms: [propext,
@@ -579,16 +554,6 @@ $ lake env lean AxiomsCheckK2.lean
 'BuchstabSwitchingK2.PureGRH.pureGRHPolySplineConstRayCert_valid' depends on axioms: [propext]
 'BuchstabSwitchingK2.PureGRH.pureGRHPolySplineVarWeightRayCert_valid' depends on axioms: [propext]
 'BuchstabSwitchingK2.PureGRH.pureGRHPolySplineQuadRayCert_valid' depends on axioms: [propext]
-'BuchstabSwitchingK2.PureGRH.plateauBumpKernel_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
-'BuchstabSwitchingK2.PureGRH.plateauBumpKernel_calibration_mass_ratio' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.PureGRH.plateauBumpKernel_mellin_l1_gt_nine_tenths' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
-'BuchstabSwitchingK2.PureGRH.plateauKernelCalibration_of_explicitFormula' depends on axioms: [propext,
- Classical.choice,
- Quot.sound]
 'BuchstabSwitchingK2.PureGRH.polySplineKernel_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
 'BuchstabSwitchingK2.PureGRH.chen_above_polySpline_const_pure_grh' depends on axioms: [propext,
  Classical.choice,

@@ -15,12 +15,7 @@ Constructs and certifies in Lean `v4.36.0` (zero `sorry`, zero custom `axiom`):
 2. **Mellin Inversion Uncertainty Barrier**:
    - Pointwise bound `sqrt_mul_abs_le_inv_two_pi_mellin_l1`: `√u * |Φ u| ≤ (1 / (2π)) ∫ ‖Φ̃(1/2 + it)‖ dt`.
    - Global mass bound `mass_le_two_sub_sqrt_mul_mellin_l1`.
-3. **Flat-Top `plateauBumpKernel` (`δ = 1 / 25`, `Φ_max = 1`)**:
-   - Proves `External.SmoothedKernelAdmissible plateauBumpKernel (1 / 25)`, `plateauBumpKernel u ≤ 1`,
-     `mass_ratio : (17 / 25 : ℝ) * 1 ≤ ∫ u in 0..1, plateauBumpKernel u`, and the strict Fourier
-     uncertainty barrier `nine_tenths_lt_plateauBumpKernel_mellin_l1` showing that `κ₁ = 9 / 10`
-     strictly beats the triangle-inequality Mellin `L¹` bound for `plateauBumpKernel`.
-4. **Explicit `C²` Polynomial Spline Kernel `polySplineKernel` (`δ = 1 / 25`, `∫_0^1 Φ = 1`)**:
+3. **Explicit `C²` Polynomial Spline Kernel `polySplineKernel` (`δ = 1 / 25`, `∫_0^1 Φ = 1`)**:
    - Normalized Beta(4, 4) spline `Φ(u) = (875 / 368) * (1 - ((u - 1/2) / (23/50))^2)^3` on `[1/25, 24/25]`,
      with exact unit integral `∫_0^1 Φ = 1`, `Φ_max = 875 / 368`, and explicit 0-, 2-, and 3-fold
      integration-by-parts bounds on `mellin Φ s`.
@@ -426,99 +421,7 @@ theorem mass_le_two_sub_sqrt_mul_mellin_l1 {Φ : ℝ → ℝ} {δ : ℝ}
   rw [hexp, ← Real.sqrt_eq_rpow, ← Real.sqrt_eq_rpow]
   ring
 
-/-! ### Part 3: Unconditional Formalization of `plateauBumpKernel` & Fourier Barrier -/
-
-section PlateauBumpFormalization
-
-private def plateauBumpSpec : ContDiffBump (1 / 2 : ℝ) where
-  rIn := 9 / 25
-  rOut := 23 / 50
-  rIn_pos := by norm_num
-  rIn_lt_rOut := by norm_num
-
-/-- Explicit flat-top `C_c^∞` plateau bump kernel on `[1/25, 24/25]` equal to `1` on `[7/50, 43/50]`. -/
-def plateauBumpKernel : ℝ → ℝ :=
-  (plateauBumpSpec : ℝ → ℝ)
-
-theorem plateauBumpKernel_nonneg (u : ℝ) : 0 ≤ plateauBumpKernel u :=
-  plateauBumpSpec.nonneg
-
-theorem plateauBumpKernel_le_one (u : ℝ) : plateauBumpKernel u ≤ 1 :=
-  plateauBumpSpec.le_one
-
-theorem plateauBumpKernel_eq_one_of_mem {u : ℝ} (h1 : 7 / 50 ≤ u) (h2 : u ≤ 43 / 50) :
-    plateauBumpKernel u = 1 := by
-  refine plateauBumpSpec.one_of_mem_closedBall ?_
-  change |u - 1 / 2| ≤ 9 / 25
-  rw [abs_le]
-  constructor <;> linarith
-
-/-- Unconditional proof that `plateauBumpKernel` achieves mass ratio `≥ 18/25 ≥ 17/25`. -/
-theorem plateauBumpKernel_mass_ratio :
-    (17 / 25 : ℝ) * 1 ≤ ∫ u in (0 : ℝ)..1, plateauBumpKernel u := by
-  have hc : Continuous plateauBumpKernel := plateauBumpSpec.continuous
-  have hsplit : ∫ u in (0 : ℝ)..1, plateauBumpKernel u =
-      (∫ u in (0 : ℝ)..(7 / 50), plateauBumpKernel u) +
-        (∫ u in (7 / 50 : ℝ)..(43 / 50), plateauBumpKernel u) +
-        (∫ u in (43 / 50 : ℝ)..1, plateauBumpKernel u) := by
-    rw [← intervalIntegral.integral_add_adjacent_intervals
-        (hc.intervalIntegrable 0 (43 / 50)) (hc.intervalIntegrable (43 / 50) 1),
-      ← intervalIntegral.integral_add_adjacent_intervals
-        (hc.intervalIntegrable 0 (7 / 50)) (hc.intervalIntegrable (7 / 50) (43 / 50))]
-  have hp1 : 0 ≤ ∫ u in (0 : ℝ)..(7 / 50), plateauBumpKernel u :=
-    intervalIntegral.integral_nonneg (by norm_num) fun _ _ => plateauBumpKernel_nonneg _
-  have hp3 : 0 ≤ ∫ u in (43 / 50 : ℝ)..1, plateauBumpKernel u :=
-    intervalIntegral.integral_nonneg (by norm_num) fun _ _ => plateauBumpKernel_nonneg _
-  have hp2 : ∫ u in (7 / 50 : ℝ)..(43 / 50), plateauBumpKernel u = 18 / 25 := by
-    have hcongr : ∫ u in (7 / 50 : ℝ)..(43 / 50), plateauBumpKernel u =
-        ∫ _u in (7 / 50 : ℝ)..(43 / 50), (1 : ℝ) := by
-      refine intervalIntegral.integral_congr fun u hu => ?_
-      rw [Set.uIcc_of_le (by norm_num)] at hu
-      exact plateauBumpKernel_eq_one_of_mem hu.1 hu.2
-    rw [hcongr, intervalIntegral.integral_const, smul_eq_mul]
-    norm_num
-  linarith
-
-/-- Unconditional proof that `plateauBumpKernel` satisfies `External.SmoothedKernelAdmissible` at `δ = 1 / 25`. -/
-theorem plateauBumpKernel_admissible :
-    External.SmoothedKernelAdmissible plateauBumpKernel (1 / 25) where
-  delta_pos := by norm_num
-  delta_lt_half := by norm_num
-  nonneg := plateauBumpKernel_nonneg
-  supp_lo := fun u hu => by
-    refine plateauBumpSpec.zero_of_le_dist ?_
-    rw [Real.dist_eq]
-    have habs : (23 / 50 : ℝ) ≤ -(u - 1 / 2) := by linarith
-    exact le_trans habs (neg_le_abs _)
-  supp_hi := fun u hu => by
-    refine plateauBumpSpec.zero_of_le_dist ?_
-    rw [Real.dist_eq]
-    have habs : (23 / 50 : ℝ) ≤ u - 1 / 2 := by linarith
-    exact le_trans habs (le_abs_self _)
-  contDiff_two := plateauBumpSpec.contDiff
-  l1_pos := lt_of_lt_of_le (by norm_num) plateauBumpKernel_mass_ratio
-
-/-- **Strict Mellin `L¹` Barrier for `plateauBumpKernel`**: the critical-line Mellin `L¹` norm
-`(1 / (2π)) ∫_ℝ ‖Φ̃(1/2 + it)‖ dt` of `plateauBumpKernel` is strictly greater than `9 / 10`, proving
-that `PlateauKernelCalibrationLemma` at `κ₁ = 9 / 10` cannot hold via the triangle inequality
-on critical-line zero sums without vertical zero-cancellation. -/
-theorem nine_tenths_lt_plateauBumpKernel_mellin_l1 :
-    (9 / 10 : ℝ) <
-      (1 / (2 * Real.pi)) *
-        ∫ y : ℝ, ‖mellin (fun t : ℝ => (plateauBumpKernel t : ℂ)) ((1 / 2 : ℂ) + (y : ℂ) * I)‖ := by
-  have hpt := sqrt_mul_abs_le_inv_two_pi_mellin_l1 plateauBumpKernel_admissible
-    (u := 43 / 50) (by norm_num)
-  have hval : plateauBumpKernel (43 / 50) = 1 :=
-    plateauBumpKernel_eq_one_of_mem (by norm_num) (by norm_num)
-  rw [hval, abs_one, mul_one] at hpt
-  have hlt : (9 / 10 : ℝ) < Real.sqrt (43 / 50) := by
-    rw [Real.lt_sqrt (by norm_num)]
-    norm_num
-  exact lt_of_lt_of_le hlt hpt
-
-end PlateauBumpFormalization
-
-/-! ### Part 4: Explicit `C²` Polynomial Spline Kernel `polySplineKernel` (`∫_0^1 Φ = 1`) -/
+/-! ### Part 3: Explicit `C²` Polynomial Spline Kernel `polySplineKernel` (`∫_0^1 Φ = 1`) -/
 
 section PolySplineKernel
 

@@ -7,7 +7,8 @@ for Pure-GRH `1 + 2` Smooth Positivity Frontiers:
   3) 2-Step Quadratic Role Reversal + `S_4` LP (`pure_grh_quad_lp_witness.json`)
 
 Runs against BOTH conservative Parzen `delta = 1/25` explicit-formula constants
-(`k1_hat = 4`, `k0_hat = 11`) AND flat-top plateau bump constants (`k1_hat = 9/10`, `k0_hat = 14/5`).
+(`k1_hat = 4`, `k0_hat = 11`) AND Lean-proved literature-premise-free `polySplineKernel`
+constants (`k1_hat = 688`, `k0_hat = 84741000`).
 """
 
 from __future__ import annotations
@@ -710,7 +711,6 @@ def main() -> None:
 
     configs = [
         ("parzen_delta_1_25", Iv(4, 4), Iv(11, 11), 1),
-        ("plateau_bump_model", Iv.from_frac(Fraction(9, 10)), Iv.from_frac(Fraction(14, 5)), 2),
         ("polyspline_uncond_ef", Iv(688, 688), Iv(84741000, 84741000), 1),
     ]
     out: dict = {"ast_audit": ast_info, "regimes": {}}
