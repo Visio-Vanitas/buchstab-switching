@@ -118,19 +118,25 @@ def verify_lean_data_exact() -> list[str]:
         fail(f"Expected 6 LinnikCheckpointCell rows in Data.lean, found {len(linnik_rows)}")
     linnik_txt = (ROOT / "data" / "certify_linnik_r_output.txt").read_text(encoding="utf-8")
     expected_linnik = [
-        ("79", "22", "16429", "14393", "10000"),
-        ("83", "22", "1008", "0", "10000"),
-        ("139", "22", "6760", "0", "10000"),
-        ("140", "22", "17553", "9813", "10000"),
-        ("0", "7", "19204", "17909", "10000"),
-        ("57", "52", "5302", "4839", "10000"),
+        ("76", "18", "10000", "9883", "10000"),
+        ("76", "18", "117", "0", "10000"),
+        ("119", "18", "10000", "7235", "10000"),
+        ("120", "18", "10000", "8886", "10000"),
+        ("0", "6", "5929", "5131", "10000"),
+        ("0", "5", "24062", "24019", "10000"),
     ]
     if linnik_rows != expected_linnik:
         fail(f"LinnikCheckpointCell mismatch: {linnik_rows} vs {expected_linnik}")
-    for token in ["r=22: N_br=1.934e+25 (L=79)", "worst margin = 0.1008 PASS", "growth/step=0.910613", "ALL ASSERTIONS PASSED WITH EXIT CODE 0."]:
+    for token in [
+        "All-Range Explicit Certification: K = 18 (k=9, P(z)=z^9, c=1/8)",
+        "Worst finite slab across L in [76, 119]: L=76, margin >= 0.0117 PASS",
+        "Collatz-Wielandt max growth/step <= 0.916314",
+        "Pure Effective GRH K=6",
+        "ALL ASSERTIONS PASSED WITH EXIT CODE 0.",
+    ]:
         if token not in linnik_txt:
             fail(f"Missing certified output token {token!r} in data/certify_linnik_r_output.txt")
-    out.append("  PASS 6/6 LinnikCheckpointCell rows in Data.lean match certify_linnik_r_output.txt")
+    out.append("  PASS 6/6 LinnikCheckpointCell rows in Data.lean match certify_linnik_r_output.txt (v2 K=18)")
     return out
 
 

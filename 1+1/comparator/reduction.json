@@ -11,12 +11,12 @@
     "OnePlusOne.Exceptional.exceptional_all_range_of_dyadic",
     "OnePlusOne.Exceptional.exceptional_all_range_of_fouradic",
     "OnePlusOne.ShortInterval.short_interval_all_range",
-    "OnePlusOne.Linnik.binary_goldbach_bridge_22",
-    "OnePlusOne.Linnik.all_even_exact_linnik_22",
-    "OnePlusOne.Linnik.all_even_linnik_22",
+    "OnePlusOne.Linnik.binary_goldbach_bridge_18",
+    "OnePlusOne.Linnik.all_even_exact_linnik_18",
+    "OnePlusOne.Linnik.all_even_linnik_18",
     "OnePlusOne.theorem_1A_all_even_exceptional_set",
     "OnePlusOne.theorem_1B_all_even_short_interval",
-    "OnePlusOne.theorem_3A_all_even_exact_linnik_22",
+    "OnePlusOne.theorem_3A_all_even_exact_linnik_18",
     "OnePlusOne.theorem_3_all_even_linnik_goldbach"
   ],
   "permitted_axioms": [

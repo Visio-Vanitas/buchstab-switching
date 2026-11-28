@@ -31,7 +31,7 @@ def ShortIntervalProp (C₁ : ℝ) (c' : ℕ) : Prop :=
 
 def HasLinnikRep (r N : ℕ) : Prop :=
   ∃ p₁ p₂ : ℕ, p₁.Prime ∧ p₂.Prime ∧
-    ∃ ks : List ℕ, ks.length ≤ r ∧ N = p₁ + p₂ + (ks.map (2 ^ ·)).sum
+    ∃ ks : List ℕ, ks.length ≤ r ∧ (∀ k ∈ ks, 1 ≤ k) ∧ N = p₁ + p₂ + (ks.map (2 ^ ·)).sum
 
 def HasExactPosLinnikRep (r N : ℕ) : Prop :=
   ∃ p₁ p₂ : ℕ, p₁.Prime ∧ p₂.Prime ∧

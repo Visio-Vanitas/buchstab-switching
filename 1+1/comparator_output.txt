@@ -11,7 +11,7 @@ Build completed successfully (7412 jobs).
 [exit 0]
 == axioms check
 $ lake env lean AxiomsCheckOnePlusOne.lean
-'OnePlusOne.hasLinnikRep_of_isGoldbachEven' depends on axioms: [propext]
+'OnePlusOne.hasLinnikRep_of_isGoldbachEven' depends on axioms: [propext, Quot.sound]
 'OnePlusOne.exceptionalCount_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.exceptionalCount_eq_zero_of_empirical' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Arithmetic.major_arcs_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -36,12 +36,12 @@ $ lake env lean AxiomsCheckOnePlusOne.lean
 'OnePlusOne.ShortInterval.exists_goldbach_of_weighted_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.ShortInterval.short_interval_all_range' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.Linnik.hasLinnikRep_mono' depends on axioms: [propext]
-'OnePlusOne.Linnik.binary_goldbach_bridge_22' depends on axioms: [propext, Classical.choice, Quot.sound]
-'OnePlusOne.Linnik.all_even_exact_linnik_22' depends on axioms: [propext, Classical.choice, Quot.sound]
-'OnePlusOne.Linnik.all_even_linnik_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Linnik.binary_goldbach_bridge_18' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Linnik.all_even_exact_linnik_18' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Linnik.all_even_linnik_18' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.theorem_1A_all_even_exceptional_set' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.theorem_1B_all_even_short_interval' depends on axioms: [propext, Classical.choice, Quot.sound]
-'OnePlusOne.theorem_3A_all_even_exact_linnik_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.theorem_3A_all_even_exact_linnik_18' depends on axioms: [propext, Classical.choice, Quot.sound]
 'OnePlusOne.theorem_3_all_even_linnik_goldbach' depends on axioms: [propext, Classical.choice, Quot.sound]
 [exit 0]
 $ env LEAN_PATH=/tmp/wt-buchstab-1p1/1+1/.lake/comparator lake env lean -Dpp.unicode.fun=true -DautoImplicit=false -DrelaxedAutoImplicit=false --root=comparator -o /tmp/wt-buchstab-1p1/1+1/.lake/comparator/ChallengeOnePlusOneDefs.olean comparator/ChallengeOnePlusOneDefs.lean
@@ -70,7 +70,7 @@ $ bash -c LEAN_PATH='/tmp/wt-buchstab-1p1/1+1/.lake/comparator' lake env leanexp
 [exit 0]
 $ bash -c lake env leanexport OnePlusOne -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/tmp/wt-buchstab-1p1/1+1/.lake/exp/red-solution.export'
 [exit 0]
-sha256: 9e7a7768eaf8fef7ab230c8586473fff82057032b8bbbb9c4cd9a7ca14955951 red-challenge.export; a5db4023b39cfeb66ae353ba13daa36d98e403b31f106323f89c7fba28fad575 red-solution.export
+sha256: 2f2597bf827d648df405216df3f1ab5ec6a70e981c190b9c192b16f3842c413a red-challenge.export; e96622f4baf892a4154a76122e5b9a1643359897d58d603115c780ccca643663 red-solution.export
 external kernels available: leanchecker leanchecker-paranoid nanoda_bin 
 $ lake comparator --inadvisably-no-sandbox --config /tmp/wt-buchstab-1p1/1+1/comparator/reduction.json --challenge-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export --solution-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-solution.export
 WARNING: Sandbox disabled, this run is not trustworthy.

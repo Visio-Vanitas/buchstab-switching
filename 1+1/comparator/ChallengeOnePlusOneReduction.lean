@@ -88,24 +88,24 @@ end ShortInterval
 
 namespace Linnik
 
-def linnikBridge22 : ℕ := (2 ^ 23 - 2) * 2 ^ 61 + 4 * 10 ^ 18
+def linnikBridge18 : ℕ := (2 ^ 19 - 2) * 2 ^ 61 + 4 * 10 ^ 18
 
-theorem binary_goldbach_bridge_22
+theorem binary_goldbach_bridge_18
     (hbase : EmpiricalGoldbachBase)
-    {N : ℕ} (hEven : Even N) (hLo : 48 ≤ N) (hHi : N ≤ linnikBridge22) :
-    HasExactPosLinnikRep 22 N := by
+    {N : ℕ} (hEven : Even N) (hLo : 40 ≤ N) (hHi : N ≤ linnikBridge18) :
+    HasExactPosLinnikRep 18 N := by
   sorry
 
-theorem all_even_exact_linnik_22
+theorem all_even_exact_linnik_18
     (hbase : EmpiricalGoldbachBase)
-    (hlarge : ∀ N : ℕ, linnikBridge22 < N → Even N → HasExactPosLinnikRep 22 N) :
-    AllEvenExactLinnikAbove 22 := by
+    (hlarge : ∀ N : ℕ, linnikBridge18 < N → Even N → HasExactPosLinnikRep 18 N) :
+    AllEvenExactLinnikAbove 18 := by
   sorry
 
-theorem all_even_linnik_22
+theorem all_even_linnik_18
     (hbase : EmpiricalGoldbachBase)
-    (hlarge : ∀ N : ℕ, linnikBridge22 < N → Even N → HasExactPosLinnikRep 22 N) :
-    AllEvenLinnikProp 22 := by
+    (hlarge : ∀ N : ℕ, linnikBridge18 < N → Even N → HasExactPosLinnikRep 18 N) :
+    AllEvenLinnikProp 18 := by
   sorry
 
 end Linnik
@@ -122,16 +122,16 @@ theorem theorem_1B_all_even_short_interval
     ShortIntervalProp 8 2 := by
   sorry
 
-theorem theorem_3A_all_even_exact_linnik_22
+theorem theorem_3A_all_even_exact_linnik_18
     (hGRH : DirichletLNonvanishingRightOfHalf)
     (hPrem : External.OnePlusOnePremises) :
-    AllEvenExactLinnikAbove 22 := by
+    AllEvenExactLinnikAbove 18 := by
   sorry
 
 theorem theorem_3_all_even_linnik_goldbach
     (hGRH : DirichletLNonvanishingRightOfHalf)
     (hPrem : External.OnePlusOnePremises) :
-    AllEvenLinnikProp 22 := by
+    AllEvenLinnikProp 18 := by
   sorry
 
 end OnePlusOne

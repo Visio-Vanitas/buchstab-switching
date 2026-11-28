@@ -20,8 +20,8 @@ def FejerShortIntervalPositivityPremise : Prop :=
 
 def LinnikCircleAboveBridgePremise : Prop :=
   DirichletLNonvanishingRightOfHalf →
-    ∀ N : ℕ, ((2 ^ 23 - 2) * 2 ^ 61 + 4 * 10 ^ 18) < N → Even N →
-      HasExactPosLinnikRep 22 N
+    ∀ N : ℕ, ((2 ^ 19 - 2) * 2 ^ 61 + 4 * 10 ^ 18) < N → Even N →
+      HasExactPosLinnikRep 18 N
 
 structure OnePlusOnePremises : Prop where
   empirical : EmpiricalGoldbachBase

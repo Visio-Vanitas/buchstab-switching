@@ -10,10 +10,11 @@ Lean `v4.36.0` + Mathlib (`fc4f59e577feb1a4956671bc04ac18aaaf8cd842`) formalizat
 2. **Theorem 1B (v2) — All-Range Explicit Short-Interval `1+1` (`theorem_1B_all_even_short_interval`)**:
    $$\forall X \ge 4,\quad \exists N \in [X,\ X + 8 (\log X)^2] \cap 2\mathbb{Z},\quad N = p_1 + p_2$$
    under `RiemannHypothesis` and `EmpiricalGoldbachBase` (`OnePlusOne/ShortInterval/FejerReduction.lean`; compressed **785.1×** from v1 `6281`, beating Chirre–Hagen 2026 `123` by **15.4×**, via averaged sharp-cutoff Fejér kernel at $\varepsilon = 1/4$, exact closed-form Mellin moments, Bochner-optimal zero-density kernel, and Fatou's Lemma with `C_J ≤ 1.75087527` across $[4\cdot 10^{18}, \infty)$).
-3. **Theorem 3 — All-Range Explicit Linnik–Goldbach (`theorem_3A_all_even_exact_linnik_22` & `theorem_3_all_even_linnik_goldbach`)**:
-   - Every even $N \ge 48$ satisfies $N = p_1 + p_2 + \sum_{i=1}^{22} 2^{k_i}$ with $k_i \ge 1$ (`r = 22`).
-   - Every even $N \ge 4$ satisfies `HasLinnikRep 22 N` ($N = p_1 + p_2 + \sum_{j=1}^s 2^{k_j}$ with $s \le 22$).
-   - **Constructive Binary Goldbach Bridge (`binary_goldbach_bridge_22` in `OnePlusOne/Linnik/Reduction.lean`)**: reduces the entire finite range $48 \le N \le (2^{23} - 2)\cdot 2^{61} + 4\cdot 10^{18} \approx 1.93428\cdot 10^{25}$ purely in Lean 4 from `EmpiricalGoldbachBase` via base-2 decomposition and bit-splitting $2^e = 2^{e-1} + 2^{e-1}$.
+3. **Theorem 3 (v2) — All-Range Explicit Linnik–Goldbach (`theorem_3A_all_even_exact_linnik_18` & `theorem_3_all_even_linnik_goldbach`)**:
+   - Every even $N \ge 40$ satisfies $N = p_1 + p_2 + \sum_{i=1}^{18} 2^{k_i}$ with $k_i \ge 1$ (`K = 18`, down from v1 `22`, zero black-box buffers, `C_E2 ≤ 31.3259`).
+   - Every even $N \ge 4$ satisfies `HasLinnikRep 18 N` ($N = p_1 + p_2 + \sum_{j=1}^s 2^{k_j}$ with $s \le 18$ and $k_j \ge 1$).
+   - **Constructive Binary Goldbach Bridge (`binary_goldbach_bridge_18` in `OnePlusOne/Linnik/Reduction.lean`)**: reduces the entire finite range $40 \le N \le (2^{19} - 2)\cdot 2^{61} + 4\cdot 10^{18} \approx 1.208925\cdot 10^{24}$ purely in Lean 4 from `EmpiricalGoldbachBase` via base-2 decomposition and bit-splitting $2^e = 2^{e-1} + 2^{e-1}$.
+   - **Pure Effective Asymptotic GRH Benchmark (`K = 6`, zero Siegel dependence)**: `scripts/certify_linnik_r.py` also certifies effective asymptotic GRH `K = 6` (`C₁ = 8.0`, margin `≥ 0.0798`) using Li–Liu's signed polynomial on $\mathcal{D}_{25/32}$ with an explicit 460-pair directional net (and reproduces Li–Liu's Lichtman `K = 5` benchmark with zero floats, margin `≥ 0.0044`).
 
 ## Trust Boundary
 
@@ -24,10 +25,10 @@ Lean `v4.36.0` + Mathlib (`fc4f59e577feb1a4956671bc04ac18aaaf8cd842`) formalizat
 
 - `OnePlusOne/Core/Defs.lean`: Core definitions (`IsGoldbachEven`, `exceptionalCount`, `ExceptionalSetProp`, `ShortIntervalProp`, `HasLinnikRep`, `HasExactPosLinnikRep`, `AllEvenLinnikProp`, `DirichletLNonvanishingRightOfHalf`, `EmpiricalGoldbachBase`).
 - `OnePlusOne/Arithmetic/ElementaryBounds.lean`: Unconditional Mathlib proofs of `major_arcs_disjoint`, `ratio_2p_sub_1_le_pow_eighth`, `twin_prime_partial_product_ge`, `totient_sq_ge_half`, `dyadic_geom_sum_lt`, and `fouradic_geom_sum_lt`.
-- `OnePlusOne/Certificates/Data.lean`: Kernel-checked (`by decide` / `norm_num`) integer tables for Theorems 1A (v2), 1B (v2), and 3.
+- `OnePlusOne/Certificates/Data.lean`: Kernel-checked (`by decide` / `norm_num`) integer tables for Theorems 1A (v2), 1B (v2), and 3 (v2).
 - `OnePlusOne/Exceptional/DyadicClosure.lean`: Unconditional dyadic & 4-adic telescoping closure for Theorem 1A (v2).
 - `OnePlusOne/ShortInterval/FejerReduction.lean`: Unconditional small-range `[4, 4 * 10^18)` & Fejér positivity bridge for Theorem 1B (v2).
-- `OnePlusOne/Linnik/Reduction.lean`: Constructive Binary Goldbach Bridge (`48 ≤ N ≤ 1.93428e25`) & all-range Linnik–Goldbach assembly.
+- `OnePlusOne/Linnik/Reduction.lean`: Constructive Binary Goldbach Bridge (`40 ≤ N ≤ 1.208925e24`) & all-range Linnik–Goldbach (`K = 18`) assembly.
 - `OnePlusOne/External/Premises.lean` & `OnePlusOne/Main.lean`: Isolated analytic premises & top-level theorem exports.
 - `scripts/`: `certify_exceptional_short.py`, `certify_linnik_r.py` (zero IEEE-754 floats), `quick_verify.py`.
 - `data/`: Pinned text outputs of both certifiers.

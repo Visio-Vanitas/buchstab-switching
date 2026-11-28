@@ -56,7 +56,7 @@ theorem fouradic_16_rat_check :
     (777 : ℚ) / 100 * 2 < 16 := by
   norm_num
 
-/-- Certified Breakthrough #3 (All-Range Linnik–Goldbach, `r = 22`) checkpoint record (`scale = 10^4`). -/
+/-- Certified Breakthrough #3 v2 (All-Range Linnik–Goldbach, `r = 18`) checkpoint record (`scale = 10^4`). -/
 structure LinnikCheckpointCell where
   tag : ℕ
   rVal : ℕ
@@ -69,26 +69,26 @@ def linnikCellValid (c : LinnikCheckpointCell) : Bool :=
   decide (0 < c.scale) &&
   decide (c.minorNum < c.majNetNum)
 
-/-- Boundary & extremal checkpoints from `data/certify_linnik_r_output.txt` (`scale = 10^4`):
-1. `L = 79` (`N_br = (2^23 - 2) * 2^61 + 4e18`): crossover `r = 22`, `1.6429 > 1.4393` (margin `0.2036`);
-2. `L = 83`: worst finite slab across `[79, 139]`, `margin = 0.1008`;
-3. `L = 139`: top finite slab, `margin = 0.6760`;
-4. `L ≥ 140`: uniform Collatz–Wielandt asymptotic tail, `1.7553 > 0.9813` (margin `0.7740`);
-5. Asymptotic GRH recovery (`r = 7`): `1.9204 > 1.7909`;
-6. Direct `N = 4e18` without binary bridge (`r = 52`): `0.5302 > 0.4839`. -/
+/-- Outward-rounded boundary & extremal checkpoints from `data/certify_linnik_r_output.txt` (`scale = 10^4`):
+1. `L = 76` (`N_br(18) = (2^19 - 2) * 2^61 + 4e18`): crossover `r = 18`, `1.0000 > 0.9883` (margin `≥ 0.0117`);
+2. `L = 76`: worst finite slab across `[76, 119]`, `margin ≥ 0.0117`;
+3. `L = 119`: top finite slab, `1.0000 > 0.7235` (margin `≥ 0.2765`);
+4. `L ≥ 120`: pure Collatz–Wielandt uniform asymptotic tail, `1.0000 > 0.8886` (margin `≥ 0.1114`);
+5. Pure effective asymptotic GRH (`K = 6`, `C₁ = 8.0`, zero Siegel dependence): `0.5929 > 0.5131` (margin `≥ 0.0798`);
+6. Informational Lichtman asymptotic benchmark (`K = 5`, `C₁ = 6.7814`): `2.4062 > 2.4019` (margin `≥ 0.0044`). -/
 def linnikCheckpointCells : List LinnikCheckpointCell :=
-  [ ⟨79, 22, 16429, 14393, 10000⟩
-  , ⟨83, 22, 1008, 0, 10000⟩
-  , ⟨139, 22, 6760, 0, 10000⟩
-  , ⟨140, 22, 17553, 9813, 10000⟩
-  , ⟨0, 7, 19204, 17909, 10000⟩
-  , ⟨57, 52, 5302, 4839, 10000⟩
+  [ ⟨76, 18, 10000, 9883, 10000⟩
+  , ⟨76, 18, 117, 0, 10000⟩
+  , ⟨119, 18, 10000, 7235, 10000⟩
+  , ⟨120, 18, 10000, 8886, 10000⟩
+  , ⟨0, 6, 5929, 5131, 10000⟩
+  , ⟨0, 5, 24062, 24019, 10000⟩
   ]
 
 theorem linnikCheckpointCells_valid : linnikCheckpointCells.all linnikCellValid = true := by decide
 
 theorem linnikCheckpointCells_count : linnikCheckpointCells.length = 6 := by decide
 
-theorem linnik_tail_growth_lt_one : (910613 : ℚ) / 1000000 < 1 := by norm_num
+theorem linnik_tail_growth_lt_one : (916314 : ℚ) / 1000000 < 1 := by norm_num
 
 end OnePlusOne.Certificates

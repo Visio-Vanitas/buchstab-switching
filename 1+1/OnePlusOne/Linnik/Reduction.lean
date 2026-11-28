@@ -6,28 +6,28 @@ import Mathlib.Tactic.Ring
 # Constructive Binary Goldbach Bridge & All-Range Linnik–Goldbach Reduction (`OnePlusOne.Linnik`)
 
 Completely unconditional Lean 4 proofs of:
-1. `binary_goldbach_bridge_22`: under `EmpiricalGoldbachBase` (`4 ≤ N ≤ 4 * 10^18`), EVERY even
-   integer `N` in `[48, linnikBridge22]` (`linnikBridge22 = (2^23 - 2) * 2^61 + 4 * 10^18 ≈ 1.934e25`)
-   satisfies `HasExactPosLinnikRep 22 N` (`N = p₁ + p₂ + ∑_{i=1}^{22} 2^{k_i}`, `k_i ≥ 1`) via
-   base-2 decomposition (`popcount ≤ 22`) and iterated bit-splitting `2^e = 2^{e-1} + 2^{e-1}`.
-2. `all_even_exact_linnik_22`: combining `binary_goldbach_bridge_22` with circle-method positivity
-   above `linnikBridge22` proves `AllEvenExactLinnikAbove 22` (`∀ N ≥ 48, Even N → ...`).
-3. `all_even_linnik_22`: combining `[4, 46]` (`0` powers of `2` from `EmpiricalGoldbachBase`) with
-   `all_even_exact_linnik_22` yields `AllEvenLinnikProp 22` (`∀ N ≥ 4, Even N → HasLinnikRep 22 N`).
+1. `binary_goldbach_bridge_18`: under `EmpiricalGoldbachBase` (`4 ≤ N ≤ 4 * 10^18`), EVERY even
+   integer `N` in `[40, linnikBridge18]` (`linnikBridge18 = (2^19 - 2) * 2^61 + 4 * 10^18 ≈ 1.208925e24`)
+   satisfies `HasExactPosLinnikRep 18 N` (`N = p₁ + p₂ + ∑_{i=1}^{18} 2^{k_i}`, `k_i ≥ 1`) via
+   base-2 decomposition (`popcount ≤ 18`) and iterated bit-splitting `2^e = 2^{e-1} + 2^{e-1}`.
+2. `all_even_exact_linnik_18`: combining `binary_goldbach_bridge_18` with circle-method positivity
+   above `linnikBridge18` proves `AllEvenExactLinnikAbove 18` (`∀ N ≥ 40, Even N → ...`).
+3. `all_even_linnik_18`: combining `[4, 38]` (`0` powers of `2` from `EmpiricalGoldbachBase`) with
+   `all_even_exact_linnik_18` yields `AllEvenLinnikProp 18` (`∀ N ≥ 4, Even N → HasLinnikRep 18 N`).
 -/
 
 namespace OnePlusOne.Linnik
 
-/-- Certified minimal all-range Linnik–Goldbach exponent `r = 22`. -/
-def certifiedLinnikR : ℕ := 22
+/-- Certified minimal all-range Linnik–Goldbach exponent `r = 18` (v2). -/
+def certifiedLinnikR : ℕ := 18
 
-/-- Constructive Binary Goldbach Bridge ceiling `(2^23 - 2) * 2^61 + 4 * 10^18 ≈ 1.93428e25`. -/
-def linnikBridge22 : ℕ := (2 ^ 23 - 2) * 2 ^ 61 + 4 * 10 ^ 18
+/-- Constructive Binary Goldbach Bridge ceiling `(2^19 - 2) * 2^61 + 4 * 10^18 ≈ 1.208925e24`. -/
+def linnikBridge18 : ℕ := (2 ^ 19 - 2) * 2 ^ 61 + 4 * 10 ^ 18
 
 theorem hasLinnikRep_mono {r₁ r₂ N : ℕ} (h : r₁ ≤ r₂) (hr : HasLinnikRep r₁ N) :
     HasLinnikRep r₂ N := by
-  rcases hr with ⟨p₁, p₂, hp₁, hp₂, ks, hlen, hEq⟩
-  exact ⟨p₁, p₂, hp₁, hp₂, ks, hlen.trans h, hEq⟩
+  rcases hr with ⟨p₁, p₂, hp₁, hp₂, ks, hlen, hpos, hEq⟩
+  exact ⟨p₁, p₂, hp₁, hp₂, ks, hlen.trans h, hpos, hEq⟩
 
 /-- Binary exponent list of `M < 2^b` in `[0, b)`. -/
 def toPow2List : ℕ → ℕ → List ℕ
@@ -150,12 +150,12 @@ private lemma padPow2ToLen_spec (m : ℕ) :
 private lemma two_pow_61_pos : 0 < (2 : ℕ) ^ 61 := by positivity
 private lemma two_pow_61_le_cap : (2 : ℕ) ^ 61 ≤ 4 * 10 ^ 18 - 4 := by norm_num
 private lemma two_pow_61_even : 2 ∣ (2 : ℕ) ^ 61 := ⟨2 ^ 60, by ring⟩
-private lemma two_pow_23_sub_two_lt : 2 ^ 23 - 2 < (2 : ℕ) ^ 23 := by norm_num
-private lemma sum_replicate_22_pow2 : ((List.replicate 22 1).map (2 ^ ·)).sum = 44 := by norm_num
+private lemma two_pow_19_sub_two_lt : 2 ^ 19 - 2 < (2 : ℕ) ^ 19 := by norm_num
+private lemma sum_replicate_18_pow2 : ((List.replicate 18 1).map (2 ^ ·)).sum = 36 := by norm_num
 
 private lemma binary_bridge_step_bounds {N Glim P B : ℕ}
     (hGlim : Glim = 4 * 10 ^ 18)
-    (hN_lo : Glim + 44 < N) (hN_hi : N ≤ B * P + Glim)
+    (hN_lo : Glim + 36 < N) (hN_hi : N ≤ B * P + Glim)
     (hP_pos : 0 < P) (hP_cap : P ≤ Glim - 4) :
     let A := N - Glim
     let M := (A + P - 1) / P
@@ -181,40 +181,40 @@ private lemma binary_bridge_step_bounds {N Glim P B : ℕ}
   · omega
   · omega
 
-/-- **Constructive Binary Goldbach Bridge (`48 ≤ N ≤ linnikBridge22`)**:
-reduces every even integer `N ∈ [48, 1.93428e25]` cleanly from `EmpiricalGoldbachBase`. -/
-theorem binary_goldbach_bridge_22
+/-- **Constructive Binary Goldbach Bridge (`40 ≤ N ≤ linnikBridge18`)**:
+reduces every even integer `N ∈ [40, 1.208925e24]` cleanly from `EmpiricalGoldbachBase`. -/
+theorem binary_goldbach_bridge_18
     (hbase : EmpiricalGoldbachBase)
-    {N : ℕ} (hEven : Even N) (hLo : 48 ≤ N) (hHi : N ≤ linnikBridge22) :
-    HasExactPosLinnikRep 22 N := by
-  by_cases hSmall : N ≤ 4 * 10 ^ 18 + 44
-  · have hN4 : 4 ≤ N - 44 := by omega
-    have hNcap : N - 44 ≤ 4 * 10 ^ 18 := by omega
-    have hNev : Even (N - 44) := by
+    {N : ℕ} (hEven : Even N) (hLo : 40 ≤ N) (hHi : N ≤ linnikBridge18) :
+    HasExactPosLinnikRep 18 N := by
+  by_cases hSmall : N ≤ 4 * 10 ^ 18 + 36
+  · have hN4 : 4 ≤ N - 36 := by omega
+    have hNcap : N - 36 ≤ 4 * 10 ^ 18 := by omega
+    have hNev : Even (N - 36) := by
       rw [Nat.even_iff] at hEven ⊢
       omega
-    rcases hbase (N - 44) hN4 hNcap hNev with ⟨_, p₁, p₂, hp₁, hp₂, hpEq⟩
-    refine ⟨p₁, p₂, hp₁, hp₂, List.replicate 22 1, by simp, ?_, ?_⟩
+    rcases hbase (N - 36) hN4 hNcap hNev with ⟨_, p₁, p₂, hp₁, hp₂, hpEq⟩
+    refine ⟨p₁, p₂, hp₁, hp₂, List.replicate 18 1, by simp, ?_, ?_⟩
     · intro k hk
       rw [List.mem_replicate] at hk
       omega
-    · rw [sum_replicate_22_pow2]
+    · rw [sum_replicate_18_pow2]
       omega
-  · have hGt : 4 * 10 ^ 18 + 44 < N := Nat.lt_of_not_le hSmall
+  · have hGt : 4 * 10 ^ 18 + 36 < N := Nat.lt_of_not_le hSmall
     have hB := binary_bridge_step_bounds rfl hGt hHi two_pow_61_pos two_pow_61_le_cap
     set A := N - 4 * 10 ^ 18
     set P := (2 : ℕ) ^ 61
     set M := (A + P - 1) / P
     obtain ⟨hM_pos, hM_cap, hN'_lo, hN'_hi⟩ := hB
-    have hM_lt23 : M < 2 ^ 23 := lt_of_le_of_lt hM_cap two_pow_23_sub_two_lt
+    have hM_lt19 : M < 2 ^ 19 := lt_of_le_of_lt hM_cap two_pow_19_sub_two_lt
     have hMP_even : 2 ∣ M * P := dvd_mul_of_dvd_right two_pow_61_even M
     have hN'_even : Even (N - M * P) := by
       rw [Nat.even_iff] at hEven ⊢
       omega
     rcases hbase (N - M * P) hN'_lo hN'_hi hN'_even with ⟨_, p₁, p₂, hp₁, hp₂, hpEq⟩
-    let raw := toPow2List 23 M
-    have hraw_sum : (raw.map (2 ^ ·)).sum = M := toPow2List_sum 23 M hM_lt23
-    have hraw_len : raw.length ≤ 22 := toPow2List_length_le_pred 23 M (by omega) hM_cap
+    let raw := toPow2List 19 M
+    have hraw_sum : (raw.map (2 ^ ·)).sum = M := toPow2List_sum 19 M hM_lt19
+    have hraw_len : raw.length ≤ 18 := toPow2List_length_le_pred 19 M (by omega) hM_cap
     have hraw_ne : raw ≠ [] := by
       intro hnil
       rw [hnil] at hraw_sum
@@ -225,7 +225,7 @@ theorem binary_goldbach_bridge_22
       intro hnil
       apply hraw_ne
       simpa [ks₀] using hnil
-    have hks₀_len : ks₀.length ≤ 22 := by simpa [ks₀] using hraw_len
+    have hks₀_len : ks₀.length ≤ 18 := by simpa [ks₀] using hraw_len
     have hks₀_ge : ∀ x ∈ ks₀, 61 ≤ x := by
       intro x hx
       rcases List.mem_map.mp hx with ⟨y, _, rfl⟩
@@ -236,40 +236,40 @@ theorem binary_goldbach_bridge_22
     cases hks₀_eq : ks₀ with
     | nil => exact absurd hks₀_eq hks₀_ne
     | cons k₀ rest₀ =>
-      let m := 22 - (k₀ :: rest₀).length
-      have hm_le : m ≤ 21 := by
+      let m := 18 - (k₀ :: rest₀).length
+      have hm_le : m ≤ 17 := by
         have hlen1 : 1 ≤ (k₀ :: rest₀).length := by simp
-        have hlen22 : (k₀ :: rest₀).length ≤ 22 := by simpa [hks₀_eq] using hks₀_len
+        have hlen18 : (k₀ :: rest₀).length ≤ 18 := by simpa [hks₀_eq] using hks₀_len
         omega
       have hk₀_ge : 61 ≤ k₀ := hks₀_ge k₀ (by rw [hks₀_eq]; simp)
       have hrest₀_ge : ∀ x ∈ rest₀, 1 ≤ x := fun x hx =>
         le_trans (by omega : 1 ≤ 61) (hks₀_ge x (by rw [hks₀_eq]; exact List.mem_cons_of_mem _ hx))
       obtain ⟨hlen, hpos, hsum⟩ := padPow2ToLen_spec m k₀ rest₀ (by omega) hrest₀_ge
       refine ⟨p₁, p₂, hp₁, hp₂, padPow2ToLen m (k₀ :: rest₀), ?_, hpos, ?_⟩
-      · have hlen22 : (k₀ :: rest₀).length ≤ 22 := by simpa [hks₀_eq] using hks₀_len
+      · have hlen18 : (k₀ :: rest₀).length ≤ 18 := by simpa [hks₀_eq] using hks₀_len
         omega
       · rw [hsum, ← hks₀_eq, hks₀_sum]
         omega
 
-/-- **All-Range Exact `r = 22` Linnik–Goldbach Theorem (`∀ N ≥ 48`)**. -/
-theorem all_even_exact_linnik_22
+/-- **All-Range Exact `r = 18` Linnik–Goldbach Theorem (`∀ N ≥ 40`)**. -/
+theorem all_even_exact_linnik_18
     (hbase : EmpiricalGoldbachBase)
-    (hlarge : ∀ N : ℕ, linnikBridge22 < N → Even N → HasExactPosLinnikRep 22 N) :
-    AllEvenExactLinnikAbove 22 := by
+    (hlarge : ∀ N : ℕ, linnikBridge18 < N → Even N → HasExactPosLinnikRep 18 N) :
+    AllEvenExactLinnikAbove 18 := by
   intro N hN hEven
-  have h48 : 48 ≤ N := by omega
-  by_cases hLe : N ≤ linnikBridge22
-  · exact binary_goldbach_bridge_22 hbase hEven h48 hLe
+  have h40 : 40 ≤ N := by omega
+  by_cases hLe : N ≤ linnikBridge18
+  · exact binary_goldbach_bridge_18 hbase hEven h40 hLe
   · exact hlarge N (Nat.lt_of_not_le hLe) hEven
 
-/-- **All-Range `≤ 22` Powers of `2` Linnik–Goldbach Theorem (`∀ N ≥ 4`)**. -/
-theorem all_even_linnik_22
+/-- **All-Range `≤ 18` Positive Powers of `2` Linnik–Goldbach Theorem (`∀ N ≥ 4`)**. -/
+theorem all_even_linnik_18
     (hbase : EmpiricalGoldbachBase)
-    (hlarge : ∀ N : ℕ, linnikBridge22 < N → Even N → HasExactPosLinnikRep 22 N) :
-    AllEvenLinnikProp 22 := by
+    (hlarge : ∀ N : ℕ, linnikBridge18 < N → Even N → HasExactPosLinnikRep 18 N) :
+    AllEvenLinnikProp 18 := by
   intro N hN hEven
-  by_cases h48 : 48 ≤ N
-  · exact hasLinnikRep_of_exactPos (all_even_exact_linnik_22 hbase hlarge N h48 hEven)
+  by_cases h40 : 40 ≤ N
+  · exact hasLinnikRep_of_exactPos (all_even_exact_linnik_18 hbase hlarge N h40 hEven)
   · have hCap : N ≤ 4 * 10 ^ 18 := by omega
     exact hasLinnikRep_of_isGoldbachEven (hbase N hN hCap hEven)
 

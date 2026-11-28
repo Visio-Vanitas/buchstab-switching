@@ -48,17 +48,17 @@ def ShortIntervalProp (C₁ : ℝ) (c' : ℕ) : Prop :=
   ∀ X : ℝ, 4 ≤ X →
     ∃ N : ℕ, X ≤ (N : ℝ) ∧ (N : ℝ) ≤ X + C₁ * (Real.log X) ^ c' ∧ IsGoldbachEven N
 
-/-- Representation of `N` as `p₁ + p₂` plus at most `r` powers of `2`. -/
+/-- Representation of `N` as `p₁ + p₂` plus at most `r` positive powers `2^k` (`k ≥ 1`). -/
 def HasLinnikRep (r N : ℕ) : Prop :=
   ∃ p₁ p₂ : ℕ, p₁.Prime ∧ p₂.Prime ∧
-    ∃ ks : List ℕ, ks.length ≤ r ∧ N = p₁ + p₂ + (ks.map (2 ^ ·)).sum
+    ∃ ks : List ℕ, ks.length ≤ r ∧ (∀ k ∈ ks, 1 ≤ k) ∧ N = p₁ + p₂ + (ks.map (2 ^ ·)).sum
 
 /-- Exact representation of `N` as `p₁ + p₂` plus `r` positive powers `2^k` (`k ≥ 1`). -/
 def HasExactPosLinnikRep (r N : ℕ) : Prop :=
   ∃ p₁ p₂ : ℕ, p₁.Prime ∧ p₂.Prime ∧
     ∃ ks : List ℕ, ks.length = r ∧ (∀ k ∈ ks, 1 ≤ k) ∧ N = p₁ + p₂ + (ks.map (2 ^ ·)).sum
 
-/-- All-range Linnik–Goldbach statement: every even `N ≥ 4` has at most `r` powers of `2`. -/
+/-- All-range Linnik–Goldbach statement: every even `N ≥ 4` has at most `r` positive powers of `2`. -/
 def AllEvenLinnikProp (r : ℕ) : Prop :=
   ∀ N : ℕ, 4 ≤ N → Even N → HasLinnikRep r N
 
@@ -67,8 +67,8 @@ def AllEvenExactLinnikAbove (r : ℕ) : Prop :=
   ∀ N : ℕ, 2 * r + 4 ≤ N → Even N → HasExactPosLinnikRep r N
 
 theorem hasLinnikRep_of_exactPos {r N : ℕ} (h : HasExactPosLinnikRep r N) : HasLinnikRep r N := by
-  rcases h with ⟨p₁, p₂, hp₁, hp₂, ks, hlen, _, hEq⟩
-  exact ⟨p₁, p₂, hp₁, hp₂, ks, hlen.le, hEq⟩
+  rcases h with ⟨p₁, p₂, hp₁, hp₂, ks, hlen, hpos, hEq⟩
+  exact ⟨p₁, p₂, hp₁, hp₂, ks, hlen.le, hpos, hEq⟩
 
 /-- Exact Mathlib-only GRH statement (`lsernau/grh-lean` / `k3/` / `k2/` / `1+a/`). -/
 def DirichletLNonvanishingRightOfHalf : Prop :=
@@ -82,7 +82,7 @@ def EmpiricalGoldbachBase : Prop :=
 /-- Every Goldbach even integer has a trivial `0`-power Linnik representation. -/
 theorem hasLinnikRep_of_isGoldbachEven {r N : ℕ} (h : IsGoldbachEven N) : HasLinnikRep r N := by
   rcases h with ⟨_, p₁, p₂, hp₁, hp₂, rfl⟩
-  exact ⟨p₁, p₂, hp₁, hp₂, [], Nat.zero_le r, by simp⟩
+  exact ⟨p₁, p₂, hp₁, hp₂, [], Nat.zero_le r, by simp, by simp⟩
 
 /-- Monotonicity of `exceptionalCount` on non-negative reals. -/
 theorem exceptionalCount_mono {X Y : ℝ} (_hX : 0 ≤ X) (hXY : X ≤ Y) :

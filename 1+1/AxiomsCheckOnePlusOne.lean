@@ -32,10 +32,10 @@ All exported theorems must depend solely on Lean's three standard axioms:
 #print axioms OnePlusOne.ShortInterval.exists_goldbach_of_weighted_pos
 #print axioms OnePlusOne.ShortInterval.short_interval_all_range
 #print axioms OnePlusOne.Linnik.hasLinnikRep_mono
-#print axioms OnePlusOne.Linnik.binary_goldbach_bridge_22
-#print axioms OnePlusOne.Linnik.all_even_exact_linnik_22
-#print axioms OnePlusOne.Linnik.all_even_linnik_22
+#print axioms OnePlusOne.Linnik.binary_goldbach_bridge_18
+#print axioms OnePlusOne.Linnik.all_even_exact_linnik_18
+#print axioms OnePlusOne.Linnik.all_even_linnik_18
 #print axioms OnePlusOne.theorem_1A_all_even_exceptional_set
 #print axioms OnePlusOne.theorem_1B_all_even_short_interval
-#print axioms OnePlusOne.theorem_3A_all_even_exact_linnik_22
+#print axioms OnePlusOne.theorem_3A_all_even_exact_linnik_18
 #print axioms OnePlusOne.theorem_3_all_even_linnik_goldbach

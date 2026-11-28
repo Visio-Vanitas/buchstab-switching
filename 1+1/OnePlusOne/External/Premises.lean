@@ -35,17 +35,18 @@ def FejerShortIntervalPositivityPremise : Prop :=
         0 < ∑ N ∈ Finset.Icc (Nat.ceil X) (Nat.floor (X + 8 * (Real.log X) ^ 2)),
           W N * goldbachIndicator N
 
-/-- **Theorem 3 Circle-Method Input above the Binary Goldbach Bridge (GRH-conditional):**
-Under `DirichletLNonvanishingRightOfHalf`, for every even `N > (2^23 - 2) * 2^61 + 4 * 10^18`
-(`≈ 1.93428e25`), the smoothed circle-method representation integral at `r = 22` is strictly positive,
-hence `HasExactPosLinnikRep 22 N` holds (verified across `L ∈ [79, 139]` + uniform tail `L ≥ 140`
-with Bessel growth/step `0.910613 < 1` in `scripts/certify_linnik_r.py`). -/
+/-- **Theorem 3 v2 Circle-Method Input above the Binary Goldbach Bridge (GRH-conditional):**
+Under `DirichletLNonvanishingRightOfHalf`, for every even `N > (2^19 - 2) * 2^61 + 4 * 10^18`
+(`≈ 1.208925e24`), the v2 `sin^2(πt/N)` circle-method representation integral at `K = 18`
+(zero black-box buffers, `C_E2 ≤ 31.3259`, 16-direction transfer automaton + Abel layer-cake)
+is strictly positive, hence `HasExactPosLinnikRep 18 N` holds (verified across `L ∈ [76, 119]` +
+pure Collatz–Wielandt uniform tail `L ≥ 120` in `scripts/certify_linnik_r.py`). -/
 def LinnikCircleAboveBridgePremise : Prop :=
   DirichletLNonvanishingRightOfHalf →
-    ∀ N : ℕ, ((2 ^ 23 - 2) * 2 ^ 61 + 4 * 10 ^ 18) < N → Even N →
-      HasExactPosLinnikRep 22 N
+    ∀ N : ℕ, ((2 ^ 19 - 2) * 2 ^ 61 + 4 * 10 ^ 18) < N → Even N →
+      HasExactPosLinnikRep 18 N
 
-/-- Combined analytic premises for `1+1/` Theorems 1A (v2), 1B (v2), and 3. -/
+/-- Combined analytic premises for `1+1/` Theorems 1A (v2), 1B (v2), and 3 (v2). -/
 structure OnePlusOnePremises : Prop where
   empirical : EmpiricalGoldbachBase
   fouradicLaplace : FouradicLaplaceCirclePremise
