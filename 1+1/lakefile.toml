@@ -1,0 +1,21 @@
+name = "OnePlusOne"
+version = "0.1.0"
+keywords = ["math", "number-theory", "analytic-number-theory", "goldbach", "lean4"]
+defaultTargets = ["OnePlusOne"]
+allowNonModules = true
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+maxSynthPendingDepth = 3
+maxHeartbeats = 4000000
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "fc4f59e577feb1a4956671bc04ac18aaaf8cd842"
+
+[[lean_lib]]
+name = "OnePlusOne"
+allowNonModules = true

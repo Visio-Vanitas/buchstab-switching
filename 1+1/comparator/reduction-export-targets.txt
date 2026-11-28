@@ -1,0 +1,4 @@
+Quot Quot.mk Quot.lift Quot.ind
+OnePlusOne.Arithmetic.major_arcs_disjoint OnePlusOne.Arithmetic.ratio_2p_sub_1_le_pow_eighth OnePlusOne.Arithmetic.twin_prime_partial_product_ge OnePlusOne.Arithmetic.totient_sq_ge_half OnePlusOne.Arithmetic.dyadic_geom_sum_lt OnePlusOne.Exceptional.exceptional_all_range_of_dyadic OnePlusOne.ShortInterval.short_interval_all_range OnePlusOne.Linnik.binary_goldbach_bridge_22 OnePlusOne.Linnik.all_even_exact_linnik_22 OnePlusOne.Linnik.all_even_linnik_22 OnePlusOne.theorem_1A_all_even_exceptional_set OnePlusOne.theorem_1B_all_even_short_interval OnePlusOne.theorem_3A_all_even_exact_linnik_22 OnePlusOne.theorem_3_all_even_linnik_goldbach
+propext Quot.sound Classical.choice
+Nat.add Nat.sub Nat.mul Nat.pow Nat.gcd Nat.div Nat.mod Nat.beq Nat.ble Nat.land Nat.lor Nat.xor Nat.shiftLeft Nat.shiftRight String.ofList Char.ofNat List eagerReduce Nat String String.mk Char optParam autoParam semiOutParam outParam

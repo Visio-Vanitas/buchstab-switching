@@ -1,0 +1,59 @@
+=== Certifying Explicit Linnik-Goldbach under GRH + Goldbach(<=4e18) ===
+2*C2 bounds: [1.31973981, 1.32040067]
+avg_S2(57) <= 2.454447, avg_S2(140) <= 2.507789, avg_S2(1000) <= 2.550813
+Correlation-free P_15 exact <= 2.521545, uniform asymp bound <= 2.600769
+
+--- 1. Asymptotic GRH Check (S_sharp, all N >= N_0) ---
+  B=10 (point-angle M=64), t=0.8: Lambda <= 1.259665, xi(beta=0.502) <= 0.723507
+  B=10 (point-angle M=64), t=0.9: Lambda <= 1.348082, xi(beta=0.502) <= 0.718492
+  B=10 (point-angle M=64), t=1.0: Lambda <= 1.453508, xi(beta=0.502) <= 0.721940
+  B=10 (point-angle M=64), t=1.1: Lambda <= 1.576871, xi(beta=0.502) <= 0.730366
+  Asymptotic r=7: minor <= 1.7909 vs Maj >= 1.9204 => PASS
+Proved Gaussian-window Mellin-Plancherel constant C_E2 <= 38.6184
+
+--- 2. All-Range Explicit Crossover Search (r = 16..24, c = 1/16) ---
+  r=16: N_br=3.022e+23 (L=73), C_Sel=5.587 (z=8000), maj_net=1.6765, minor=4.3823 (lam0=0.89) => FAIL
+  r=18: N_br=1.209e+24 (L=75), C_Sel=5.564 (z=12000), maj_net=1.6657, minor=3.1119 (lam0=0.89) => FAIL
+  r=19: N_br=2.418e+24 (L=76), C_Sel=5.542 (z=12000), maj_net=1.6600, minor=2.5584 (lam0=0.88) => FAIL
+  r=20: N_br=4.836e+24 (L=77), C_Sel=5.544 (z=12000), maj_net=1.6543, minor=2.1227 (lam0=0.88) => FAIL
+  r=21: N_br=9.671e+24 (L=78), C_Sel=5.529 (z=20000), maj_net=1.6486, minor=1.7909 (lam0=0.88) => FAIL
+  r=22: N_br=1.934e+25 (L=79), C_Sel=5.499 (z=20000), maj_net=1.6429, minor=1.4393 (lam0=0.87) => PASS
+  r=24: N_br=7.737e+25 (L=81), C_Sel=5.508 (z=20000), maj_net=1.6317, minor=0.9962 (lam0=0.87) => PASS
+
+=== Exhaustive Uniform Slab Verification for Certified r = 22 ===
+  L= 79 (4 sub-slabs): C_Sel<=5.499, worst margin = 0.2036 PASS
+  L= 80 (4 sub-slabs): C_Sel<=5.564, worst margin = 0.2305 PASS
+  L= 81 (4 sub-slabs): C_Sel<=5.558, worst margin = 0.2781 PASS
+  L= 82 (4 sub-slabs): C_Sel<=5.572, worst margin = 0.3023 PASS
+  L= 83 (1 sub-slabs): C_Sel<=5.599, worst margin = 0.1008 PASS
+  L= 84 (1 sub-slabs): C_Sel<=5.635, worst margin = 0.1336 PASS
+  L= 85 (1 sub-slabs): C_Sel<=5.679, worst margin = 0.1581 PASS
+  L= 86 (1 sub-slabs): C_Sel<=5.728, worst margin = 0.1788 PASS
+  L= 90 (1 sub-slabs): C_Sel<=5.951, worst margin = 0.2353 PASS
+  L= 95 (1 sub-slabs): C_Sel<=6.254, worst margin = 0.3402 PASS
+  L=100 (1 sub-slabs): C_Sel<=6.563, worst margin = 0.3961 PASS
+  L=105 (1 sub-slabs): C_Sel<=6.873, worst margin = 0.4738 PASS
+  L=110 (1 sub-slabs): C_Sel<=7.183, worst margin = 0.5008 PASS
+  L=115 (1 sub-slabs): C_Sel<=7.494, worst margin = 0.5632 PASS
+  L=120 (1 sub-slabs): C_Sel<=7.804, worst margin = 0.5968 PASS
+  L=125 (1 sub-slabs): C_Sel<=8.114, worst margin = 0.6016 PASS
+  L=130 (1 sub-slabs): C_Sel<=8.425, worst margin = 0.6463 PASS
+  L=135 (1 sub-slabs): C_Sel<=8.735, worst margin = 0.6709 PASS
+  L=139 (1 sub-slabs): C_Sel<=8.983, worst margin = 0.6760 PASS
+
+--- 3. Asymptotic Tail Verification for ALL L >= 140 ---
+  C_Sel(N >= N_140) <= 9.1412, maj_err_asymp <= 0.1120, sing_tail <= 0.002400
+  t=1.2: Lambda=1.740275, growth/step=0.910613 (< 1 => strictly decreasing for all L >= 140!)
+  L >= 140 uniform: maj_net >= 1.7553 > minor <= 0.9813 (margin=0.7740) PASS
+
+--- 4. Direct Circle Method Check at N = 4e18 (No Binary Bridge) ---
+  Direct N=4e18 (Q0=250), r=24: C_Sel=6.714, maj_net=0.7206, minor=4.4638 (lam0=0.92) => FAIL
+  Direct N=4e18 (Q0=250), r=30: C_Sel=6.714, maj_net=0.6798, minor=2.7857 (lam0=0.92) => FAIL
+  Direct N=4e18 (Q0=250), r=36: C_Sel=6.714, maj_net=0.6390, minor=1.7465 (lam0=0.92) => FAIL
+  Direct N=4e18 (Q0=250), r=40: C_Sel=6.714, maj_net=0.6118, minor=1.2626 (lam0=0.91) => FAIL
+  Direct N=4e18 (Q0=250), r=44: C_Sel=6.714, maj_net=0.5846, minor=0.9124 (lam0=0.91) => FAIL
+  Direct N=4e18 (Q0=250), r=46: C_Sel=6.714, maj_net=0.5710, minor=0.7770 (lam0=0.91) => FAIL
+  Direct N=4e18 (Q0=250), r=48: C_Sel=6.714, maj_net=0.5574, minor=0.6626 (lam0=0.91) => FAIL
+  Direct N=4e18 (Q0=250), r=52: C_Sel=6.714, maj_net=0.5302, minor=0.4839 (lam0=0.91) => PASS
+
+ALL ASSERTIONS PASSED WITH EXIT CODE 0.

@@ -1,0 +1,86 @@
+== toolchain
+$ lean --version
+Lean (version 4.36.0, x86_64-unknown-linux-gnu, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)
+[exit 0]
+$ lake --version
+Lake version 5.0.0-src+611c117 (Lean version 4.36.0)
+[exit 0]
+== build OnePlusOne
+$ lake build OnePlusOne
+Build completed successfully (7412 jobs).
+[exit 0]
+== axioms check
+$ lake env lean AxiomsCheckOnePlusOne.lean
+'OnePlusOne.hasLinnikRep_of_isGoldbachEven' depends on axioms: [propext]
+'OnePlusOne.exceptionalCount_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.exceptionalCount_eq_zero_of_empirical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Arithmetic.major_arcs_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Arithmetic.ratio_2p_sub_1_le_pow_eighth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Arithmetic.twin_prime_partial_product_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Arithmetic.totient_sq_ge_half' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Arithmetic.dyadic_geom_sum_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Certificates.certifiedCells_valid' does not depend on any axioms
+'OnePlusOne.Certificates.certifiedCells_count' does not depend on any axioms
+'OnePlusOne.Certificates.dyadic_12731_rat_check' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Certificates.linnikCheckpointCells_valid' does not depend on any axioms
+'OnePlusOne.Certificates.linnikCheckpointCells_count' does not depend on any axioms
+'OnePlusOne.Certificates.linnik_tail_growth_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.exceptional_all_range_of_dyadic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.dyadic_multiplier_le_12731' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.dyadic_of_parseval_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Exceptional.theorem_1A_of_dyadic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.ShortInterval.one_lt_log_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.ShortInterval.short_interval_small_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.ShortInterval.exists_goldbach_of_weighted_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.ShortInterval.short_interval_all_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Linnik.hasLinnikRep_mono' depends on axioms: [propext]
+'OnePlusOne.Linnik.binary_goldbach_bridge_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Linnik.all_even_exact_linnik_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.Linnik.all_even_linnik_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.theorem_1A_all_even_exceptional_set' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.theorem_1B_all_even_short_interval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.theorem_3A_all_even_exact_linnik_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+'OnePlusOne.theorem_3_all_even_linnik_goldbach' depends on axioms: [propext, Classical.choice, Quot.sound]
+[exit 0]
+$ env LEAN_PATH=/tmp/wt-buchstab-1p1/1+1/.lake/comparator lake env lean -Dpp.unicode.fun=true -DautoImplicit=false -DrelaxedAutoImplicit=false --root=comparator -o /tmp/wt-buchstab-1p1/1+1/.lake/comparator/ChallengeOnePlusOneDefs.olean comparator/ChallengeOnePlusOneDefs.lean
+[exit 0]
+$ env LEAN_PATH=/tmp/wt-buchstab-1p1/1+1/.lake/comparator lake env lean -Dpp.unicode.fun=true -DautoImplicit=false -DrelaxedAutoImplicit=false --root=comparator -o /tmp/wt-buchstab-1p1/1+1/.lake/comparator/ChallengeOnePlusOnePremises.olean comparator/ChallengeOnePlusOnePremises.lean
+[exit 0]
+$ env LEAN_PATH=/tmp/wt-buchstab-1p1/1+1/.lake/comparator lake env lean -Dpp.unicode.fun=true -DautoImplicit=false -DrelaxedAutoImplicit=false --root=comparator -o /tmp/wt-buchstab-1p1/1+1/.lake/comparator/ChallengeOnePlusOneReduction.olean comparator/ChallengeOnePlusOneReduction.lean
+comparator/ChallengeOnePlusOneReduction.lean:23:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:33:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:37:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:42:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:46:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:54:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:67:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:80:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:86:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:92:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:100:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:106:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:112:8: warning: declaration uses `sorry`
+comparator/ChallengeOnePlusOneReduction.lean:118:8: warning: declaration uses `sorry`
+[exit 0]
+$ bash -c LEAN_PATH='/tmp/wt-buchstab-1p1/1+1/.lake/comparator' lake env leanexport ChallengeOnePlusOneReduction -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export'
+[exit 0]
+$ bash -c lake env leanexport OnePlusOne -- $(tr -d '\r' < comparator/reduction-export-targets.txt) > '/tmp/wt-buchstab-1p1/1+1/.lake/exp/red-solution.export'
+[exit 0]
+sha256: b8296268f85bfb4411be12b632644b6128c8b3fdbc8b7c31b22bffd35a0eaccc red-challenge.export; 4debe9c621b7ca9f1077a7824e4d3471364b70112fc4c18ac978293661268c31 red-solution.export
+external kernels available: leanchecker leanchecker-paranoid nanoda_bin 
+$ lake comparator --inadvisably-no-sandbox --config /tmp/wt-buchstab-1p1/1+1/comparator/reduction.json --challenge-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export --solution-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-solution.export
+WARNING: Sandbox disabled, this run is not trustworthy.
+Running Lean paranoid kernel on solution
+Lean paranoid kernel accepts the solution
+Running nanoda kernel on solution
+nanoda kernel accepts the solution
+Running Lean default kernel on solution
+Lean default kernel accepts the solution
+Your solution is okay!
+[exit 0]
+== rehearsal: self-challenge (must reject sorryAx)
+$ lake comparator --inadvisably-no-sandbox --config /tmp/wt-buchstab-1p1/1+1/comparator/reduction.json --challenge-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export --solution-from-export /tmp/wt-buchstab-1p1/1+1/.lake/exp/red-challenge.export
+WARNING: Sandbox disabled, this run is not trustworthy.
+error: Illegal axiom detected: 'sorryAx'
+[exit 1]
+== DONE (comparator verified, self-challenge rejected with exit 1)
