@@ -33,6 +33,7 @@ Lean `v4.36.0` + Mathlib (`fc4f59e577feb1a4956671bc04ac18aaaf8cd842`) formalizat
 - `scripts/`: `certify_exceptional_short.py`, `certify_linnik_r.py` (zero IEEE-754 floats), `quick_verify.py`.
 - `data/`: Pinned text outputs of both certifiers.
 - `notes/`: Mathematical & Lean design specifications (`DESIGN_AND_PROOF_SPEC.md`, `LEAN4_INTERFACE.md`, `LINNIK_GOLDBACH_SPEC.md`).
+- `manuscript/`: Paper manuscript on the explicit all-range Linnik–Goldbach reduction (`linnik_goldbach_all_range.tex` & `linnik_goldbach_all_range.pdf`).
 - `comparator/`: Multi-kernel challenge/solution export harness (`leanchecker-paranoid`, `nanoda_bin`, `sorryAx` self-challenge rejection).
 
 ## Reproducibility (POSIX shell)

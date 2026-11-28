@@ -1,0 +1,348 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{hyperref}
+
+\emergencystretch=2em
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black,
+  pdftitle={An Explicit All-Range Linnik-Goldbach Reduction with 18 Powers of Two},
+  pdfauthor={Visio-Vanitas}
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\GoldbachBase}{\mathsf{GoldbachBase}}
+\newcommand{\Circle}[1]{\mathsf{Circle}_{#1}}
+\newcommand{\LRepPos}[1]{\mathsf{LRep}^{+}_{=#1}}
+\newcommand{\LRepLe}[1]{\mathsf{LRep}^{+}_{\le #1}}
+\newcommand{\GRH}{\mathsf{GRH}}
+
+\title{\textbf{An Explicit All-Range Linnik--Goldbach Reduction\\with 18 Powers of Two}\\[0.35em]
+\large A Lean-Formalized Binary Bridge, a Zero-Buffer Circle-Method Certificate,\\and a Conditional All-Even Composition}
+\author{Visio-Vanitas}
+\date{28 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Linnik's approximation to the binary Goldbach problem asks for a representation of every sufficiently large even integer as the sum of two primes and a bounded number of positive powers of two. Recent asymptotic work reduces the number of powers to six unconditionally and five under the generalized Riemann hypothesis ($\GRH$), with an ineffective threshold $N_0$. We describe an explicit \emph{all-range} reduction (v2, superseding our earlier $K=22$ baseline) with eighteen powers of two. It combines (i)~the verified binary Goldbach range up to $B = 4\cdot 10^{18}$, (ii)~a constructive binary-expansion bridge covering every even integer $N$ with $40 \le N \le N_{\mathrm{br}} = (2^{19}-2)2^{61} + B \approx 1.208925\cdot 10^{24}$, and (iii)~a high-range circle-method statement supplied as an explicit analytic premise under $\GRH$. The finite bridge, the strengthened positive-exponent representation predicate, the arithmetic decomposition, the pure-integer certificate checks, and the all-even composition theorem are formalized in Lean~4 (\texttt{v4.36.0}) and checked by three independent Lean kernels (\texttt{leanchecker-paranoid}, \texttt{nanoda\_bin}, and the default kernel). In addition, the accompanying directed-rounding \texttt{Decimal} certificate script (zero IEEE-754 floating-point operations) eliminates both additive safety allowances ($+0.06$ and $+4.00$) present in the v1 script, certifies all $44$ finite slabs $76 \le L \le 119$ plus a pure Collatz--Wielandt uniform tail $L \ge 120$, and separately certifies a pure effective asymptotic $\GRH$ bound of $K=6$ without Siegel's theorem. The top-level Lean theorem remains conditional on $\GRH$, the finite Goldbach base, and the explicit high-range circle-method proposition; we state this trust boundary transparently and identify the remaining formalization obligations.
+\end{abstract}
+
+\noindent\textbf{Keywords:} Goldbach problem; Linnik--Goldbach problem; powers of two; circle method; GRH; Lean; formal verification.\\
+\textbf{MSC 2020:} 11P32, 11P55, 03B35.
+
+\section{Introduction}
+
+The binary Goldbach conjecture asserts that every even integer $N \ge 4$ is a sum of two primes. Linnik's approximation permits a bounded number of positive powers of two:
+\[
+  N = p_1 + p_2 + \sum_{j=1}^{s} 2^{k_j}, \qquad k_j \ge 1.
+\]
+The objective is to minimize a uniform bound $K$ on $s$ with strictly positive exponents $k_j \ge 1$.
+
+The asymptotic theory for sufficiently large even integers has seen substantial progress. Heath-Brown and Puchta~\cite{HBP2002} established an influential framework yielding $13$ powers unconditionally and $7$ under $\GRH$, and Pintz and Ruzsa~\cite{PR2003,PR2020} refined the circle-method and transfer-matrix bounds. More recently, Johnston and Trudgian~\cite{JT2026} improved the $\GRH$ bound to $6$ (and $7$ unconditionally), and Li and Liu~\cite{LL2026} proved that $6$ powers suffice unconditionally for all sufficiently large even integers and $5$ suffice under $\GRH$ (using Lichtman's sieve constant $C_1 = 6.7814$, which depends on Siegel's ineffective theorem).
+
+Our purpose is complementary: we give an explicit \emph{all-range} reduction valid for \emph{every} even integer $N \ge 4$ with $K = 18$ (and exact $18$ positive powers for every even $N \ge 40$), based on the finite verification of binary Goldbach up to $B = 4\cdot 10^{18}$~\cite{OSHP2014}, a constructive binary-expansion bridge formalized unconditionally in Lean~4, and a high-range circle-method input. This v2 revision advances our earlier v1 baseline ($K = 22$, commit \texttt{f878d4a}, workbench PR~\texttt{\#4727}) in four concrete respects:
+\begin{enumerate}[leftmargin=2em,itemsep=2pt]
+  \item reduces the all-range exponent count from $K = 22$ to $K = 18$ (and pure effective asymptotic $\GRH$ from $K = 7$ to $K = 6$, without Siegel's theorem);
+  \item strengthens the Lean predicate \texttt{HasLinnikRep} directly in its type to enforce $k \ge 1$ for every exponent $k$ in the list;
+  \item eliminates both additive safety allowances ($+0.06$ and $+4.00$) present in the v1 numerical script via zero-buffer Bochner--Hadamard, Parseval, and exact Ramanujan-sum bounds; and
+  \item runs the entire directed-rounding \texttt{Decimal} certification in under $46$ seconds with zero IEEE-754 floating-point operations.
+\end{enumerate}
+
+The logical status must be stated precisely. The Lean~4 development proves the finite bridge, the strengthened representation predicates, the arithmetic and elementary bounds, the pure-integer certificate table checks, and the formal all-even composition theorem. The high-range circle-method statement is passed to the top-level theorem as an explicit \texttt{Prop} premise (zero \texttt{axiom} declarations). Thus the formalized theorem is conditional on $\GRH$, the finite Goldbach base, and that high-range premise; the reproducible directed-rounding script provides numerical certification for the analytic inequalities, but full formalization of those analytic inequalities inside Lean remains future work.
+
+\section{Statement of the All-Range Reduction}
+
+Put
+\[
+  B = 4\cdot 10^{18}, \qquad P = 2^{61}, \qquad M_{\max} = 2^{19} - 2, \qquad N_{\mathrm{br}} = M_{\max} P + B.
+\]
+Explicitly,
+\[
+  N_{\mathrm{br}} = 1{,}208{,}925{,}207{,}928{,}610{,}747{,}318{,}272 \approx 1.208925\cdot 10^{24}.
+\]
+
+\begin{definition}\label{def:base}
+Let $\GoldbachBase(B)$ denote the assertion that every even integer $n$ with $4 \le n \le B$ is a sum of two primes.
+\end{definition}
+
+This finite input is supported by the empirical verification of Oliveira e Silva, Herzog, and Pardi up to $4\cdot 10^{18}$~\cite{OSHP2014}. It is an empirical verification theorem, independent of $\GRH$.
+
+\begin{definition}\label{def:circle}
+Let $\Circle{18}(N_{\mathrm{br}})$ denote the high-range assertion that, under $\GRH$ for Dirichlet $L$-functions (\texttt{DirichletLNonvanishingRightOfHalf}), every even integer $N > N_{\mathrm{br}}$ admits a representation
+\[
+  N = p_1 + p_2 + \sum_{j=1}^{18} 2^{k_j}, \qquad k_j \ge 1,
+\]
+with $p_1, p_2$ prime.
+\end{definition}
+
+\begin{theorem}[All-range Linnik--Goldbach reduction, $K = 18$]\label{thm:main}
+Assume \textup{(i)}~$\GRH$ for Dirichlet $L$-functions, \textup{(ii)}~$\GoldbachBase(B)$, and \textup{(iii)}~$\Circle{18}(N_{\mathrm{br}})$. Then every even integer $N \ge 4$ admits a representation
+\[
+  \boxed{\;N = p_1 + p_2 + \sum_{j=1}^{s} 2^{k_j}, \qquad 0 \le s \le 18, \qquad k_j \ge 1.\;}
+\]
+Moreover, every even integer $N \ge 40$ admits a representation with \emph{exactly} eighteen positive powers of two ($s = 18$, $k_j \ge 1$).
+\end{theorem}
+
+\begin{remark}[Strengthened formal predicate]\label{rem:predicate}
+In the earlier v1 snapshot (\texttt{f878d4a}), \texttt{HasExactPosLinnikRep} encoded $k_j \ge 1$ directly while \texttt{HasLinnikRep} bounded only the list length. In the v2 Lean source (\texttt{OnePlusOne/Core/Defs.lean} and \texttt{comparator/ChallengeOnePlusOneDefs.lean}), \texttt{HasLinnikRep} has been strengthened to
+\begin{multline*}
+  \exists\, p_1, p_2 : \mathbb{N},\; p_1.\mathsf{Prime} \wedge p_2.\mathsf{Prime} \wedge
+  \exists\, ks : \mathsf{List}\,\mathbb{N},\\
+  ks.\mathsf{length} \le r \wedge (\forall k \in ks,\; 1 \le k) \wedge N = p_1 + p_2 + \sum_{k \in ks} 2^k,
+\end{multline*}
+so positive exponents are now enforced directly in the Lean type for both \texttt{theorem\_3A\_all\_even\_exact\_linnik\_18} ($N \ge 40$) and \texttt{theorem\_3\_all\_even\_linnik\_goldbach} ($N \ge 4$, using the empty list $ks = []$ on $4 \le N \le 38$).
+\end{remark}
+
+\section{The Constructive Binary Bridge}
+
+\begin{lemma}[Binary bridge for $K = 18$]\label{lem:bridge}
+Assume $\GoldbachBase(B)$. Every even integer $N$ with
+\[
+  40 \le N \le N_{\mathrm{br}} = (2^{19} - 2)2^{61} + 4\cdot 10^{18}
+\]
+can be represented as
+\[
+  N = p_1 + p_2 + \sum_{j=1}^{18} 2^{k_j}, \qquad k_j \ge 1,
+\]
+with $p_1, p_2$ prime.
+\end{lemma}
+
+\begin{proof}
+We split into two cases.
+
+\medskip\noindent\emph{Case 1: $40 \le N \le B + 36$.}
+Take eighteen copies of $2^1 = 2$. Their sum is $36$, and
+\[
+  4 \le N - 36 \le B.
+\]
+Since $N - 36$ is even, $\GoldbachBase(B)$ yields primes $p_1, p_2$ with $N - 36 = p_1 + p_2$, whence
+\[
+  N = p_1 + p_2 + \underbrace{2 + \cdots + 2}_{18\text{ terms}}.
+\]
+
+\medskip\noindent\emph{Case 2: $B + 36 < N \le N_{\mathrm{br}}$.}
+Set $A = N - B > 0$ and define
+\[
+  M = \left\lceil \frac{A}{P} \right\rceil = \left\lfloor \frac{A + P - 1}{P} \right\rfloor.
+\]
+Then $A \le MP < A + P$. Because $P = 2^{61} = 2{,}305{,}843{,}009{,}213{,}693{,}952 \le B - 4$, it follows that
+\[
+  4 \le N - MP \le B.
+\]
+Since $N \le (2^{19} - 2)P + B$, we also have $1 \le M \le 2^{19} - 2$. Every integer in $[1, 2^{19}-2]$ omits at least one bit among $\{0, 1, \dots, 18\}$ (as $2^{19}-1$ is the unique integer below $2^{19}$ with $19$ ones), so the binary expansion of $M$ has $1 \le t \le 18$ nonzero digits:
+\[
+  M = \sum_{i=1}^{t} 2^{e_i}, \qquad 0 \le e_i \le 18, \qquad 1 \le t \le 18.
+\]
+Multiplying by $P = 2^{61}$ shifts every exponent into $[61, 79]$:
+\[
+  MP = \sum_{i=1}^{t} 2^{e_i + 61}.
+\]
+If $t < 18$, repeatedly split a term $2^k$ into $2^{k-1} + 2^{k-1}$. Each split preserves the sum and increases the number of terms by $1$. Since the head exponent starts at $\ge 61$ and at most $18 - 1 = 17$ splits are needed, every resulting exponent remains at least $61 - 17 = 44 \ge 1$. Thus
+\[
+  MP = \sum_{j=1}^{18} 2^{k_j}, \qquad k_j \ge 1.
+\]
+Finally, $N - MP$ is even (as $2 \mid P$) and lies in $[4, B]$, so $\GoldbachBase(B)$ gives $N - MP = p_1 + p_2$. Combining the identities completes the proof.
+\end{proof}
+
+\begin{remark}
+Lemma~\ref{lem:bridge} is an unconditional arithmetic implication from $\GoldbachBase(B)$, proved in \texttt{OnePlusOne/Linnik/Reduction.lean} (\texttt{binary\_goldbach\_bridge\_18}). It uses neither $\GRH$ nor any analytic estimate. The same mechanism works for any $1 \le K \le 60$ with crossover $N_{\mathrm{br}}(K) = (2^{K+1}-2)2^{61} + B$.
+\end{remark}
+
+\section{The High-Range Circle-Method Input (v2, Zero-Buffer Architecture)}
+
+For the high-range regime $N > N_{\mathrm{br}}(18)$, the v2 architecture replaces v1's Laplace weight and heuristic buffers with a compactly supported $\sin^2$ weight, exact Bochner--Hadamard and Parseval bounds, and a 16-direction rational-polygon transfer automaton.
+
+For an even integer $N > N_{\mathrm{br}}(18)$, set
+\[
+  c = \frac{1}{8}, \qquad L = \left\lfloor \log_2\!\left(\frac{N}{8}\right) \right\rfloor \ge 76,
+\]
+and define the smooth prime-power weight $w(n) = \sin^2(\pi n/N)\mathbf{1}_{1 \le n \le N}$ ($E_2 = \frac{3}{8}N$, $\|\hat\phi\|_1 \le 2.136916$, Mellin moments $(M_0, M_1, M_2) \le (0.7703, 2.0828, 10.7884)$), together with
+\[
+  S_w(\alpha) = \sum_{n=1}^{N} \Lambda(n) w(n) e(n\alpha), \qquad G_L(\alpha) = \sum_{m=1}^{L} e(2^m \alpha),
+\]
+where $e(t) = e^{2\pi i t}$. For $K = 18 = 2k$ ($k = 9$), we evaluate the pure-monomial signed/nonnegative circle integral associated with $P(z) = z^9$ and $Q(z) = z^8$, normalized by $2 E_2 L^{18}$.
+
+\subsection{Resolution of the v1 Additive Allowances}
+
+The v1 script (\texttt{f878d4a}) contained two additive allowances flagged in audit: $+0.06$ in \texttt{avg\_S2\_pintz\_ruzsa\_bound} and $+4.00$ in \texttt{proved\_C\_E2\_const}. Both are completely eliminated in v2 (\texttt{d5081e7}):
+\begin{enumerate}[leftmargin=2em,itemsep=3pt]
+  \item \textbf{Zero-buffer major-arc $L^2$ constant ($C_{E_2} \le 31.3259$):} Derived directly from the unit-interval Bochner kernel and Hadamard expansion at $\operatorname{Re}(s) = 5/2$ ($C_{\mathrm{row,dir}} \le 1.0000$), with zero additive buffer. Non-zero-sum remainders on major arcs are bounded explicitly without heuristic padding:
+  \begin{itemize}[leftmargin=1.5em,itemsep=1pt]
+    \item prime powers ($k \ge 2$) via Parseval over the full circle $[0,1]$ and Rosser--Schoenfeld~\cite[Theorem~13]{RS1962} ($\psi(N) - \vartheta(N) < 1.4262\sqrt{N}$), contributing $\le 1.4262\log N / (0.375\sqrt{N}) \approx 1.9\cdot 10^{-10}$;
+    \item $\gcd(n,q) > 1$ terms via $\omega(q)(\log N + 2\log Q_0)$, contributing $\approx 5.7\cdot 10^{-29}$;
+    \item the vertical contour at $\operatorname{Re}(s) = 1/4$ on $\mathfrak{M}_1^{\mathrm{odd}}$ using the actual major-arc cutoff $|U| \le U_q$ (rather than the minor-arc cutoff $\sqrt{Y}$), contributing $\approx 1.9\cdot 10^{-11}$.
+  \end{itemize}
+  \item \textbf{Zero-buffer singular-series and character tables:} Replaced by exact rational Ramanujan sums over all $43$ odd squarefree moduli $q \le 105$ ($\sum_{q \in S_{\mathrm{ex}}} A_{1,1}(q) \ge 0.254248$), exact $D_1 = 2000$ truncation tails ($\le 0.01683$), and outward-rounded prefix sums of $\sum_{q \le Q,\, 2 \nmid q} \mu^2(q)/\varphi(q)$ up to $Q = 1{,}800{,}000$, using BMOR zero counting~\cite{BMOR2021}.
+  \item \textbf{Single-$N$ Dirichlet minor-arc sup-norm and convex-vertex polygon bounds:} Parameterizing $Q_1 = Q_{\max} = \sqrt{Y}$ and $q = u\sqrt{Y}$ ($u \in (0,1]$) makes $U_q \le 2\pi / u$ independent of $N$ within each slab, eliminating $(N_{\mathrm{hi}}/N_{\mathrm{lo}})^{3.5}$ subdivision inflation. Sixteen Pythagorean rational directions form $20$ nested exact-\texttt{Fraction} convex polygons $K_s$; since $x^2 + y^2$ is convex, $\max_{z \in K_s} |z|^{2k}$ is attained at an exact rational vertex of $K_s$, with Abel layer-cake summation over the polygons.
+\end{enumerate}
+
+\subsection{Reported v2 Certificate Summary}
+
+Running \texttt{python3 -I scripts/certify\_linnik\_r.py} (80-digit directed-rounding \texttt{Decimal} with \texttt{FloatOperation} traps, zero \texttt{float} AST nodes, runtime $45.97\,\mathrm{s}$) yields the outward-rounded bounds in Table~\ref{tab:cert}.
+
+\begin{table}[ht]
+\centering
+\caption{Outward-rounded v2 certificate summary from \texttt{data/certify\_linnik\_r\_output.txt} ($K = 18$ all-range; $K = 6$ pure effective asymptotic $\GRH$).}
+\label{tab:cert}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}l l X l@{}}
+\toprule
+Regime & Method / Parameters & Certified Inequality & Margin \\
+\midrule
+$4 \le N \le 38$ & $\GoldbachBase(B)$ & $s = 0$ ($\LRepLe{18}$) & exact \\
+$40 \le N \le N_{\mathrm{br}}(18)$ & Lean binary bridge & $s = 18$, $k_j \ge 1$ ($\LRepPos{18}$) & exact \\
+$L = 76$ ($N > N_{\mathrm{br}}$) & $2$ sub-slabs, $M_{\mathrm{dyad}}(30,45)$ & $C_{\mathrm{Sel}} \le 5.025$, $\mathrm{lhs} \ge 1.0000 > \mathrm{rhs} \le 0.9883$ & $\ge 0.0117$ \\
+$L \in [76, 84]$ & Dyadic-excluded $B=10$ & Worst at $L = 76$; rises to $0.1043$ at $L = 82$ & $\ge 0.0117$ \\
+$L \in [85, 119]$ & Pure $B=10$ (no $M_{\mathrm{dyad}}$) & Rises from $0.0491$ ($L=85$) to $0.2765$ ($L=119$) & $\ge 0.0491$ \\
+$L \ge 120$ (tail) & Collatz--Wielandt ($\le 0.916314$) & $C_{\mathrm{Sel}} \le 9.0945$, $\mathrm{lhs} \ge 1.0000 > \mathrm{rhs} \le 0.8886$ & $\ge 0.1114$ \\
+Asymptotic $\GRH$ & Pure effective ($C_1 = 8.0$, $K=6$) & $460$-pair net; $\mathrm{lhs} \le 0.5131 < \mathrm{rhs} \ge 0.5929$ & $\ge 0.0798$ \\
+Informational & Lichtman ($C_1 = 6.7814$, $K=5$) & Same net; $\mathrm{lhs} \le 2.4019 < \mathrm{rhs} \ge 2.4062$ & $\ge 0.0044$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{The Formal High-Range Interface}
+
+The Lean source (\texttt{OnePlusOne/External/Premises.lean}) isolates the high-range circle-method statement as an explicit \texttt{Prop} field inside \texttt{OnePlusOnePremises}:
+\[
+  \GRH \implies \forall N > N_{\mathrm{br}}(18),\quad \mathrm{Even}(N) \implies \LRepPos{18}(N).
+\]
+
+\begin{remark}
+The Lean kernel verifies the binary bridge, strengthened predicates, arithmetic lemmas, pure-integer certificate tables, and all-even composition. It does not prove the high-range analytic proposition merely by checking the interface; proving $\Circle{18}(N_{\mathrm{br}})$ from $\GRH$ inside Lean remains an external mathematical obligation.
+\end{remark}
+
+\section{All-Range Composition}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Let $N \ge 4$ be even.
+If $4 \le N \le 38$, then $N \le B$ and $\GoldbachBase(B)$ gives $N = p_1 + p_2$, yielding $\LRepLe{18}(N)$ with $ks = []$ (vacuously satisfying $\forall k \in ks,\, 1 \le k$).
+If $40 \le N \le N_{\mathrm{br}}(18)$, Lemma~\ref{lem:bridge} gives $\LRepPos{18}(N)$ (hence also $\LRepLe{18}(N)$).
+If $N > N_{\mathrm{br}}(18)$, $\Circle{18}(N_{\mathrm{br}})$ under $\GRH$ gives $\LRepPos{18}(N)$.
+These three cases exhaust all even integers $N \ge 4$, and the last two exhaust all even $N \ge 40$.
+\end{proof}
+
+\section{Lean 4 Formalization and Trust Boundary}
+
+{\sloppy
+The v2 source snapshot is \texttt{Visio-Vanitas/buchstab-switching} (branch \texttt{feat/one-plus-one-v436}, commit \texttt{d5081e7a2dae5d8067c43d92cf35403ce12f0ee4}), matching Lean~\texttt{v4.36.0}, Mathlib commit \texttt{fc4f59e577feb1a4956671bc04ac18aaaf8cd842}, and strict CI options (\texttt{autoImplicit=false}, \texttt{relaxedAutoImplicit=false}, \texttt{maxSynthPendingDepth=3}, \texttt{maxHeartbeats=4000000}). The $\GRH$ predicate \texttt{DirichletLNonvanishingRightOfHalf} matches \texttt{lsernau/grh-lean} (\texttt{72fead1}) and \texttt{CGandGameEngineLearner/goldbach-proofs} verbatim.
+}
+
+Independent verification on the 64-core \texttt{GoldBach} host (outside Docker, clean worktree) and locally recorded:
+\begin{itemize}[leftmargin=2em,itemsep=2pt]
+  \item \texttt{python3 -I scripts/quick\_verify.py}: $4/4$ PASS (zero \texttt{float} / \texttt{import math} AST leaks across all scripts, byte-for-byte replay match with archived outputs, exact match of all $15$ exceptional/short cells at $10^{-8}$ scale and all $6$ Linnik checkpoints in \texttt{Data.lean}, and zero forbidden Lean tokens across all $10$ source files);
+  \item \texttt{lake build OnePlusOne}: $7{,}412$ jobs, $0$ errors and $0$ warnings;
+  \item \texttt{lake env lean AxiomsCheckOnePlusOne.lean}: all $32$ exported declarations depend solely on Lean's three standard axioms \texttt{[propext, Classical.choice, Quot.sound]} (with the four \texttt{by decide} certificate theorems depending on zero axioms);
+  \item \texttt{bash comparator/run\_comparator.sh} ($16$ exported targets; \texttt{red-challenge.export} SHA-256 \texttt{2f2597bf827d...}, \texttt{red-solution.export} SHA-256 \texttt{e96622f4baf8...}): accepted independently by \texttt{leanchecker-paranoid}, \texttt{nanoda\_bin}, and the default Lean kernel (\texttt{exit 0}), with the \texttt{sorryAx} self-challenge rejected (\texttt{exit 1}).
+\end{itemize}
+
+\begin{remark}[Companion v2 results in \texttt{1+1/}]
+The same Lean package and zero-float toolchain also certify two sibling all-range v2 results (merged in \texttt{goldbach-proofs} PR~\texttt{\#4995}, commit \texttt{eef391f}): under $\GRH + \GoldbachBase(B)$, $E(X) \le 16\sqrt{X}(\log X)^3$ for all $X \ge 4$ (Theorem~1A, compressed $795.7\times$ from v1's $12731$ via $4$-adic telescoping); and under $\mathsf{RH} + \GoldbachBase(B)$, every interval $[X, X + 8(\log X)^2]$ ($X \ge 4$) contains a binary Goldbach sum $p_1 + p_2$ (Theorem~1B, compressed $785.1\times$ from v1's $6281$).
+\end{remark}
+
+\section{Comparison with Recent Asymptotic Results}
+
+Table~\ref{tab:comp} places our all-range reductions alongside recent asymptotic theorems.
+
+\begin{table}[ht]
+\centering
+\caption{Comparison of Linnik--Goldbach bounds across asymptotic and all-range regimes.}
+\label{tab:comp}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}l c X@{}}
+\toprule
+Result & Powers $K$ & Range / Hypotheses \\
+\midrule
+Heath-Brown--Puchta (2002)~\cite{HBP2002} & $13$ / $7$ & sufficiently large; unconditional / $\GRH$ \\
+Johnston--Trudgian (2026)~\cite{JT2026} & $7$ / $6$ & sufficiently large; unconditional / $\GRH$ \\
+Li--Liu (2026)~\cite{LL2026} & $6$ / $5$ & sufficiently large; unconditional / $\GRH$ (Siegel-ineffective $C_1$) \\
+This script (Section~1 benchmark) & $6$ & sufficiently large; pure effective $\GRH$ ($C_1 = 8.0$, no Siegel) \\
+Our v1 reduction (\texttt{f878d4a}, PR~\texttt{\#4727}) & $22$ & all even $N \ge 4$; $\GRH + \GoldbachBase(B) + \Circle{22}$ \\
+\textbf{Our v2 reduction (\texttt{d5081e7})} & \textbf{18} & \textbf{all even $N \ge 4$ (exact $18$ for $N \ge 40$); $\GRH + \GoldbachBase(B) + \Circle{18}$} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Remaining Obligations and Next Steps}
+
+While v2 resolves three of the five obligations identified in our v1 manuscript (eliminating the $+0.06$ and $+4.00$ allowances, strengthening \texttt{HasLinnikRep} with $k_j \ge 1$, and reducing $K$ from $22$ to $18$), two major formalization and analytic directions remain open:
+\begin{enumerate}[leftmargin=2em,itemsep=2pt]
+  \item \textbf{Formalize the high-range circle-method proof in Lean~4:} prove $\Circle{18}(N_{\mathrm{br}})$ from $\GRH$ inside Lean rather than passing it as an external premise—decomposing the major-arc $L^2$ Bochner--Hadamard bound, the Selberg sieve upper bound, the 16-direction transfer-automaton measure bound, and the Collatz--Wielandt tail contraction into independently checkable Lean lemmas.
+  \item \textbf{Further reduce all-range $K$ (v3 direction):} pushing finite-$L$ certification from $K = 18$ toward $K = 14$ or lower requires compressing the finite-range non-principal singular-series remainder $T_{1,1}$ (currently $\approx 0.145$ at $Q_0 \sim 2\cdot 10^5$, versus $0.025$ asymptotically) via higher-modulus character tables and finite-$L$ signed-polynomial optimization.
+\end{enumerate}
+
+\section{Conclusion}
+
+The binary-expansion bridge converts the verified binary Goldbach range $[4, 4\cdot 10^{18}]$ into an unconditionally formalized exact $18$-power representation up to $N_{\mathrm{br}}(18) \approx 1.2089\cdot 10^{24}$. Above $N_{\mathrm{br}}(18)$, a zero-float, zero-black-box-buffer directed-rounding certificate script covers all $44$ finite slabs $76 \le L \le 119$ and the uniform Collatz--Wielandt tail $L \ge 120$ in $46$ seconds, while also certifying effective asymptotic $\GRH$ at $K = 6$. The Lean~4 formalization checks the binary bridge, strengthened positive-exponent predicate, pure-integer certificate tables, and all-even composition across three independent kernels, isolating the remaining analytic obligation cleanly in a single explicit \texttt{Prop} premise.
+
+\section*{Source Record}
+
+This manuscript corresponds to the pinned source snapshot
+\url{https://github.com/Visio-Vanitas/buchstab-switching/tree/d5081e7a2dae5d8067c43d92cf35403ce12f0ee4/1+1}
+(evolving from v1 commit \texttt{f878d4a} / workbench PR \url{https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4727} and v2 1A/1B PR \url{https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4995}). It documents the verified source and review dossier; it does not claim that the external analytic premise has been formalized inside Lean or independently peer-reviewed.
+
+\begin{thebibliography}{9}
+
+\bibitem{BMOR2021}
+M.~A.~Bennett, G.~Martin, K.~O'Bryant, and A.~Rechnitzer,
+Explicit bounds for primes in arithmetic progressions,
+\emph{Illinois Journal of Mathematics} 62 (2018), 427--532;
+and Counting zeros of Dirichlet $L$-functions,
+\emph{Mathematics of Computation} 90 (2021), 1455--1482.
+
+\bibitem{HBP2002}
+D.~R.~Heath-Brown and J.~C.~Puchta,
+Integers represented as a sum of primes and powers of two,
+\emph{Asian Journal of Mathematics} 6 (2002), no.~3, 535--565.
+
+\bibitem{JT2026}
+D.~R.~Johnston and T.~Trudgian,
+An update on the Linnik--Goldbach and Romanov problems,
+\texttt{arXiv:2605.17825}, 2026.
+
+\bibitem{LL2026}
+H.~Li and Z.~Liu,
+6 powers of 2 in the Linnik--Goldbach problem,
+\texttt{arXiv:2610.15784}, 2026.
+
+\bibitem{OSHP2014}
+T.~Oliveira e Silva, S.~Herzog, and S.~Pardi,
+Empirical verification of the even Goldbach conjecture and computation of prime gaps up to $4\cdot 10^{18}$,
+\emph{Mathematics of Computation} 83 (2014), no.~288, 2033--2060.
+DOI: \texttt{10.1090/S0025-5718-2013-02787-1}.
+
+\bibitem{PR2003}
+J.~Pintz and I.~Z.~Ruzsa,
+On Linnik's approximation to Goldbach's problem, I,
+\emph{Acta Arithmetica} 109 (2003), no.~2, 169--194.
+
+\bibitem{PR2020}
+J.~Pintz and I.~Z.~Ruzsa,
+On Linnik's approximation to Goldbach's problem, II,
+\emph{Acta Mathematica Hungarica} 161 (2020), 569--582.
+
+\bibitem{RS1962}
+J.~B.~Rosser and L.~Schoenfeld,
+Approximate formulas for some functions of prime numbers,
+\emph{Illinois Journal of Mathematics} 6 (1962), 64--94.
+
+\end{thebibliography}
+
+\end{document}
